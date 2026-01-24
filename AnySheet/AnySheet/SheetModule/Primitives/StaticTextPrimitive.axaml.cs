@@ -68,14 +68,14 @@ public partial class StaticTextLua : ModulePrimitiveLuaBase
 
     public override UserControl CreateUiControl()
     {
-        return new StaticTextControl(GridX, GridY, GridWidth, GridHeight, _text, _alignment, _fontStyle);
+        return new StaticTextPrimitive(GridX, GridY, GridWidth, GridHeight, _text, _alignment, _fontStyle);
     }
 }
 
-public partial class StaticTextControl : UserControl
+public partial class StaticTextPrimitive : UserControl
 {
     public static readonly StyledProperty<string> DisplayTextProperty =
-        AvaloniaProperty.Register<StaticTextControl, string>(
+        AvaloniaProperty.Register<StaticTextPrimitive, string>(
             nameof(DisplayText));
 
     public string DisplayText
@@ -84,7 +84,7 @@ public partial class StaticTextControl : UserControl
         set => SetValue(DisplayTextProperty, value);
     }
     
-    public StaticTextControl(int x, int y, int width, int height, string text, string alignment, string fontStyle)
+    public StaticTextPrimitive(int x, int y, int width, int height, string text, string alignment, string fontStyle)
     {
         InitializeComponent();
         

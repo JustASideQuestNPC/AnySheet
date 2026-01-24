@@ -5,8 +5,8 @@
              xmlns:cc="using:CCLibrary"
              xmlns:vm="using:AnySheet.SheetModule.Primitives"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
-             x:Class="AnySheet.SheetModule.Primitives.StaticTextControl"
-             x:DataType="vm:StaticTextControl"
+             x:Class="AnySheet.SheetModule.Primitives.StaticTextPrimitive"
+             x:DataType="vm:StaticTextPrimitive"
              x:Name="Control">
     <UserControl.Styles>
         <StyleInclude Source="/Assets/SheetModuleStyles.axaml" />
