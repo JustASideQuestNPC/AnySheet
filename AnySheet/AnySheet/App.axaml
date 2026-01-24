@@ -1,0 +1,24 @@
+<Application xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:AnySheet.ViewModels"
+             xmlns:vs="using:AnySheet.Views"
+             x:Class="AnySheet.App"
+             xmlns:local="using:AnySheet"
+             RequestedThemeVariant="Default">
+             <!-- "Default" ThemeVariant follows system theme variant. "Dark" or "Light" are other available options. -->
+
+    <Application.DataTemplates>
+        <local:ViewLocator/>
+    </Application.DataTemplates>
+  
+    <Application.Styles>
+        <FluentTheme />
+    </Application.Styles>
+             
+    <Application.Resources>
+        <FontFamily x:Key="PtSerif">avares://AnySheet/Assets/Fonts/PTSerif</FontFamily>
+        <FontFamily x:Key="PtSerifBold">avares://AnySheet/Assets/Fonts/PTSerif-Bold</FontFamily>
+        <FontFamily x:Key="PtSerifItalic">avares://AnySheet/Assets/Fonts/PTSerif-Italic</FontFamily>
+        <FontFamily x:Key="PtSerifBoldItalic">avares://AnySheet/Assets/Fonts/PTSerif-BoldItalic</FontFamily>
+    </Application.Resources>
+</Application>

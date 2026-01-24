@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AvaloniaProject">
+    <option name="projectPerEditor">
+      <map>
+        <entry key="AnySheet/App.axaml" value="AnySheet/AnySheet.csproj" />
+        <entry key="AnySheet/Assets/SheetModuleStyles.axaml" value="AnySheet/AnySheet.csproj" />
+        <entry key="AnySheet/CharacterSheetPanel/CharacterSheetModule.axaml" value="AnySheet/AnySheet.csproj" />
+        <entry key="AnySheet/CharacterSheetPanel/SheetModuleContainer.axaml" value="AnySheet/AnySheet.csproj" />
+        <entry key="AnySheet/SheetModule/Primitives/ModulePrimitiveBase.axaml" value="AnySheet/AnySheet.csproj" />
+        <entry key="AnySheet/SheetModule/Primitives/ModulePrimitiveControl.axaml" value="AnySheet/AnySheet.csproj" />
+        <entry key="AnySheet/SheetModule/Primitives/ModulePrimitiveControlBase.axaml" value="AnySheet/AnySheet.csproj" />
+        <entry key="AnySheet/SheetModule/Primitives/ModuleSpacer.axaml" value="AnySheet/AnySheet.csproj" />
+        <entry key="AnySheet/SheetModule/Primitives/StaticTextControl.axaml" value="AnySheet/AnySheet.csproj" />
+        <entry key="AnySheet/SheetModule/Primitives/StaticTextPrimitive.axaml" value="AnySheet/AnySheet.csproj" />
+        <entry key="AnySheet/SheetModule/Primitives/TextFieldControl.axaml" value="AnySheet/AnySheet.csproj" />
+        <entry key="AnySheet/SheetModule/SheetModule.axaml" value="AnySheet/AnySheet.csproj" />
+        <entry key="AnySheet/SheetViewer.axaml" value="AnySheet/AnySheet.csproj" />
+        <entry key="AnySheet/Views/CharacterSheet.axaml" value="AnySheet/AnySheet.csproj" />
+        <entry key="AnySheet/Views/MainWindow.axaml" value="AnySheet/AnySheet.csproj" />
+      </map>
+    </option>
+  </component>
+</project>

@@ -1,0 +1,14 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="AnySheet.SheetModule.SheetModule">
+    
+    <UserControl.Styles>
+        <StyleInclude Source="../Assets/SheetModuleStyles.axaml" />
+    </UserControl.Styles>
+    <Border Name="Border" Background="White" Classes="Module">
+        <Grid Name="PrimitiveGrid" RowSpacing="2" ColumnSpacing="2" />
+    </Border>
+</UserControl>

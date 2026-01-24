@@ -1,0 +1,25 @@
+﻿<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <Design.PreviewWith>
+        <Border Padding="20">
+            <!-- Add Controls for Previewer Here -->
+        </Border>
+    </Design.PreviewWith>
+
+    <!-- Add Styles Here -->
+    <Style Selector="Border.Module">
+        <Setter Property="Background" Value="White" />
+        <Setter Property="Padding" Value="0" />
+        <Setter Property="BorderBrush" Value="Red"/>
+        <Setter Property="BorderThickness" Value="2"/>
+        <Setter Property="CornerRadius" Value="5"/>
+    </Style>
+    <Style Selector="Border.Primitive">
+        <Setter Property="CornerRadius" Value="5"/>
+    </Style>
+    <Style Selector="TextBlock">
+        <Setter Property="FontFamily" Value="{StaticResource PtSerif}" />
+        <Setter Property="Padding" Value="5" />
+        <Setter Property="Foreground" Value="Black" />
+    </Style>
+</Styles>
