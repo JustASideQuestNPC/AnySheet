@@ -27,6 +27,7 @@
     </ItemGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\CCLibrary\CCLibrary.csproj" />
       <ProjectReference Include="..\LuaLib\LuaLib.csproj" />
     </ItemGroup>
 </Project>

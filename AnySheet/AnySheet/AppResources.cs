@@ -1,15 +1,22 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using Avalonia;
 using Avalonia.Media;
 
 namespace AnySheet;
 
 public class AppResources
 {
-    public static Dictionary<string, FontFamily> ModuleFonts { get; } = new()
+    public static Dictionary<string, string> ModuleFonts { get; } = new()
     {
-        ["normal"] = new FontFamily("avares://AnySheet/Assets/Fonts/PTSerif"),
-        ["bold"] = new FontFamily("avares://AnySheet/Assets/Fonts/PTSerif-Bold"),
-        ["italic"] = new FontFamily("avares://AnySheet/Assets/Fonts/PTSerif-Italic"),
-        ["bold italic"] = new FontFamily("avares://AnySheet/Assets/Fonts/PTSerif-BoldItalic"),
+        ["normal"] = "PtSerif",
+        ["bold"] = "PtSerifBold",
+        ["italic"] = "PtSerifItalic",
+        ["bold italic"] = "PtSerifBoldItalic"
     };
+
+    public static T GetResource<T>(string resourceName) where T : class
+    {
+        return Application.Current?.Resources[resourceName] as T ?? throw new InvalidOperationException();
+    }
 }

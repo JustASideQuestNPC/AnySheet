@@ -1,12 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
+using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Media;
 using Lua;
 using LuaLib;
 
 namespace AnySheet.SheetModule.Primitives;
 
+/// <summary>
+/// Basic, uneditable block of text.
+/// </summary>
 [LuaObject]
 public partial class StaticTextLua : ModulePrimitiveLuaBase
 {
@@ -70,6 +74,16 @@ public partial class StaticTextLua : ModulePrimitiveLuaBase
 
 public partial class StaticTextControl : UserControl
 {
+    public static readonly StyledProperty<string> DisplayTextProperty =
+        AvaloniaProperty.Register<StaticTextControl, string>(
+            nameof(DisplayText));
+
+    public string DisplayText
+    {
+        get => GetValue(DisplayTextProperty);
+        set => SetValue(DisplayTextProperty, value);
+    }
+    
     public StaticTextControl(int x, int y, int width, int height, string text, string alignment, string fontStyle)
     {
         InitializeComponent();
@@ -79,13 +93,12 @@ public partial class StaticTextControl : UserControl
         Grid.SetColumnSpan(this, width);
         Grid.SetRowSpan(this, height);
 
-        TextBlock.FontSize = (SheetModule.GridSize * height) * 0.75;
-        TextBlock.Text = text;
-        TextBlock.HorizontalAlignment = alignment switch {
-            "left"   => Avalonia.Layout.HorizontalAlignment.Left,
-            "center" => Avalonia.Layout.HorizontalAlignment.Center,
-            _        => Avalonia.Layout.HorizontalAlignment.Right
+        DisplayText = text;
+        TextBlock.TextAlignment = alignment switch {
+            "left"   => TextAlignment.Left,
+            "center" => TextAlignment.Center,
+            _        => TextAlignment.Right
         };
-        TextBlock.FontFamily = AppResources.ModuleFonts[fontStyle];
+        TextBlock.FontFamily = AppResources.GetResource<FontFamily>(AppResources.ModuleFonts[fontStyle]);
     }
 }

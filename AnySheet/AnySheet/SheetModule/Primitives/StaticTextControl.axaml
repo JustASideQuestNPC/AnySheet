@@ -2,12 +2,16 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:cc="using:CCLibrary"
+             xmlns:vm="using:AnySheet.SheetModule.Primitives"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
-             x:Class="AnySheet.SheetModule.Primitives.StaticTextControl">
+             x:Class="AnySheet.SheetModule.Primitives.StaticTextControl"
+             x:DataType="vm:StaticTextControl"
+             x:Name="Control">
     <UserControl.Styles>
         <StyleInclude Source="/Assets/SheetModuleStyles.axaml" />
     </UserControl.Styles>
-    <Border Name="Container" Classes="Primitive">
-        <TextBlock Name="TextBlock" />
+    <Border Name="Container" Classes="Primitive" Background="LightBlue">
+        <cc:AutoFitTextBlock Name="TextBlock" Text="{Binding #Control.DisplayText}" />
     </Border>
 </UserControl>
