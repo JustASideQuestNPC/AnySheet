@@ -2,21 +2,20 @@
 using System.Collections.Generic;
 using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Markup.Xaml;
 using Avalonia.Media;
+using CCLibrary;
 using Lua;
 using LuaLib;
 
 namespace AnySheet.SheetModule.Primitives;
 
-/// <summary>
-/// Basic, uneditable block of text.
-/// </summary>
 [LuaObject]
-public partial class StaticTextLua : ModulePrimitiveLuaBase
+public partial class TextBoxLua : ModulePrimitiveLuaBase
 {
     private static readonly Dictionary<string, LuaValueType> ConstructorArgs = new()
     {
-        ["text"] = LuaValueType.String,
+        ["[defaultText]"] = LuaValueType.String,
         ["[alignment]"] = LuaValueType.String,
         ["[style]"] = LuaValueType.String
     };
@@ -26,7 +25,7 @@ public partial class StaticTextLua : ModulePrimitiveLuaBase
     private string _fontStyle = "";
     
     [LuaMember("create")]
-    private new static StaticTextLua CreateLua(LuaTable args)
+    private new static TextBoxLua CreateLua(LuaTable args)
     {
         VerifyPositionArgs(args);
         LuaSandbox.VerifyTable(args, ConstructorArgs);
@@ -45,13 +44,13 @@ public partial class StaticTextLua : ModulePrimitiveLuaBase
                                         $"'bold italic', received '{fontStyle}').");
         }
         
-        var module = new StaticTextLua
+        var module = new TextBoxLua
         {
             GridX = args["x"].Read<int>(),
             GridY = args["y"].Read<int>(),
             GridWidth = args["width"].Read<int>(),
             GridHeight = args["height"].Read<int>(),
-            _text = args["text"].Read<string>(),
+            _text = LuaSandbox.GetTableValueOrDefault(args, "defaultText", ""),
             _alignment = alignment,
             _fontStyle = fontStyle
         };
@@ -59,30 +58,20 @@ public partial class StaticTextLua : ModulePrimitiveLuaBase
     }
 
     // ReSharper disable once UnusedMember.Global
-    public new static StaticTextLua FromLua(LuaValue value)
+    public new static TextBoxLua FromLua(LuaValue value)
     {
-        return value.Read<StaticTextLua>();
+        return value.Read<TextBoxLua>();
     }
 
     public override UserControl CreateUiControl()
     {
-        return new StaticTextPrimitive(GridX, GridY, GridWidth, GridHeight, _text, _alignment, _fontStyle);
+        return new TextBoxPrimitive(GridX, GridY, GridWidth, GridHeight);
     }
 }
 
-public partial class StaticTextPrimitive : UserControl
+public partial class TextBoxPrimitive : UserControl
 {
-    public static readonly StyledProperty<string> DisplayTextProperty =
-        AvaloniaProperty.Register<StaticTextPrimitive, string>(
-            nameof(DisplayText));
-
-    public string DisplayText
-    {
-        get => GetValue(DisplayTextProperty);
-        set => SetValue(DisplayTextProperty, value);
-    }
-    
-    public StaticTextPrimitive(int x, int y, int width, int height, string text, string alignment, string fontStyle)
+    public TextBoxPrimitive(int x, int y, int width, int height)
     {
         InitializeComponent();
         
@@ -90,13 +79,11 @@ public partial class StaticTextPrimitive : UserControl
         Grid.SetRow(this, y);
         Grid.SetColumnSpan(this, width);
         Grid.SetRowSpan(this, height);
-
-        DisplayText = text;
-        TextBlock.TextAlignment = alignment switch {
-            "left"   => TextAlignment.Left,
-            "center" => TextAlignment.Center,
-            _        => TextAlignment.Right
-        };
-        TextBlock.FontFamily = AppResources.GetResource<FontFamily>(AppResources.ModuleFonts[fontStyle]);
+        
+        
+        TextBox.FontSize = TextFitHelper.FindBestFontSize("X", FontFamily,
+                                        (width * SheetModule.GridSize) - TextBox.Padding.Left - TextBox.Padding.Right,
+                                        (height * SheetModule.GridSize) - TextBox.Padding.Top - TextBox.Padding.Bottom,
+                                        TextAlignment.Left, TextBox.LineHeight);
     }
 }

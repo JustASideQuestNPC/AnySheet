@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Reflection;
 using System.Threading.Tasks;
 using AnySheet.SheetModule.Primitives;
 using AnySheet.Views;
@@ -74,6 +75,7 @@ public partial class SheetModule : UserControl
             {
                 ["SheetModule"] = new LuaSheetModule(),
                 ["StaticText"]  = new StaticTextLua(),
+                ["TextBox"]     = new TextBoxLua()
             }
         };
 
@@ -122,6 +124,9 @@ public partial class SheetModule : UserControl
 
         foreach (var (_, e) in module.Elements)
         {
+            // afaik the only way to read the luaValue to the correct primitive class is to brute-force it by trying
+            // with every single class and catching exceptions until something works (there's definitely a better way
+            // and i'm just too lazy to find it).
             ModulePrimitiveLuaBase? primitive = null;
             foreach (var reader in App.PrimitiveReaders)
             {
@@ -129,7 +134,15 @@ public partial class SheetModule : UserControl
                 {
                     primitive = reader.Invoke(null, [e]) as ModulePrimitiveLuaBase;
                 }
-                catch (InvalidOperationException) { }
+                // i'm invoking the method instead of calling it directly, so instead of just checking for the right
+                // exception type i have to do whatever the fuck this is
+                catch (TargetInvocationException ex)
+                {
+                    if (ex.InnerException is not InvalidOperationException)
+                    {
+                        throw;
+                    }
+                }
             }
 
             if (primitive == null)

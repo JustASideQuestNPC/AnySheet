@@ -5,7 +5,7 @@ using Avalonia.Media.TextFormatting;
 namespace CCLibrary;
 using Avalonia.Controls;
 
-internal static class TextFitHelper
+public static class TextFitHelper
 {
     public static double FindBestFontSize(string text, FontFamily font, double maxWidth, double maxHeight,
         TextAlignment alignment, double lineHeight, double minSize = 4, double maxSize = 200)

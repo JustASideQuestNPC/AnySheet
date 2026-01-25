@@ -1,5 +1,5 @@
 local module = SheetModule.create({
-	noBorder = false,
+	noBorder = true,
 	elements = {
 		StaticText.create({
 			x = 0,
@@ -9,14 +9,11 @@ local module = SheetModule.create({
 			text = "two\nlines",
 			style = "bold"
 		}),
-		StaticText.create({
+		TextBox.create({
 			x = 0,
 			y = 2,
 			width = 6,
-			height = 2,
-			text = "big text",
-			style = "italic",
-			alignment = "center"
+			height = 2
 		}),
 		StaticText.create({
 			x = 0,
