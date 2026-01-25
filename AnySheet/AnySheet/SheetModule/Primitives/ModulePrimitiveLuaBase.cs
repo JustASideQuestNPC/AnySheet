@@ -17,8 +17,8 @@ namespace AnySheet.SheetModule.Primitives;
 ///
 /// <c>CreateLua</c> must be overriden to return a new instance of the class. The argument object should at least
 /// contain the <c>"x"</c>, <c>"y"</c>, <c>"width"</c>, and <c>"height"</c> keys. <c>CreateUiControl</c> should return a
-/// new instance of the corresponding UI control. <c>FromLua</c> should do nothing except read the <c>LuaValue</c> as an
-/// instance of the class and return it.
+/// new instance of the corresponding UI control. <c>TryReadLua</c> should do nothing except try to read the
+/// <c>LuaValue</c> as an instance of the class, assign it to the out var and return whether it was successful.
 /// </summary>
 public abstract class ModulePrimitiveLuaBase
 {
@@ -62,7 +62,7 @@ public abstract class ModulePrimitiveLuaBase
         }
     }
     // ReSharper disable once UnusedMember.Global
-    public static ModulePrimitiveLuaBase FromLua(LuaValue value)
+    public static bool TryReadLua(LuaValue value, out ModulePrimitiveLuaBase module)
     {
         throw new InvalidOperationException("How did you even get here??");
     }

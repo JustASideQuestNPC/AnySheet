@@ -18,9 +18,9 @@ namespace AnySheet;
 public partial class App : Application
 {
     public static readonly IEnumerable<MethodInfo> PrimitiveReaders = typeof(ModulePrimitiveLuaBase)
-                                      .Assembly.GetTypes()
-                                      .Where(t => t.IsSubclassOf(typeof(ModulePrimitiveLuaBase)) &&!t.IsAbstract)
-                                      .Select(t => t.GetMethod("FromLua", BindingFlags.Static | BindingFlags.Public))!;
+                                    .Assembly.GetTypes()
+                                    .Where(t => t.IsSubclassOf(typeof(ModulePrimitiveLuaBase)) &&!t.IsAbstract)
+                                    .Select(t => t.GetMethod("TryReadLua", BindingFlags.Static | BindingFlags.Public))!;
     
     public override void Initialize()
     {

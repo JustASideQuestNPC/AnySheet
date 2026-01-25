@@ -21,7 +21,7 @@ public partial class SheetModule : UserControl
     private int _gridWidth;
     private int _gridHeight;
 
-    // future-proofing for when i get around to adding the trigger system
+    // for saving and the trigger system when i get to that
     private List<ModulePrimitiveLuaBase> _items = [];
     
     public int GridX
@@ -68,6 +68,8 @@ public partial class SheetModule : UserControl
         GridY = gridY;
         
         InitializeComponent();
+        // hide the module until it finishes loading (without this it'll temporarily cover the entire window)
+        Container.IsVisible = false;
 
         _lua = new LuaSandbox
         {
@@ -92,6 +94,7 @@ public partial class SheetModule : UserControl
             Console.WriteLine($"Loaded module '{scriptPath}' with {PrimitiveGrid.Children.Count} elements. Module " +
                               $"size: {GridWidth}x{GridHeight}.");
             parent.UpdateGrid(this);
+            Container.IsVisible = true;
         };
     }
 
@@ -119,29 +122,21 @@ public partial class SheetModule : UserControl
 
         if (module.NoBorder)
         {
-            Border.BorderBrush = Avalonia.Media.Brushes.Transparent;
+            Container.BorderBrush = Avalonia.Media.Brushes.Transparent;
         }
 
         foreach (var (_, e) in module.Elements)
         {
             // afaik the only way to read the luaValue to the correct primitive class is to brute-force it by trying
-            // with every single class and catching exceptions until something works (there's definitely a better way
-            // and i'm just too lazy to find it).
+            // with every single class until it works
             ModulePrimitiveLuaBase? primitive = null;
             foreach (var reader in App.PrimitiveReaders)
             {
-                try
+                var args = new object[] { e, primitive! };
+                if (reader.Invoke(null, args) is true)
                 {
-                    primitive = reader.Invoke(null, [e]) as ModulePrimitiveLuaBase;
-                }
-                // i'm invoking the method instead of calling it directly, so instead of just checking for the right
-                // exception type i have to do whatever the fuck this is
-                catch (TargetInvocationException ex)
-                {
-                    if (ex.InnerException is not InvalidOperationException)
-                    {
-                        throw;
-                    }
+                    primitive = args[1] as ModulePrimitiveLuaBase;
+                    break;
                 }
             }
 

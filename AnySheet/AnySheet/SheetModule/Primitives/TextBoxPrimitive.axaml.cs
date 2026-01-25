@@ -58,9 +58,9 @@ public partial class TextBoxLua : ModulePrimitiveLuaBase
     }
 
     // ReSharper disable once UnusedMember.Global
-    public new static TextBoxLua FromLua(LuaValue value)
+    public static bool TryReadLua(LuaValue value, out TextBoxLua module)
     {
-        return value.Read<TextBoxLua>();
+        return value.TryRead(out module);
     }
 
     public override UserControl CreateUiControl()

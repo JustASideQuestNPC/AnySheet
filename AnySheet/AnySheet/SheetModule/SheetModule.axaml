@@ -8,7 +8,7 @@
     <UserControl.Styles>
         <StyleInclude Source="../Assets/SheetModuleStyles.axaml" />
     </UserControl.Styles>
-    <Border Name="Border" Background="White" Classes="Module">
+    <Border Name="Container" Background="White" Classes="Module">
         <Grid Name="PrimitiveGrid" RowSpacing="2" ColumnSpacing="2" />
     </Border>
 </UserControl>

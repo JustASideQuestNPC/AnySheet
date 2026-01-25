@@ -59,9 +59,9 @@ public partial class StaticTextLua : ModulePrimitiveLuaBase
     }
 
     // ReSharper disable once UnusedMember.Global
-    public new static StaticTextLua FromLua(LuaValue value)
+    public static bool TryReadLua(LuaValue value, out StaticTextLua module)
     {
-        return value.Read<StaticTextLua>();
+        return value.TryRead(out module);
     }
 
     public override UserControl CreateUiControl()

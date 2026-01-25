@@ -31,6 +31,11 @@ public partial class CharacterSheet : UserControl
             ++_currentHeight;
         }
     }
+
+    public void AddModule(int x, int y, string scriptPath)
+    {
+        var module = new SheetModule.SheetModule(this, x, y, "module1.lua");
+    }
     
     public void RemoveModule(SheetModule.SheetModule module)
     {
