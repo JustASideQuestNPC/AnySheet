@@ -2,12 +2,20 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="using:AnySheet.SheetModule"
+             xmlns:behaviors="clr-namespace:AnySheet.Behaviors"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
-             x:Class="AnySheet.SheetModule.SheetModule">
-    
+             x:Class="AnySheet.SheetModule.SheetModule"
+             x:DataType="vm:SheetModule"
+             x:Name="Control">
     <UserControl.Styles>
         <StyleInclude Source="../Assets/SheetModuleStyles.axaml" />
     </UserControl.Styles>
+    <Interaction.Behaviors>
+        <!-- TODO: de-hard-code the grid size -->
+        <behaviors:ModuleDragBehavior DragCompletedCommand="{Binding ModuleMovedCommand}" GridWidth="27"
+                                      GridHeight="27" />
+    </Interaction.Behaviors>
     <Border Name="Container" Background="White" Classes="Module">
         <Grid Name="PrimitiveGrid" RowSpacing="2" ColumnSpacing="2" />
     </Border>

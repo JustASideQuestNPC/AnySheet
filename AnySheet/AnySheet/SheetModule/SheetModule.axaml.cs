@@ -2,10 +2,12 @@
 using System.Collections.Generic;
 using System.Reflection;
 using System.Threading.Tasks;
+using System.Windows.Input;
 using AnySheet.SheetModule.Primitives;
 using AnySheet.Views;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
+using CommunityToolkit.Mvvm.Input;
 using LuaLib;
 
 namespace AnySheet.SheetModule;
@@ -42,24 +44,34 @@ public partial class SheetModule : UserControl
             Grid.SetRow(this, value);
         }
     }
-    public int GridWidth
+
+    private int GridWidth
     {
         get => _gridWidth;
-        private set
+        set
         {
             _gridWidth = value;
             Grid.SetColumnSpan(this, value);
         }
     }
-    public int GridHeight
+
+    private int GridHeight
     {
         get => _gridHeight;
-        private set
+        set
         {
             _gridHeight = value;
             Grid.SetRowSpan(this, value);
         }
     }
+
+    public ICommand ModuleMovedCommand => new RelayCommand<Control>(control =>
+    {
+        var x = Canvas.GetLeft(control);
+        var y = Canvas.GetTop(control);
+        
+        Console.WriteLine($"Moved module to {x},{y}");
+    });
 
     public SheetModule(CharacterSheet parent, int gridX, int gridY, string scriptPath)
     {
@@ -93,7 +105,6 @@ public partial class SheetModule : UserControl
             }
             Console.WriteLine($"Loaded module '{scriptPath}' with {PrimitiveGrid.Children.Count} elements. Module " +
                               $"size: {GridWidth}x{GridHeight}.");
-            parent.UpdateGrid(this);
             Container.IsVisible = true;
         };
     }
@@ -156,6 +167,8 @@ public partial class SheetModule : UserControl
                 PrimitiveGrid.RowDefinitions.Add(new RowDefinition(new GridLength(GridSize)));
                 ++GridHeight;
             }
+            Width = GridWidth * (GridSize + PrimitiveGrid.ColumnSpacing);
+            Height = GridHeight * (GridSize + PrimitiveGrid.RowSpacing);
             
             _items.Add(primitive);
             PrimitiveGrid.Children.Add(primitive.CreateUiControl());
