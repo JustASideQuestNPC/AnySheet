@@ -7,44 +7,71 @@
         </Border>
     </Design.PreviewWith>
 
-    <!-- Add Styles Here -->
     <Style Selector="Border.Module">
         <Setter Property="Background" Value="White" />
         <Setter Property="Padding" Value="0" />
-        <Setter Property="BorderBrush" Value="Red"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource Accent}"/>
         <Setter Property="BorderThickness" Value="2" />
         <Setter Property="CornerRadius" Value="5" />
     </Style>
     <Style Selector="Border.Primitive">
         <Setter Property="CornerRadius" Value="5"/>
     </Style>
+    
     <Style Selector="cc|AutoFitTextBlock">
         <Setter Property="FontFamily" Value="{StaticResource PtSerif}" />
         <Setter Property="Padding" Value="3" />
-        <Setter Property="Foreground" Value="Black" />
+        <Setter Property="Foreground" Value="{DynamicResource Primary}" />
         <Setter Property="TextWrapping" Value="Wrap" />
     </Style>
+    
     <Style Selector="TextBox">
         <Setter Property="FontFamily" Value="{StaticResource PtSerif}" />
         <Setter Property="Padding" Value="3" />
-        <Setter Property="Foreground" Value="Black" />
+        <Setter Property="Foreground" Value="{DynamicResource Primary}" />
         <Setter Property="Background" Value="Transparent" />
     </Style>
     <Style Selector="TextBox:focus-within">
-        <Setter Property="Foreground" Value="Black" />
-        <Setter Property="CaretBrush" Value="Black" />
+        <Setter Property="Foreground" Value="{DynamicResource Primary}" />
+        <Setter Property="CaretBrush" Value="{DynamicResource Primary}" />
     </Style>
     <Style Selector="TextBox:pointerover">
-        <Setter Property="Foreground" Value="Black" />
+        <Setter Property="Foreground" Value="{DynamicResource Primary}" />
     </Style>
     <Style Selector="TextBox:focus-within /template/ Border">
         <Setter Property="Background" Value="Transparent" />
-        <Setter Property="BorderBrush" Value="Red" />
+        <Setter Property="BorderBrush" Value="{DynamicResource Accent}" />
         <Setter Property="BorderThickness" Value="0 0 0 3" />
     </Style>
     <Style Selector="TextBox:pointerover /template/ Border">
         <Setter Property="Background" Value="Transparent" />
-        <Setter Property="BorderBrush" Value="Red" />
+        <Setter Property="BorderBrush" Value="{DynamicResource Accent}" />
         <Setter Property="BorderThickness" Value="0 0 0 3" />
+    </Style>
+    
+    <Style Selector="NumericUpDown">
+        <Setter Property="FontFamily" Value="{StaticResource PtSerif}" />
+        <Setter Property="Foreground" Value="{DynamicResource Primary}" />
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="ShowButtonSpinner" Value="False" />
+        <Setter Property="BorderBrush" Value="Transparent" />
+    </Style>
+    <Style Selector="NumericUpDown:focus-within">
+        <Setter Property="Foreground" Value="{DynamicResource Primary}" />
+        <Setter Property="ShowButtonSpinner" Value="False" />
+        <Setter Property="BorderBrush" Value="Transparent" />
+    </Style>
+    <Style Selector="NumericUpDown:pointerover">
+        <Setter Property="Foreground" Value="{DynamicResource Primary}" />
+        <Setter Property="ShowButtonSpinner" Value="False" />
+        <Setter Property="BorderBrush" Value="Transparent" />
+    </Style>
+    <Style Selector="NumericUpDown:focus-within /template/ Border">
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="BorderBrush" Value="Transparent" />
+    </Style>
+    <Style Selector="NumericUpDown:pointerover /template/ Border">
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="BorderBrush" Value="Transparent" />
     </Style>
 </Styles>

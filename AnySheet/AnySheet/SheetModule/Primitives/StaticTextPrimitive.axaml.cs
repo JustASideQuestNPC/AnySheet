@@ -17,6 +17,7 @@ public partial class StaticTextLua : ModulePrimitiveLuaBase
     private static readonly Dictionary<string, LuaValueType> ConstructorArgs = new()
     {
         ["text"] = LuaValueType.String,
+        ["[color]"] = LuaValueType.String,
         ["[alignment]"] = LuaValueType.String,
         ["[style]"] = LuaValueType.String
     };
@@ -24,6 +25,7 @@ public partial class StaticTextLua : ModulePrimitiveLuaBase
     private string _text = "";
     private string _alignment = "";
     private string _fontStyle = "";
+    private string _color = "";
     
     [LuaMember("create")]
     private new static StaticTextLua CreateLua(LuaTable args)
@@ -45,6 +47,13 @@ public partial class StaticTextLua : ModulePrimitiveLuaBase
                                         $"'bold italic', received '{fontStyle}').");
         }
         
+        var color = LuaSandbox.GetTableValueOrDefault(args, "color", "primary");
+        if (color != "primary" && color != "secondary" && color != "accent")
+        {
+            throw new ArgumentException("Invalid color value (expected 'primary', 'secondary' or 'accent', received " +
+                                        $"'{color}').");
+        }
+        
         var module = new StaticTextLua
         {
             GridX = args["x"].Read<int>(),
@@ -53,7 +62,8 @@ public partial class StaticTextLua : ModulePrimitiveLuaBase
             GridHeight = args["height"].Read<int>(),
             _text = args["text"].Read<string>(),
             _alignment = alignment,
-            _fontStyle = fontStyle
+            _fontStyle = fontStyle,
+            _color = string.Concat(color[0].ToString().ToUpper(), color.AsSpan(1))
         };
         return module;
     }
@@ -66,7 +76,7 @@ public partial class StaticTextLua : ModulePrimitiveLuaBase
 
     public override UserControl CreateUiControl()
     {
-        return new StaticTextPrimitive(GridX, GridY, GridWidth, GridHeight, _text, _alignment, _fontStyle);
+        return new StaticTextPrimitive(GridX, GridY, GridWidth, GridHeight, _text, _alignment, _fontStyle, _color);
     }
 }
 
@@ -82,7 +92,8 @@ public partial class StaticTextPrimitive : UserControl
         set => SetValue(DisplayTextProperty, value);
     }
     
-    public StaticTextPrimitive(int x, int y, int width, int height, string text, string alignment, string fontStyle)
+    public StaticTextPrimitive(int x, int y, int width, int height, string text, string alignment, string fontStyle, 
+                               string color)
     {
         InitializeComponent();
         
@@ -98,5 +109,6 @@ public partial class StaticTextPrimitive : UserControl
             _        => TextAlignment.Right
         };
         TextBlock.FontFamily = AppResources.GetResource<FontFamily>(AppResources.ModuleFonts[fontStyle]);
+        TextBlock.Foreground = AppResources.GetResource<IBrush>(color);
     }
 }

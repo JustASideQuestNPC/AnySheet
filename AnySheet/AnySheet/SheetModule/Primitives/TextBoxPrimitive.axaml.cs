@@ -16,6 +16,7 @@ public partial class TextBoxLua : ModulePrimitiveLuaBase
     private static readonly Dictionary<string, LuaValueType> ConstructorArgs = new()
     {
         ["[defaultText]"] = LuaValueType.String,
+        ["[color]"] = LuaValueType.String,
         ["[alignment]"] = LuaValueType.String,
         ["[style]"] = LuaValueType.String
     };
@@ -23,6 +24,7 @@ public partial class TextBoxLua : ModulePrimitiveLuaBase
     private string _text = "";
     private string _alignment = "";
     private string _fontStyle = "";
+    private string _color = "";
     
     [LuaMember("create")]
     private new static TextBoxLua CreateLua(LuaTable args)
@@ -44,7 +46,14 @@ public partial class TextBoxLua : ModulePrimitiveLuaBase
                                         $"'bold italic', received '{fontStyle}').");
         }
         
-        var module = new TextBoxLua
+        var color = LuaSandbox.GetTableValueOrDefault(args, "color", "primary");
+        if (color != "primary" && color != "secondary" && color != "accent")
+        {
+            throw new ArgumentException("Invalid color value (expected 'primary', 'secondary' or 'accent', received " +
+                                        $"'{color}').");
+        }
+        
+        return new TextBoxLua
         {
             GridX = args["x"].Read<int>(),
             GridY = args["y"].Read<int>(),
@@ -52,9 +61,9 @@ public partial class TextBoxLua : ModulePrimitiveLuaBase
             GridHeight = args["height"].Read<int>(),
             _text = LuaSandbox.GetTableValueOrDefault(args, "defaultText", ""),
             _alignment = alignment,
-            _fontStyle = fontStyle
+            _fontStyle = fontStyle,
+            _color = string.Concat(color[0].ToString().ToUpper(), color.AsSpan(1))
         };
-        return module;
     }
 
     // ReSharper disable once UnusedMember.Global
@@ -65,13 +74,13 @@ public partial class TextBoxLua : ModulePrimitiveLuaBase
 
     public override UserControl CreateUiControl()
     {
-        return new TextBoxPrimitive(GridX, GridY, GridWidth, GridHeight);
+        return new TextBoxPrimitive(GridX, GridY, GridWidth, GridHeight, _alignment, _fontStyle, _color);
     }
 }
 
 public partial class TextBoxPrimitive : UserControl
 {
-    public TextBoxPrimitive(int x, int y, int width, int height)
+    public TextBoxPrimitive(int x, int y, int width, int height, string alignment, string fontStyle, string color)
     {
         InitializeComponent();
         
@@ -80,7 +89,13 @@ public partial class TextBoxPrimitive : UserControl
         Grid.SetColumnSpan(this, width);
         Grid.SetRowSpan(this, height);
         
-        
+        TextBox.TextAlignment = alignment switch {
+            "left"   => TextAlignment.Left,
+            "center" => TextAlignment.Center,
+            _        => TextAlignment.Right
+        };
+        TextBox.FontFamily = AppResources.GetResource<FontFamily>(AppResources.ModuleFonts[fontStyle]);
+        TextBox.Foreground = AppResources.GetResource<IBrush>(color);
         TextBox.FontSize = TextFitHelper.FindBestFontSize("X", FontFamily,
                                         (width * SheetModule.GridSize) - TextBox.Padding.Left - TextBox.Padding.Right,
                                         (height * SheetModule.GridSize) - TextBox.Padding.Top - TextBox.Padding.Bottom,

@@ -13,7 +13,7 @@ public partial class CharacterSheet : UserControl
     {
         InitializeComponent();
         // for testing; will be removed later
-        ModuleGrid.Children.Add(new SheetModule.SheetModule(this, 0, 0, "module1.lua"));
+        ModuleGrid.Children.Add(new SheetModule.SheetModule(this, 1, 1, "module1.lua"));
     }
     
     public void RemoveModule(SheetModule.SheetModule module)

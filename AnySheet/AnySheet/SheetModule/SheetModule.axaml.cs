@@ -32,7 +32,7 @@ public partial class SheetModule : UserControl
         private set
         {
             _gridX = value;
-            Grid.SetColumn(this, value);
+            Canvas.SetLeft(this, value * GridSize);
         }
     }
     public int GridY
@@ -41,7 +41,7 @@ public partial class SheetModule : UserControl
         private set
         {
             _gridY = value;
-            Grid.SetRow(this, value);
+            Canvas.SetTop(this, value * GridSize);
         }
     }
 
@@ -87,9 +87,11 @@ public partial class SheetModule : UserControl
         {
             Environment =
             {
-                ["SheetModule"] = new LuaSheetModule(),
-                ["StaticText"]  = new StaticTextLua(),
-                ["TextBox"]     = new TextBoxLua()
+                ["SheetModule"]  = new LuaSheetModule(),
+                ["StaticText"]   = new StaticTextLua(),
+                ["TextBox"]      = new TextBoxLua(),
+                ["TripleToggle"] = new TripleToggleLua(),
+                ["NumberBox"]    = new NumberBoxLua()
             }
         };
 
@@ -167,8 +169,9 @@ public partial class SheetModule : UserControl
                 PrimitiveGrid.RowDefinitions.Add(new RowDefinition(new GridLength(GridSize)));
                 ++GridHeight;
             }
-            Width = GridWidth * (GridSize + PrimitiveGrid.ColumnSpacing);
-            Height = GridHeight * (GridSize + PrimitiveGrid.RowSpacing);
+            
+            Width = GridWidth * (GridSize + PrimitiveGrid.ColumnSpacing) + Container.BorderThickness.Left + Container.BorderThickness.Right;
+            Height = GridHeight * (GridSize + PrimitiveGrid.RowSpacing) + Container.BorderThickness.Top + Container.BorderThickness.Bottom;
             
             _items.Add(primitive);
             PrimitiveGrid.Children.Add(primitive.CreateUiControl());

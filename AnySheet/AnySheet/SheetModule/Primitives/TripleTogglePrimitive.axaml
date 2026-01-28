@@ -1,0 +1,58 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="using:AnySheet.SheetModule.Primitives"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="AnySheet.SheetModule.Primitives.TripleTogglePrimitive"
+             x:DataType="vm:TripleTogglePrimitive"
+             x:Name="Control">
+    <UserControl.Styles>
+        <StyleInclude Source="/Assets/SheetModuleStyles.axaml" />
+        <Style Selector="ToggleButton">
+            <Setter Property="Width" Value="15" />
+            <Setter Property="Height" Value="15" />
+            <Setter Property="HorizontalAlignment" Value="Center" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+            <Setter Property="BorderThickness" Value="2" />
+            <Setter Property="Background" Value="Transparent" />
+        </Style>
+        
+        <Style Selector="#Container ToggleButton.Enabled">
+            <Setter Property="BorderBrush" Value="{DynamicResource Primary}" />
+        </Style>
+        <Style Selector="#Container ToggleButton.Enabled:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="BorderBrush" Value="{DynamicResource Primary}" />
+        </Style>
+        <Style Selector="#Container ToggleButton.Enabled:checked/template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="BorderBrush" Value="{DynamicResource Primary}" />
+            <Setter Property="Background" Value="{DynamicResource Primary}" />
+        </Style>
+        <Style Selector="#Container ToggleButton.Enabled:checked:pointerover
+                         /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="BorderBrush" Value="{DynamicResource Primary}" />
+            <Setter Property="Background" Value="{DynamicResource Primary}" />
+        </Style>
+        
+        <Style Selector="#Container ToggleButton.Disabled">
+            <Setter Property="BorderBrush" Value="{DynamicResource Tertiary}" />
+        </Style>
+        <Style Selector="#Container ToggleButton.Disabled:pointerover
+                         /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="BorderBrush" Value="{DynamicResource Tertiary}" />
+        </Style>
+        <Style Selector="#Container ToggleButton.Disabled:checked/template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="BorderBrush" Value="{DynamicResource Tertiary}" />
+            <Setter Property="Background" Value="{DynamicResource Tertiary}" />
+        </Style>
+        <Style Selector="#Container ToggleButton.Disabled:checked:pointerover
+                         /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="BorderBrush" Value="{DynamicResource Tertiary}" />
+            <Setter Property="Background" Value="{DynamicResource Tertiary}" />
+        </Style>
+    </UserControl.Styles>
+    
+    <Border Name="Container" Classes="Primitive">
+        <ToggleButton Name="Button" Click="ButtonClick" Classes="Enabled" />
+    </Border>
+</UserControl>

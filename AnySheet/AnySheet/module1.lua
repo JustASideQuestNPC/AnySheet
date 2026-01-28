@@ -1,28 +1,44 @@
-local module = SheetModule.create({
-	noBorder = true,
+return SheetModule.create({
 	elements = {
-		StaticText.create({
-			x = 0,
-			y = 0,
-			width = 6,
-			height = 2,
-			text = "two\nlines",
-			style = "bold"
-		}),
 		TextBox.create({
 			x = 0,
-			y = 2,
-			width = 6,
-			height = 2
+			y = 0,
+			width = 3,
+			height = 1,
+			color = "accent"
+		}),
+		NumberBox.create({
+			x = 0,
+			y = 1,
+			width = 2,
+			height = 2,
+			minValue = 0,
 		}),
 		StaticText.create({
 			x = 0,
-			y = 4,
-			width = 6,
+			y = 3,
+			width = 2,
+			height = 1,
+			text = "Current",
+			alignment = "center",
+			color = "secondary"
+		}),
+		
+		NumberBox.create({
+			x = 3,
+			y = 1,
+			width = 2,
 			height = 2,
-			text = "text text text text text text text text",
-			style = "bold italic"
+			minValue = 0,
+		}),
+		StaticText.create({
+			x = 3,
+			y = 3,
+			width = 2,
+			height = 1,
+			text = "Max",
+			alignment = "center",
+			color = "secondary"
 		}),
 	}
 });
-return module;
