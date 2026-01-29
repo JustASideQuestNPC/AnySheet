@@ -18,6 +18,16 @@
         <FontFamily x:Key="PtSerifBold">avares://AnySheet/Assets/Fonts/PTSerif-Bold.ttf#PT Serif Bold</FontFamily>
         <FontFamily x:Key="PtSerifItalic">avares://AnySheet/Assets/Fonts/PTSerif-Italic.ttf#PT Serif Italic</FontFamily>
         <FontFamily x:Key="PtSerifBoldItalic">avares://AnySheet/Assets/Fonts/PTSerif-BoldItalic.ttf#PT Serif Bold Italic</FontFamily>
+        <FontFamily x:Key="LatoBlack">avares://AnySheet/Assets/Fonts/Lato-Black.ttf#Lato Black</FontFamily>
+        <FontFamily x:Key="LatoBlackItalic">avares://AnySheet/Assets/Fonts/Lato-BlackItalic.ttf#Lato Black Italic</FontFamily>
+        <FontFamily x:Key="LatoBold">avares://AnySheet/Assets/Fonts/Lato-Bolx.ttf#Lato Bold</FontFamily>
+        <FontFamily x:Key="LatoBoldItalic">avares://AnySheet/Assets/Fonts/Lato-BolxItalic.ttf#Lato Bold Italic</FontFamily>
+        <FontFamily x:Key="Lato">avares://AnySheet/Assets/Fonts/Lato-Regular.ttf#Lato</FontFamily>
+        <FontFamily x:Key="LatoItalic">avares://AnySheet/Assets/Fonts/Lato-Italic.ttf#Lato Italic</FontFamily>
+        <FontFamily x:Key="LatoLight">avares://AnySheet/Assets/Fonts/Lato-Light.ttf#Lato Light</FontFamily>
+        <FontFamily x:Key="LatoLightItalic">avares://AnySheet/Assets/Fonts/Lato-LightItalic.ttf#Lato Light Italic</FontFamily>
+        <FontFamily x:Key="LatoThin">avares://AnySheet/Assets/Fonts/Lato-Thin.ttf#Lato Thin</FontFamily>
+        <FontFamily x:Key="LatoThinItalic">avares://AnySheet/Assets/Fonts/Lato-ThinItalic.ttf#Lato Thin Italic</FontFamily>
         <SolidColorBrush x:Key="Primary">Black</SolidColorBrush>
         <SolidColorBrush x:Key="Secondary">#5e6468</SolidColorBrush>
         <SolidColorBrush x:Key="Tertiary">#a2a6aa</SolidColorBrush>

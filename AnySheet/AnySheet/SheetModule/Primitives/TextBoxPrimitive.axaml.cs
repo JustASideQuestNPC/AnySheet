@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Layout;
 using Avalonia.Markup.Xaml;
 using Avalonia.Media;
 using CCLibrary;
@@ -89,16 +91,16 @@ public partial class TextBoxPrimitive : UserControl
         Grid.SetColumnSpan(this, width);
         Grid.SetRowSpan(this, height);
         
-        TextBox.TextAlignment = alignment switch {
-            "left"   => TextAlignment.Left,
-            "center" => TextAlignment.Center,
-            _        => TextAlignment.Right
+        TextBox.HorizontalContentAlignment = alignment switch {
+            "left"   => HorizontalAlignment.Left,
+            "center" => HorizontalAlignment.Center,
+            _        => HorizontalAlignment.Right
         };
         TextBox.FontFamily = AppResources.GetResource<FontFamily>(AppResources.ModuleFonts[fontStyle]);
         TextBox.Foreground = AppResources.GetResource<IBrush>(color);
         TextBox.FontSize = TextFitHelper.FindBestFontSize("X", FontFamily,
                                         (width * SheetModule.GridSize) - TextBox.Padding.Left - TextBox.Padding.Right,
                                         (height * SheetModule.GridSize) - TextBox.Padding.Top - TextBox.Padding.Bottom,
-                                        TextAlignment.Left, TextBox.LineHeight);
+                                        TextBox.TextAlignment, TextBox.LineHeight);
     }
 }

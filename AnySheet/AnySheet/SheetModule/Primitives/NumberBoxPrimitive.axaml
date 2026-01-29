@@ -10,8 +10,8 @@
     <UserControl.Styles>
         <StyleInclude Source="/Assets/SheetModuleStyles.axaml" />
     </UserControl.Styles>
-    <Border Name="Container" Classes="Primitive" Margin="3" BorderBrush="{DynamicResource Accent}"
-            BorderThickness="2">
-        <NumericUpDown Name="NumberBox" />
+    <Border Name="Container" Classes="Primitive" BorderBrush="{DynamicResource Accent}" BorderThickness="2">
+        <NumericUpDown Name="NumberBox" ValueChanged="ValueChanged" HorizontalAlignment="Center"
+                 VerticalAlignment="Center" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" />
     </Border>
 </UserControl>

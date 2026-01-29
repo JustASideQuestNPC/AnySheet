@@ -30,6 +30,7 @@ return SheetModule.create({
 			width = 2,
 			height = 2,
 			minValue = 0,
+			maxValue = 10
 		}),
 		StaticText.create({
 			x = 3,

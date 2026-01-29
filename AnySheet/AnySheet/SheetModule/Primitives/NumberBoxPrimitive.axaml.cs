@@ -1,11 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Reflection;
+using System.Runtime.InteropServices.JavaScript;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Markup.Xaml;
+using Avalonia.Media;
 using Lua;
 using LuaLib;
+using CCLibrary;
 
 namespace AnySheet.SheetModule.Primitives;
 
@@ -20,9 +23,9 @@ public partial class NumberBoxLua : ModulePrimitiveLuaBase
         ["[allowDecimal]"] = LuaValueType.Boolean
     };
     
-    public double CurrentValue { get; private set; } = 0;
-    public double MinValue { get; private set; } = 0;
-    public double MaxValue { get; private set; } = double.MaxValue;
+    public decimal CurrentValue { get; private set; } = 0;
+    public decimal MinValue { get; private set; } = 0;
+    public decimal MaxValue { get; private set; } = decimal.MaxValue;
     public bool IntegerOnly { get; private set; } = false;
     
     [LuaMember("create")]
@@ -31,9 +34,10 @@ public partial class NumberBoxLua : ModulePrimitiveLuaBase
         VerifyPositionArgs(args);
         LuaSandbox.VerifyTable(args, ConstructorArgs);
         
-        var defaultValue = LuaSandbox.GetTableValueOrDefault(args, "defaultValue", 0);
-        var minValue = LuaSandbox.GetTableValueOrDefault(args, "minValue", 0);
-        var maxValue = LuaSandbox.GetTableValueOrDefault(args, "maxValue", double.MaxValue);
+        var defaultValue = (decimal)LuaSandbox.GetTableValueOrDefault<double>(args, "defaultValue", 0);
+        var minValue = (decimal)LuaSandbox.GetTableValueOrDefault<double>(args, "minValue", 0);
+        // eventually i need to figure out how to actually set this to infinity
+        var maxValue = (decimal)LuaSandbox.GetTableValueOrDefault<double>(args, "maxValue", 10000000);
         var integerOnly = !LuaSandbox.GetTableValueOrDefault(args, "allowDecimal", false);
 
         if (minValue > maxValue)
@@ -79,8 +83,12 @@ public partial class NumberBoxLua : ModulePrimitiveLuaBase
 
 public partial class NumberBoxPrimitive : UserControl
 {
-    public NumberBoxPrimitive(int x, int y, int width, int height, double defaultValue, double minValue,
-                              double maxValue, bool integerOnly)
+    private readonly bool _integerOnly;
+    private readonly int _width;
+    private readonly int _height;
+    
+    public NumberBoxPrimitive(int x, int y, int width, int height, decimal defaultValue, decimal minValue,
+                              decimal maxValue, bool integerOnly)
     {
         InitializeComponent();
         
@@ -88,5 +96,27 @@ public partial class NumberBoxPrimitive : UserControl
         Grid.SetRow(this, y);
         Grid.SetColumnSpan(this, width);
         Grid.SetRowSpan(this, height);
+        
+        _width = width;
+        _height = height;
+        _integerOnly = integerOnly;
+
+        NumberBox.Minimum = minValue;
+        NumberBox.Maximum = maxValue;
+        NumberBox.Value = defaultValue;
+    }
+
+    private void ValueChanged(object? sender, NumericUpDownValueChangedEventArgs args)
+    {
+        if (_integerOnly && args.NewValue != null && args.NewValue % 1 != 0)
+        {
+            NumberBox.Value = Math.Floor(args.NewValue.Value);
+        }
+        
+        NumberBox.FontSize = TextFitHelper.FindBestFontSize(
+            (NumberBox.Value).ToString().PadLeft(3, '0'), NumberBox.FontFamily,
+            (_width * SheetModule.GridSize) - NumberBox.Padding.Left - NumberBox.Padding.Right,
+            (_height * SheetModule.GridSize) - NumberBox.Padding.Top - NumberBox.Padding.Bottom,
+            NumberBox.TextAlignment, double.NaN);
     }
 }
