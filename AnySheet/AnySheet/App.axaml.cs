@@ -10,6 +10,7 @@ using AnySheet.SheetModule.Primitives;
 using Avalonia.Markup.Xaml;
 using AnySheet.ViewModels;
 using AnySheet.Views;
+using Avalonia.Controls;
 using Lua;
 using LuaLib;
 
@@ -26,6 +27,11 @@ public partial class App : Application
     {
         AvaloniaXamlLoader.Load(this);
     }
+    
+    public new static App? Current => Application.Current as App;
+    public static TopLevel? TopLevel =>
+        Application.Current?.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop ?
+            desktop.MainWindow : null;
 
     public override void OnFrameworkInitializationCompleted()
     {

@@ -23,10 +23,12 @@ public partial class NumberBoxLua : ModulePrimitiveLuaBase
         ["[allowDecimal]"] = LuaValueType.Boolean
     };
     
-    public decimal CurrentValue { get; private set; } = 0;
-    public decimal MinValue { get; private set; } = 0;
-    public decimal MaxValue { get; private set; } = decimal.MaxValue;
-    public bool IntegerOnly { get; private set; } = false;
+    private decimal CurrentValue { get; init; } = 0;
+    private decimal MinValue { get; init; } = 0;
+    private decimal MaxValue { get; init; } = decimal.MaxValue;
+    private bool IntegerOnly { get; init; } = false;
+    
+    private NumberBoxPrimitive _uiControl;
     
     [LuaMember("create")]
     private new static NumberBoxLua CreateLua(LuaTable args)
@@ -76,8 +78,19 @@ public partial class NumberBoxLua : ModulePrimitiveLuaBase
     
     public override UserControl CreateUiControl()
     {
-        return new NumberBoxPrimitive(GridX, GridY, GridWidth, GridHeight, CurrentValue, MinValue, MaxValue,
-                                      IntegerOnly);
+        _uiControl = new NumberBoxPrimitive(GridX, GridY, GridWidth, GridHeight, CurrentValue, MinValue, MaxValue,
+                                            IntegerOnly);
+        return _uiControl;
+    }
+
+    public override void EnableUiControl()
+    {
+        _uiControl.IsEnabled = true;
+    }
+
+    public override void DisableUiControl()
+    {
+        _uiControl.IsEnabled = false;
     }
 }
 

@@ -3,9 +3,10 @@ return SheetModule.create({
 		TextBox.create({
 			x = 0,
 			y = 0,
-			width = 3,
+			width = 5,
 			height = 1,
-			color = "accent"
+			color = "accent",
+			alignment = "center"
 		}),
 		NumberBox.create({
 			x = 0,

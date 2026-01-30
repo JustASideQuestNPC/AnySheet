@@ -65,14 +65,6 @@ public partial class SheetModule : UserControl
         }
     }
 
-    public ICommand ModuleMovedCommand => new RelayCommand<Control>(control =>
-    {
-        var x = Canvas.GetLeft(control);
-        var y = Canvas.GetTop(control);
-        
-        Console.WriteLine($"Moved module to {x},{y}");
-    });
-
     public SheetModule(CharacterSheet parent, int gridX, int gridY, string scriptPath)
     {
         _parent = parent;
@@ -183,5 +175,21 @@ public partial class SheetModule : UserControl
     public void Remove(object? sender, RoutedEventArgs? routedEventArgs)
     {
         _parent.RemoveModule(this);
+    }
+
+    public void SetModuleMode(CharacterSheet.SheetMode mode)
+    {
+        switch (mode)
+        {
+            case CharacterSheet.SheetMode.Gameplay:
+                foreach (var item in _items) item.EnableUiControl();
+                break;
+            case CharacterSheet.SheetMode.ModuleEdit:
+                foreach (var item in _items) item.DisableUiControl();
+                break;
+            case CharacterSheet.SheetMode.TriggerEdit:
+                // currently unused
+                break;
+        }
     }
 }

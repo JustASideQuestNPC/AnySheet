@@ -14,11 +14,17 @@ namespace AnySheet.SheetModule.Primitives;
 ///     <item><description><c>GridWidth</c>: <c>"width"</c></description></item>
 ///     <item><description><c>CreateLua</c>: <c>"create"</c></description></item>
 /// </list>
-///
+/// 
 /// <c>CreateLua</c> must be overriden to return a new instance of the class. The argument object should at least
-/// contain the <c>"x"</c>, <c>"y"</c>, <c>"width"</c>, and <c>"height"</c> keys. <c>CreateUiControl</c> should return a
-/// new instance of the corresponding UI control. <c>TryReadLua</c> should do nothing except try to read the
-/// <c>LuaValue</c> as an instance of the class, assign it to the out var and return whether it was successful.
+/// contain the <c>"x"</c> and <c>"y"</c> keys.
+///
+/// <c>CreateUiControl</c> should return a new instance of the corresponding UI control.
+///
+/// <c>EnableUiControl</c> and <c>DisableUiControl</c> should enable and disable any interactable elements in that
+/// control respectively.
+///
+/// <c>TryReadLua</c> should do nothing except try to read the <c>LuaValue</c> as an instance of the class, assign it to
+/// the out var and return whether it was successful.
 /// </summary>
 public abstract class ModulePrimitiveLuaBase
 {
@@ -36,6 +42,8 @@ public abstract class ModulePrimitiveLuaBase
     public int GridHeight { get; protected init; }
     
     public abstract UserControl CreateUiControl();
+    public abstract void EnableUiControl();
+    public abstract void DisableUiControl();
 
     protected static void VerifyPositionArgs(LuaTable args)
     {

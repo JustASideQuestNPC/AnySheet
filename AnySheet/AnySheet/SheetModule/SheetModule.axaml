@@ -13,8 +13,7 @@
     </UserControl.Styles>
     <Interaction.Behaviors>
         <!-- TODO: de-hard-code the grid size -->
-        <behaviors:ModuleDragBehavior DragCompletedCommand="{Binding ModuleMovedCommand}" GridWidth="25"
-                                      GridHeight="25" />
+        <behaviors:ModuleDragBehavior GridWidth="25" GridHeight="25" />
     </Interaction.Behaviors>
     <Border Name="Container" Background="White" Classes="Module">
         <Grid Name="PrimitiveGrid" RowSpacing="0" ColumnSpacing="0" />

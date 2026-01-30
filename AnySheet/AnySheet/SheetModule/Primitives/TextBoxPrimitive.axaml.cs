@@ -28,6 +28,8 @@ public partial class TextBoxLua : ModulePrimitiveLuaBase
     private string _fontStyle = "";
     private string _color = "";
     
+    private TextBoxPrimitive _uiControl;
+    
     [LuaMember("create")]
     private new static TextBoxLua CreateLua(LuaTable args)
     {
@@ -76,13 +78,25 @@ public partial class TextBoxLua : ModulePrimitiveLuaBase
 
     public override UserControl CreateUiControl()
     {
-        return new TextBoxPrimitive(GridX, GridY, GridWidth, GridHeight, _alignment, _fontStyle, _color);
+        _uiControl = new TextBoxPrimitive(GridX, GridY, GridWidth, GridHeight, _alignment, _fontStyle, _color, _text);
+        return _uiControl;
+    }
+    
+    public override void EnableUiControl()
+    {
+        _uiControl.IsEnabled = true;
+    }
+
+    public override void DisableUiControl()
+    {
+        _uiControl.IsEnabled = false;
     }
 }
 
 public partial class TextBoxPrimitive : UserControl
 {
-    public TextBoxPrimitive(int x, int y, int width, int height, string alignment, string fontStyle, string color)
+    public TextBoxPrimitive(int x, int y, int width, int height, string alignment, string fontStyle, string color,
+                            string initialText)
     {
         InitializeComponent();
         
@@ -102,5 +116,6 @@ public partial class TextBoxPrimitive : UserControl
                                         (width * SheetModule.GridSize) - TextBox.Padding.Left - TextBox.Padding.Right,
                                         (height * SheetModule.GridSize) - TextBox.Padding.Top - TextBox.Padding.Bottom,
                                         TextBox.TextAlignment, TextBox.LineHeight);
+        TextBox.Text = initialText;
     }
 }

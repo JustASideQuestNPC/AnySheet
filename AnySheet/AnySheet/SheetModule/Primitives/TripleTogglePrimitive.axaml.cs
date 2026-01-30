@@ -20,6 +20,8 @@ public partial class TripleToggleLua : ModulePrimitiveLuaBase
         ["y"] = LuaValueType.Number
     };
 
+    private TripleTogglePrimitive _uiControl;
+
     [LuaMember("create")]
     private new static TripleToggleLua CreateLua(LuaTable args)
     {
@@ -51,7 +53,18 @@ public partial class TripleToggleLua : ModulePrimitiveLuaBase
 
     public override UserControl CreateUiControl()
     {
-        return new TripleTogglePrimitive(GridX, GridY);
+        _uiControl = new TripleTogglePrimitive(GridX, GridY);
+        return _uiControl;
+    }
+    
+    public override void EnableUiControl()
+    {
+        _uiControl.IsEnabled = true;
+    }
+
+    public override void DisableUiControl()
+    {
+        _uiControl.IsEnabled = false;
     }
 }
 

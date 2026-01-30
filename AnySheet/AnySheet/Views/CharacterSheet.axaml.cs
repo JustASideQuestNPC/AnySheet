@@ -7,13 +7,23 @@ namespace AnySheet.Views;
 
 public partial class CharacterSheet : UserControl
 {
+    public enum SheetMode
+    {
+        Gameplay,
+        ModuleEdit,
+        TriggerEdit // currently unused
+    }
+    
     public const int GridSize = 27;
     
     public CharacterSheet()
     {
         InitializeComponent();
-        // for testing; will be removed later
-        ModuleGrid.Children.Add(new SheetModule.SheetModule(this, 1, 1, "module1.lua"));
+    }
+
+    public void AddModuleFromScript(string path, int gridX, int gridY)
+    {
+        ModuleGrid.Children.Add(new SheetModule.SheetModule(this, gridX, gridY, path));
     }
     
     public void RemoveModule(SheetModule.SheetModule module)
