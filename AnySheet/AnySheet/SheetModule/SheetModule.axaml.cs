@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Reflection;
+using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using AnySheet.SheetModule.Primitives;
@@ -16,15 +17,16 @@ public partial class SheetModule : UserControl
 {
     public const int GridSize = 25;
     
-    private readonly LuaSandbox _lua;
-    private readonly CharacterSheet _parent;
+    private LuaSandbox _lua = null!;
+    private CharacterSheet _parent = null!;
+    private string _scriptPath = ""; // for saving
     private int _gridX;
     private int _gridY;
     private int _gridWidth;
     private int _gridHeight;
 
     // for saving and the trigger system when i get to that
-    private List<ModulePrimitiveLuaBase> _items = [];
+    private readonly List<ModulePrimitiveLuaBase> _items = [];
     
     public int GridX
     {
@@ -65,9 +67,33 @@ public partial class SheetModule : UserControl
         }
     }
 
+    public SheetModule(CharacterSheet parent, JsonArray saveData)
+    {
+        if (saveData.Count != 4)
+        {
+            throw new ArgumentException("Cannot load module: save data must contain 4 elements.");
+        }
+
+        if (
+            saveData[0] != null && saveData[0]!.AsValue().TryGetValue<string>(out var path) &&
+            saveData[1] != null && saveData[1]!.AsValue().TryGetValue<int>(out var x) &&
+            saveData[2] != null && saveData[2]!.AsValue().TryGetValue<int>(out var y) &&
+            saveData[3] != null && saveData[3]!.AsArray() is { Count: > 0 } itemData
+        )
+        {
+            _setup(parent, x, y, path, itemData);
+        }
+    }
+
     public SheetModule(CharacterSheet parent, int gridX, int gridY, string scriptPath)
     {
+        _setup(parent, gridX, gridY, scriptPath, new JsonArray());
+    }
+    
+    private void _setup(CharacterSheet parent, int gridX, int gridY, string scriptPath, JsonArray itemData)
+    {
         _parent = parent;
+        _scriptPath = scriptPath;
         GridX = gridX;
         GridY = gridY;
         
@@ -89,7 +115,7 @@ public partial class SheetModule : UserControl
 
         Loaded += async (_, _) =>
         {
-            var buildScript = _runBuildScript(scriptPath);
+            var buildScript = _runBuildScript(scriptPath, itemData);
             await buildScript;
             // immediately remove the module if the build script fails
             if (!buildScript.Result)
@@ -98,12 +124,12 @@ public partial class SheetModule : UserControl
                 return;
             }
             Console.WriteLine($"Loaded module '{scriptPath}' with {PrimitiveGrid.Children.Count} elements. Module " +
-                              $"size: {GridWidth}x{GridHeight}.");
+                              $"size: {Width}x{Height} ({GridWidth}x{GridHeight} on grid).");
             Container.IsVisible = true;
         };
     }
 
-    private async Task<bool> _runBuildScript(string path)
+    private async Task<bool> _runBuildScript(string path, JsonArray itemData)
     {
         var task = await _lua.DoFileAsync(path);
         
@@ -130,6 +156,7 @@ public partial class SheetModule : UserControl
             Container.BorderBrush = Avalonia.Media.Brushes.Transparent;
         }
 
+        var i = 0;
         foreach (var (_, e) in module.Elements)
         {
             // afaik the only way to read the luaValue to the correct primitive class is to brute-force it by trying
@@ -162,8 +189,18 @@ public partial class SheetModule : UserControl
                 ++GridHeight;
             }
             
-            Width = GridWidth * (GridSize + PrimitiveGrid.ColumnSpacing) + Container.BorderThickness.Left + Container.BorderThickness.Right;
-            Height = GridHeight * (GridSize + PrimitiveGrid.RowSpacing) + Container.BorderThickness.Top + Container.BorderThickness.Bottom;
+            Width = GridWidth * (GridSize + PrimitiveGrid.ColumnSpacing) +
+                    Container.BorderThickness.Left + Container.BorderThickness.Right +
+                    Container.Padding.Left + Container.Padding.Right;
+            Height = GridHeight * (GridSize + PrimitiveGrid.RowSpacing) +
+                     Container.BorderThickness.Top + Container.BorderThickness.Bottom +
+                     Container.Padding.Top + Container.Padding.Bottom;
+            
+            if (itemData.Count > i)
+            {
+                primitive.LoadSaveObject(itemData[i] != null ? itemData[i]!.AsObject() : null);
+                ++i;
+            }
             
             _items.Add(primitive);
             PrimitiveGrid.Children.Add(primitive.CreateUiControl());
@@ -191,5 +228,16 @@ public partial class SheetModule : UserControl
                 // currently unused
                 break;
         }
+    }
+
+    public JsonArray GetSaveData()
+    {
+        var itemData = new JsonArray();
+        foreach (var item in _items)
+        {
+            itemData.Add(item.GetSaveObject());
+        }
+        
+        return [_scriptPath, GridX, GridY, itemData];
     }
 }

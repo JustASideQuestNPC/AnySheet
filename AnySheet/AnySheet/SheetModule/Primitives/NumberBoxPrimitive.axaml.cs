@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Reflection;
 using System.Runtime.InteropServices.JavaScript;
+using System.Text.Json;
+using System.Text.Json.Nodes;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Markup.Xaml;
@@ -23,7 +25,7 @@ public partial class NumberBoxLua : ModulePrimitiveLuaBase
         ["[allowDecimal]"] = LuaValueType.Boolean
     };
     
-    private decimal CurrentValue { get; init; } = 0;
+    public decimal? CurrentValue { get; set; } = 0;
     private decimal MinValue { get; init; } = 0;
     private decimal MaxValue { get; init; } = decimal.MaxValue;
     private bool IntegerOnly { get; init; } = false;
@@ -78,7 +80,7 @@ public partial class NumberBoxLua : ModulePrimitiveLuaBase
     
     public override UserControl CreateUiControl()
     {
-        _uiControl = new NumberBoxPrimitive(GridX, GridY, GridWidth, GridHeight, CurrentValue, MinValue, MaxValue,
+        _uiControl = new NumberBoxPrimitive(this, GridX, GridY, GridWidth, GridHeight, CurrentValue, MinValue, MaxValue,
                                             IntegerOnly);
         return _uiControl;
     }
@@ -92,16 +94,33 @@ public partial class NumberBoxLua : ModulePrimitiveLuaBase
     {
         _uiControl.IsEnabled = false;
     }
+
+    public override JsonObject GetSaveObject()
+    {
+        return new JsonObject {["value"] = CurrentValue};
+    }
+
+    public override void LoadSaveObject(JsonObject obj)
+    {
+        if (obj["value"] != null && obj["value"]!.AsValue().TryGetValue<decimal>(out var value))
+        {
+            CurrentValue = value;
+            return;
+        }
+
+        throw new JsonException("Invalid save data for NumberBoxPrimitive.");
+    }
 }
 
 public partial class NumberBoxPrimitive : UserControl
 {
+    private readonly NumberBoxLua _parent;
     private readonly bool _integerOnly;
     private readonly int _width;
     private readonly int _height;
     
-    public NumberBoxPrimitive(int x, int y, int width, int height, decimal defaultValue, decimal minValue,
-                              decimal maxValue, bool integerOnly)
+    public NumberBoxPrimitive(NumberBoxLua parent, int x, int y, int width, int height, decimal? defaultValue,
+                              decimal minValue, decimal maxValue, bool integerOnly)
     {
         InitializeComponent();
         
@@ -109,6 +128,8 @@ public partial class NumberBoxPrimitive : UserControl
         Grid.SetRow(this, y);
         Grid.SetColumnSpan(this, width);
         Grid.SetRowSpan(this, height);
+        
+        _parent = parent;
         
         _width = width;
         _height = height;
@@ -124,6 +145,11 @@ public partial class NumberBoxPrimitive : UserControl
         if (_integerOnly && args.NewValue != null && args.NewValue % 1 != 0)
         {
             NumberBox.Value = Math.Floor(args.NewValue.Value);
+        }
+
+        if (NumberBox.Value != null)
+        {
+            _parent.CurrentValue = NumberBox.Value;
         }
         
         NumberBox.FontSize = TextFitHelper.FindBestFontSize(

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text.Json.Nodes;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Media;
@@ -79,9 +80,14 @@ public partial class StaticTextLua : ModulePrimitiveLuaBase
         return new StaticTextPrimitive(GridX, GridY, GridWidth, GridHeight, _text, _alignment, _fontStyle, _color);
     }
     
-    // static text already isn't interactive
+    // static text isn't interactive and saves no data
     public override void EnableUiControl() {}
     public override void DisableUiControl() {}
+    public override JsonObject? GetSaveObject()
+    {
+        return null;
+    }
+    public override void LoadSaveObject(JsonObject obj) {}
 }
 
 public partial class StaticTextPrimitive : UserControl

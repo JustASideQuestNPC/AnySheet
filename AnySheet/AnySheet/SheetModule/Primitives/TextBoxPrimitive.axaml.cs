@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Text.Json;
+using System.Text.Json.Nodes;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Layout;
@@ -23,47 +25,47 @@ public partial class TextBoxLua : ModulePrimitiveLuaBase
         ["[style]"] = LuaValueType.String
     };
 
-    private string _text = "";
+    public string Text = "";
     private string _alignment = "";
     private string _fontStyle = "";
     private string _color = "";
-    
+
     private TextBoxPrimitive _uiControl;
-    
+
     [LuaMember("create")]
     private new static TextBoxLua CreateLua(LuaTable args)
     {
         VerifyPositionArgs(args);
         LuaSandbox.VerifyTable(args, ConstructorArgs);
-        
+
         var alignment = LuaSandbox.GetTableValueOrDefault(args, "alignment", "left");
         if (alignment != "left" && alignment != "center" && alignment != "right")
         {
             throw new ArgumentException("Invalid alignment value (expected 'left', 'center' or 'right', received " +
                                         $"'{alignment}').");
         }
-        
+
         var fontStyle = LuaSandbox.GetTableValueOrDefault(args, "style", "normal");
         if (fontStyle != "normal" && fontStyle != "bold" && fontStyle != "italic" && fontStyle != "bold italic")
         {
             throw new ArgumentException("Invalid font style value (expected 'normal', 'bold', 'italic' or " +
                                         $"'bold italic', received '{fontStyle}').");
         }
-        
+
         var color = LuaSandbox.GetTableValueOrDefault(args, "color", "primary");
         if (color != "primary" && color != "secondary" && color != "accent")
         {
             throw new ArgumentException("Invalid color value (expected 'primary', 'secondary' or 'accent', received " +
                                         $"'{color}').");
         }
-        
+
         return new TextBoxLua
         {
             GridX = args["x"].Read<int>(),
             GridY = args["y"].Read<int>(),
             GridWidth = args["width"].Read<int>(),
             GridHeight = args["height"].Read<int>(),
-            _text = LuaSandbox.GetTableValueOrDefault(args, "defaultText", ""),
+            Text = LuaSandbox.GetTableValueOrDefault(args, "defaultText", ""),
             _alignment = alignment,
             _fontStyle = fontStyle,
             _color = string.Concat(color[0].ToString().ToUpper(), color.AsSpan(1))
@@ -78,10 +80,10 @@ public partial class TextBoxLua : ModulePrimitiveLuaBase
 
     public override UserControl CreateUiControl()
     {
-        _uiControl = new TextBoxPrimitive(GridX, GridY, GridWidth, GridHeight, _alignment, _fontStyle, _color, _text);
+        _uiControl = new TextBoxPrimitive(this, GridX, GridY, GridWidth, GridHeight, _alignment, _fontStyle, _color, Text);
         return _uiControl;
     }
-    
+
     public override void EnableUiControl()
     {
         _uiControl.IsEnabled = true;
@@ -91,12 +93,30 @@ public partial class TextBoxLua : ModulePrimitiveLuaBase
     {
         _uiControl.IsEnabled = false;
     }
+
+    public override JsonObject GetSaveObject()
+    {
+        return new JsonObject { ["text"] = Text };
+    }
+
+    public override void LoadSaveObject(JsonObject obj)
+    {
+        if (obj["text"] != null && obj["text"]!.AsValue().TryGetValue<string>(out var text))
+        {
+            Text = text;
+            return;
+        }
+
+        throw new JsonException("Invalid save data for TextBoxPrimitive.");
+    }
 }
 
 public partial class TextBoxPrimitive : UserControl
 {
-    public TextBoxPrimitive(int x, int y, int width, int height, string alignment, string fontStyle, string color,
-                            string initialText)
+    private readonly TextBoxLua _parent;
+    
+    public TextBoxPrimitive(TextBoxLua parent, int x, int y, int width, int height, string alignment, string fontStyle,
+                            string color, string initialText)
     {
         InitializeComponent();
         
@@ -104,6 +124,8 @@ public partial class TextBoxPrimitive : UserControl
         Grid.SetRow(this, y);
         Grid.SetColumnSpan(this, width);
         Grid.SetRowSpan(this, height);
+        
+        _parent = parent;
         
         TextBox.HorizontalContentAlignment = alignment switch {
             "left"   => HorizontalAlignment.Left,
@@ -117,5 +139,11 @@ public partial class TextBoxPrimitive : UserControl
                                         (height * SheetModule.GridSize) - TextBox.Padding.Top - TextBox.Padding.Bottom,
                                         TextBox.TextAlignment, TextBox.LineHeight);
         TextBox.Text = initialText;
+    }
+
+
+    private void TextChanged(object? sender, TextChangedEventArgs e)
+    {
+        _parent.Text = TextBox.Text!;
     }
 }

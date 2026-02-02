@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text.Json.Nodes;
 using Avalonia.Controls;
 using Lua;
 using LuaLib;
@@ -44,6 +45,8 @@ public abstract class ModulePrimitiveLuaBase
     public abstract UserControl CreateUiControl();
     public abstract void EnableUiControl();
     public abstract void DisableUiControl();
+    public abstract JsonObject? GetSaveObject();
+    public abstract void LoadSaveObject(JsonObject? obj);
 
     protected static void VerifyPositionArgs(LuaTable args)
     {

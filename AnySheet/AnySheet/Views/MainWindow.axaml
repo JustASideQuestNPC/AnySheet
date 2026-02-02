@@ -21,21 +21,21 @@
             <MenuItem Header="_File">
                 <MenuItem Header="_New" Command="{Binding CreateNewSheet}" />
                 <Separator />
-                <MenuItem Header="_Open" />
+                <MenuItem Header="_Open" Command="{Binding LoadSheetCommand}" />
                 <Separator />
-                <MenuItem Header="_Save" IsEnabled="{Binding SheetMenusEnabled}" />
-                <Separator />
-                <MenuItem Header="_Save As" IsEnabled="{Binding SheetMenusEnabled}" />
+                <!-- <MenuItem Header="_Save" IsEnabled="{Binding SheetMenusEnabled}" /> -->
+                <!-- <Separator /> -->
+                <MenuItem Header="_Save As" Command="{Binding SaveSheetCommand}" IsEnabled="{Binding SheetMenusEnabled}" />
             </MenuItem>
             <MenuItem Header="_Modules" IsEnabled="{Binding SheetMenusEnabled}">
                 <MenuItem Header="_Add From File" Command="{Binding AddModuleFileCommand}" />
             </MenuItem>
             <MenuItem Header="_Mode" IsEnabled="{Binding SheetMenusEnabled}">
-                <MenuItem Header="_Module Editor" />
+                <MenuItem Header="_Module Editor" Command="{Binding ChangeUiMode}" CommandParameter="ModuleEdit" />
                 <Separator />
-                <MenuItem Header="_Gameplay" />
+                <MenuItem Header="_Gameplay" Command="{Binding ChangeUiMode}" CommandParameter="Gameplay" />
             </MenuItem>
         </Menu>
-        <ContentControl Content="{Binding CharacterSheet}" />
+        <ContentControl Content="{Binding LoadedSheet}" />
     </DockPanel>
 </Window>

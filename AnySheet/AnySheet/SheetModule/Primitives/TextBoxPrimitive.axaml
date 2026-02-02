@@ -9,6 +9,6 @@
     </UserControl.Styles>
     
     <Border Name="Container" Classes="Primitive">
-        <TextBox Name="TextBox" Classes="TextInput" VerticalContentAlignment="Center" />
+        <TextBox Name="TextBox" TextChanged="TextChanged" Classes="TextInput" VerticalContentAlignment="Center" />
     </Border>
 </UserControl>

@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text.Json;
+using System.Text.Json.Nodes;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
@@ -20,7 +22,8 @@ public partial class TripleToggleLua : ModulePrimitiveLuaBase
         ["y"] = LuaValueType.Number
     };
 
-    private TripleTogglePrimitive _uiControl;
+    private int _buttonState = 0;
+    private TripleTogglePrimitive _uiControl = null!;
 
     [LuaMember("create")]
     private new static TripleToggleLua CreateLua(LuaTable args)
@@ -54,6 +57,7 @@ public partial class TripleToggleLua : ModulePrimitiveLuaBase
     public override UserControl CreateUiControl()
     {
         _uiControl = new TripleTogglePrimitive(GridX, GridY);
+        _uiControl.SetButtonState(_buttonState);
         return _uiControl;
     }
     
@@ -66,11 +70,28 @@ public partial class TripleToggleLua : ModulePrimitiveLuaBase
     {
         _uiControl.IsEnabled = false;
     }
+
+    public override JsonObject GetSaveObject()
+    {
+        var state = _uiControl.ButtonDisabled ? 0 : _uiControl.Button.IsChecked == true ? 2 : 1;
+        return new JsonObject {["state"] = state};
+    }
+
+    public override void LoadSaveObject(JsonObject obj)
+    {
+        if (obj["state"] != null && obj["state"]!.AsValue().TryGetValue<int>(out var state))
+        {
+            _buttonState = state;
+            return;
+        }
+
+        throw new JsonException("Invalid save data for TripleTogglePrimitive.");
+    }
 }
 
 public partial class TripleTogglePrimitive : UserControl
 {
-    private bool _buttonDisabled = false;
+    public bool ButtonDisabled = false;
     
     public TripleTogglePrimitive(int x, int y)
     {
@@ -82,8 +103,22 @@ public partial class TripleTogglePrimitive : UserControl
         Grid.SetRowSpan(this, 1);
         
         Button.AddHandler(PointerPressedEvent, ButtonPointerPressed, RoutingStrategies.Tunnel);
-        
-        // Console.WriteLine(Button.);
+    }
+
+    public void SetButtonState(int state)
+    {
+        if (state == 0)
+        {
+            Button.Classes.Add("Disabled");
+            Button.Classes.Remove("Enabled");
+            Button.IsChecked = true;
+        }
+        else
+        {
+            Button.Classes.Add("Enabled");
+            Button.Classes.Remove("Disabled");
+            Button.IsChecked = (state == 2);
+        }
     }
 
     private void ButtonPointerPressed(object? sender, PointerPressedEventArgs args)
@@ -91,8 +126,8 @@ public partial class TripleTogglePrimitive : UserControl
         if (args.GetCurrentPoint(this).Properties.IsRightButtonPressed)
         {
             // i can't just disable the button because it would break the pointer capture
-            _buttonDisabled = !_buttonDisabled;
-            if (_buttonDisabled)
+            ButtonDisabled = !ButtonDisabled;
+            if (ButtonDisabled)
             {
                 Button.Classes.Add("Disabled");
                 Button.Classes.Remove("Enabled");
@@ -109,7 +144,8 @@ public partial class TripleTogglePrimitive : UserControl
     
     public void ButtonClick(object sender, RoutedEventArgs args)
     {
-        if (_buttonDisabled)
+        // hack because i can't disable the button
+        if (ButtonDisabled)
         {
             Button.IsChecked = true;
         }
