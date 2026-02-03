@@ -109,7 +109,8 @@ public partial class SheetModule : UserControl
                 ["StaticText"]   = new StaticTextLua(),
                 ["TextBox"]      = new TextBoxLua(),
                 ["TripleToggle"] = new TripleToggleLua(),
-                ["NumberBox"]    = new NumberBoxLua()
+                ["NumberBox"]    = new NumberBoxLua(),
+                ["Button"]       = new ButtonLua()
             }
         };
 
@@ -202,6 +203,7 @@ public partial class SheetModule : UserControl
                 ++i;
             }
             
+            primitive.Lua = _lua;
             _items.Add(primitive);
             PrimitiveGrid.Children.Add(primitive.CreateUiControl());
         }

@@ -36,6 +36,8 @@ public abstract class ModulePrimitiveLuaBase
         ["width"] = LuaValueType.Number,
         ["height"] = LuaValueType.Number
     };
+
+    public LuaSandbox Lua;
     
     public int GridX { get; protected init; }
     public int GridY { get; protected init; }

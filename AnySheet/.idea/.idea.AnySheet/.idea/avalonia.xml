@@ -7,6 +7,7 @@
         <entry key="AnySheet/Assets/SheetModuleStyles.axaml" value="AnySheet/AnySheet.csproj" />
         <entry key="AnySheet/CharacterSheetPanel/CharacterSheetModule.axaml" value="AnySheet/AnySheet.csproj" />
         <entry key="AnySheet/CharacterSheetPanel/SheetModuleContainer.axaml" value="AnySheet/AnySheet.csproj" />
+        <entry key="AnySheet/SheetModule/Primitives/ButtonPrimitive.axaml" value="AnySheet/AnySheet.csproj" />
         <entry key="AnySheet/SheetModule/Primitives/ModulePrimitiveBase.axaml" value="AnySheet/AnySheet.csproj" />
         <entry key="AnySheet/SheetModule/Primitives/ModulePrimitiveControl.axaml" value="AnySheet/AnySheet.csproj" />
         <entry key="AnySheet/SheetModule/Primitives/ModulePrimitiveControlBase.axaml" value="AnySheet/AnySheet.csproj" />

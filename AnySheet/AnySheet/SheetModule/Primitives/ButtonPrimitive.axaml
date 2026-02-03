@@ -1,0 +1,25 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="using:AnySheet.SheetModule.Primitives"
+             xmlns:materialIcons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="AnySheet.SheetModule.Primitives.ButtonPrimitive"
+             x:DataType="vm:ButtonPrimitive">
+    <UserControl.Styles>
+        <StyleInclude Source="/Assets/SheetModuleStyles.axaml" />
+        
+        <Style Selector="Button">
+            <Setter Property="Background" Value="Transparent" />
+        </Style>
+        <Style Selector="#Container Button:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="{DynamicResource Tertiary}" />
+        </Style>
+    </UserControl.Styles>
+    <Border Name="Container" Classes="Primitive">
+        <Button Name="Button" Click="OnClick" Padding="3">
+            <materialIcons:MaterialIcon Name="Icon" Foreground="{DynamicResource Accent}" />
+        </Button>
+    </Border>
+</UserControl>

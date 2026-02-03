@@ -1,3 +1,19 @@
+local currentUses = NumberBox.create({
+	x = 0,
+	y = 1,
+	width = 2,
+	height = 2,
+	minValue = 0,
+})
+local maxUses = NumberBox.create({
+	x = 3,
+	y = 1,
+	width = 2,
+	height = 2,
+	minValue = 0,
+	maxValue = 10
+})
+
 return SheetModule.create({
 	elements = {
 		TextBox.create({
@@ -8,13 +24,7 @@ return SheetModule.create({
 			color = "accent",
 			alignment = "center"
 		}),
-		NumberBox.create({
-			x = 0,
-			y = 1,
-			width = 2,
-			height = 2,
-			minValue = 0,
-		}),
+		currentUses,
 		StaticText.create({
 			x = 0,
 			y = 3,
@@ -25,14 +35,29 @@ return SheetModule.create({
 			color = "secondary"
 		}),
 		
-		NumberBox.create({
-			x = 3,
+		Button.create({
+			x = 2,
 			y = 1,
-			width = 2,
-			height = 2,
-			minValue = 0,
-			maxValue = 10
+			width = 1,
+			height = 1,
+			icon = "Plus",
+			callback = function()
+				print("plus")
+			end
 		}),
+		
+		Button.create({
+			x = 2,
+			y = 2,
+			width = 1,
+			height = 1,
+			icon = "Minus",
+			callback = function()
+				print("minus")
+			end
+		}),
+		
+		maxUses,
 		StaticText.create({
 			x = 3,
 			y = 3,
