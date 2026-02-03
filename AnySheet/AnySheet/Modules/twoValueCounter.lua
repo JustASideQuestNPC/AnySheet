@@ -34,29 +34,33 @@ return SheetModule.create({
 			alignment = "center",
 			color = "secondary"
 		}),
-		
+
 		Button.create({
 			x = 2,
 			y = 1,
 			width = 1,
 			height = 1,
-			icon = "Plus",
+			icon = "plus",
 			callback = function()
-				print("plus")
+				if (currentUses.value < maxUses.value) then
+					currentUses.value = currentUses.value + 1
+				end
 			end
 		}),
-		
+
 		Button.create({
 			x = 2,
 			y = 2,
 			width = 1,
 			height = 1,
-			icon = "Minus",
+			icon = "minus",
 			callback = function()
-				print("minus")
+				if (currentUses.value > 0) then
+					currentUses.value = currentUses.value - 1
+				end
 			end
 		}),
-		
+
 		maxUses,
 		StaticText.create({
 			x = 3,
