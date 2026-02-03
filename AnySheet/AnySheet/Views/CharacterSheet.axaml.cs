@@ -17,7 +17,7 @@ public partial class CharacterSheet : UserControl
     
     public const int GridSize = 27;
 
-    private SheetMode _mode = SheetMode.Gameplay;
+    public SheetMode Mode = SheetMode.Gameplay;
     private readonly List<SheetModule.SheetModule> _modules = [];
     
     public CharacterSheet()
@@ -37,7 +37,7 @@ public partial class CharacterSheet : UserControl
             var module = new SheetModule.SheetModule(this, moduleData.AsArray());
             _modules.Add(module);
             ModuleGrid.Children.Add(module);
-            module.SetModuleMode(_mode);
+            module.SetModuleMode(Mode);
         }
     }
 
@@ -46,7 +46,7 @@ public partial class CharacterSheet : UserControl
         var module = new SheetModule.SheetModule(this, gridX, gridY, path);
         _modules.Add(module);
         ModuleGrid.Children.Add(module);
-        module.SetModuleMode(_mode);
+        module.SetModuleMode(Mode);
     }
     
     public void RemoveModule(SheetModule.SheetModule module)
@@ -57,7 +57,7 @@ public partial class CharacterSheet : UserControl
 
     public void ChangeSheetMode(SheetMode mode)
     {
-        _mode = mode;
+        Mode = mode;
         foreach (var module in _modules)
         {
             module.SetModuleMode(mode);

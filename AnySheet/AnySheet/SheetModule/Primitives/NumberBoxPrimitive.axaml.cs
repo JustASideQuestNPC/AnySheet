@@ -24,13 +24,55 @@ public partial class NumberBoxLua : ModulePrimitiveLuaBase
         ["[maxValue]"] = LuaValueType.Number,
         ["[allowDecimal]"] = LuaValueType.Boolean
     };
+
+    public decimal CurrentValue { get; set; } = 0;
+    [LuaMember("value")]
+    public double CurrentValueLua
+    {
+        get => (double)CurrentValue;
+        set
+        {
+            CurrentValue = (decimal)value;
+            if (_uiControl != null)
+            {
+                _uiControl.NumberBox.Value = CurrentValue;
+            }
+        }
+    }
     
-    public decimal? CurrentValue { get; set; } = 0;
-    private decimal MinValue { get; init; } = 0;
-    private decimal MaxValue { get; init; } = decimal.MaxValue;
+    private decimal MinValue { get; set; } = 0;
+    [LuaMember("minValue")]
+    private double MinValueLua
+    {
+        get => (double)MinValue;
+        set
+        {
+            MinValue = (decimal)value;
+            if (_uiControl != null)
+            {
+                _uiControl.NumberBox.Minimum = MinValue;
+            }
+        }
+    }
+    
+    private decimal MaxValue { get; set; } = 10000000;
+    [LuaMember("maxValue")]
+    private double MaxValueLua
+    {
+        get => (double)MaxValue;
+        set
+        {
+            MaxValue = (decimal)value;
+            if (_uiControl != null)
+            {
+                _uiControl.NumberBox.Maximum = MaxValue;
+            }
+        }
+    }
+    
     private bool IntegerOnly { get; init; } = false;
     
-    private NumberBoxPrimitive _uiControl;
+    private NumberBoxPrimitive? _uiControl;
     
     [LuaMember("create")]
     private new static NumberBoxLua CreateLua(LuaTable args)
@@ -66,10 +108,13 @@ public partial class NumberBoxLua : ModulePrimitiveLuaBase
             GridY = args["y"].Read<int>(),
             GridWidth = args["width"].Read<int>(),
             GridHeight = args["height"].Read<int>(),
-            MinValue = minValue,
-            MaxValue = maxValue,
             IntegerOnly = integerOnly,
-            CurrentValue = defaultValue
+            MinValue = minValue,
+            MinValueLua = (double)minValue,
+            MaxValue = maxValue,
+            MaxValueLua = (double)maxValue,
+            CurrentValue = defaultValue,
+            CurrentValueLua = (double)defaultValue
         };
     }
     
@@ -100,11 +145,12 @@ public partial class NumberBoxLua : ModulePrimitiveLuaBase
         return new JsonObject {["value"] = CurrentValue};
     }
 
-    public override void LoadSaveObject(JsonObject obj)
+    public override void LoadSaveObject(JsonObject? obj)
     {
-        if (obj["value"] != null && obj["value"]!.AsValue().TryGetValue<decimal>(out var value))
+        if (obj?["value"] != null && obj["value"]!.AsValue().TryGetValue<decimal>(out var value))
         {
             CurrentValue = value;
+            CurrentValueLua = (double)value;
             return;
         }
 
@@ -149,7 +195,8 @@ public partial class NumberBoxPrimitive : UserControl
 
         if (NumberBox.Value != null)
         {
-            _parent.CurrentValue = NumberBox.Value;
+            _parent.CurrentValue = (decimal)NumberBox.Value;
+            _parent.CurrentValueLua = (double)NumberBox.Value;
         }
         
         NumberBox.FontSize = TextFitHelper.FindBestFontSize(

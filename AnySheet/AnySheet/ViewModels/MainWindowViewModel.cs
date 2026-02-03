@@ -107,7 +107,6 @@ public partial class MainWindowViewModel : ViewModelBase
         {
             await using var writer = new StreamWriter(await file.OpenWriteAsync());
             var saveData = LoadedSheet.GetSaveData();
-            Console.WriteLine(JsonSerializer.Serialize(saveData));
             await writer.WriteAsync(JsonSerializer.Serialize(saveData));
         }
     }

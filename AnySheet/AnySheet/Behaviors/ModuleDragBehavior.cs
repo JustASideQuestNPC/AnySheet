@@ -75,7 +75,7 @@ public class ModuleDragBehavior : Behavior<Control>
     private void Pressed(object? sender, PointerPressedEventArgs e)
     {
         var properties = e.GetCurrentPoint(AssociatedObject).Properties;
-        if (!properties.IsLeftButtonPressed || AssociatedObject?.Parent is not  Control parent || !IsEnabled)
+        if (!properties.IsLeftButtonPressed || AssociatedObject?.Parent is not Control parent || !IsEnabled)
         {
             return;
         }
@@ -101,7 +101,7 @@ public class ModuleDragBehavior : Behavior<Control>
     
     private void Released(object? sender, PointerReleasedEventArgs e)
     {
-        if (_dragging && e.InitialPressMouseButton == MouseButton.Left)
+        if (_dragging && e.InitialPressMouseButton == MouseButton.Left && IsEnabled)
         {
             DragCompletedCommand?.Execute(AssociatedObject);
             _dragging = false;
@@ -112,7 +112,7 @@ public class ModuleDragBehavior : Behavior<Control>
     
     private void CaptureLost(object? sender, PointerCaptureLostEventArgs e)
     {
-        if (_dragging)
+        if (_dragging && IsEnabled)
         {
             DragCompletedCommand?.Execute(AssociatedObject);
             _dragging = false;

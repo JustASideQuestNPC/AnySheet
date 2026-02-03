@@ -25,12 +25,24 @@ public partial class TextBoxLua : ModulePrimitiveLuaBase
         ["[style]"] = LuaValueType.String
     };
 
-    public string Text = "";
+    private string _text = "";
+
+    [LuaMember("text")]
+    public string Text
+    {
+        get => _text;
+        set
+        {
+            _text = value;
+            if (_uiControl != null) _uiControl.TextBox.Text = value;
+        }
+    }
+    
     private string _alignment = "";
     private string _fontStyle = "";
     private string _color = "";
 
-    private TextBoxPrimitive _uiControl;
+    private TextBoxPrimitive? _uiControl;
 
     [LuaMember("create")]
     private new static TextBoxLua CreateLua(LuaTable args)

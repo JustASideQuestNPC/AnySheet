@@ -6,7 +6,9 @@ using System.Threading.Tasks;
 using System.Windows.Input;
 using AnySheet.SheetModule.Primitives;
 using AnySheet.Views;
+using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Input;
 using Avalonia.Interactivity;
 using CommunityToolkit.Mvvm.Input;
 using LuaLib;
@@ -27,7 +29,8 @@ public partial class SheetModule : UserControl
 
     // for saving and the trigger system when i get to that
     private readonly List<ModulePrimitiveLuaBase> _items = [];
-    
+    public static readonly StyledProperty<bool> DragEnabledProperty = AvaloniaProperty.Register<SheetModule, bool>("DragEnabled");
+
     public int GridX
     {
         get => _gridX;
@@ -65,6 +68,12 @@ public partial class SheetModule : UserControl
             _gridHeight = value;
             Grid.SetRowSpan(this, value);
         }
+    }
+
+    public object DragEnabled
+    {
+        get { return (object)GetValue(DragEnabledProperty); }
+        set { SetValue(DragEnabledProperty, value); }
     }
 
     public SheetModule(CharacterSheet parent, JsonArray saveData)
@@ -126,6 +135,7 @@ public partial class SheetModule : UserControl
             }
             Console.WriteLine($"Loaded module '{scriptPath}' with {PrimitiveGrid.Children.Count} elements. Module " +
                               $"size: {Width}x{Height} ({GridWidth}x{GridHeight} on grid).");
+            Container.AddHandler(PointerPressedEvent, ContainerPointerPressed, RoutingStrategies.Tunnel);
             Container.IsVisible = true;
         };
     }
@@ -211,24 +221,30 @@ public partial class SheetModule : UserControl
         return true;
     }
 
-    public void Remove(object? sender, RoutedEventArgs? routedEventArgs)
-    {
-        _parent.RemoveModule(this);
-    }
-
     public void SetModuleMode(CharacterSheet.SheetMode mode)
     {
         switch (mode)
         {
             case CharacterSheet.SheetMode.Gameplay:
                 foreach (var item in _items) item.EnableUiControl();
+                DragEnabled = false;
                 break;
             case CharacterSheet.SheetMode.ModuleEdit:
                 foreach (var item in _items) item.DisableUiControl();
+                DragEnabled = true;
                 break;
             case CharacterSheet.SheetMode.TriggerEdit:
                 // currently unused
                 break;
+        }
+    }
+
+    private void ContainerPointerPressed(object? sender, PointerPressedEventArgs args)
+    {
+        if (args.GetCurrentPoint(this).Properties.IsRightButtonPressed &&
+            _parent.Mode == CharacterSheet.SheetMode.ModuleEdit)
+        {
+            _parent.RemoveModule(this);
         }
     }
 
