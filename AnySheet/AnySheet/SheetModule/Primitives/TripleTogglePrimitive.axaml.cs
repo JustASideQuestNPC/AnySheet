@@ -22,7 +22,7 @@ public partial class TripleToggleLua : ModulePrimitiveLuaBase
         ["y"] = LuaValueType.Number
     };
 
-    private int _buttonState = 0;
+    private int _buttonState = 1;
     private TripleTogglePrimitive _uiControl = null!;
 
     [LuaMember("create")]
@@ -74,6 +74,7 @@ public partial class TripleToggleLua : ModulePrimitiveLuaBase
     public override JsonObject GetSaveObject()
     {
         var state = _uiControl.ButtonDisabled ? 0 : _uiControl.Button.IsChecked == true ? 2 : 1;
+        Console.WriteLine($"Saving state {state}");
         return new JsonObject {["state"] = state};
     }
 
