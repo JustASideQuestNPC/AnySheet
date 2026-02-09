@@ -24,6 +24,7 @@ return SheetModule.create({
 			color = "accent",
 			alignment = "center"
 		}),
+		
 		currentUses,
 		StaticText.create({
 			x = 0,

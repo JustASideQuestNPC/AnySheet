@@ -1,0 +1,34 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="AnySheet.SheetModule.Primitives.ToggleButtonPrimitive">
+    <UserControl.Styles>
+        <StyleInclude Source="/Assets/SheetModuleStyles.axaml" />
+        <Style Selector="#Container ToggleButton">
+            <Setter Property="Width" Value="15" />
+            <Setter Property="Height" Value="15" />
+            <Setter Property="HorizontalAlignment" Value="Center" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+            <Setter Property="BorderThickness" Value="2" />
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="BorderBrush" Value="{DynamicResource Primary}" />
+        </Style>
+        <Style Selector="#Container ToggleButton:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="BorderBrush" Value="{DynamicResource Primary}" />
+        </Style>
+        <Style Selector="#Container ToggleButton:checked/template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="BorderBrush" Value="{DynamicResource Primary}" />
+            <Setter Property="Background" Value="{DynamicResource Primary}" />
+        </Style>
+        <Style Selector="#Container ToggleButton:checked:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="BorderBrush" Value="{DynamicResource Primary}" />
+            <Setter Property="Background" Value="{DynamicResource Primary}" />
+        </Style>
+    </UserControl.Styles>
+    
+    <Border Name="Container" Classes="Primitive">
+        <ToggleButton Name="Button" />
+    </Border>
+</UserControl>

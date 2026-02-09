@@ -60,12 +60,13 @@ public partial class MainWindowViewModel : ViewModelBase
         {
             throw new InvalidOperationException("How did you even get here?");
         }
-        
+        var startFolder = await App.TopLevel.StorageProvider.TryGetFolderFromPathAsync(Environment.CurrentDirectory);
         var files = await App.TopLevel.StorageProvider.OpenFilePickerAsync(new FilePickerOpenOptions
         {
             Title = "Choose a Lua module file",
             AllowMultiple = false,
-            SuggestedFileType = new FilePickerFileType("lua")
+            SuggestedFileType = new FilePickerFileType("lua"),
+            SuggestedStartLocation = startFolder
         });
 
         if (files.Count > 0)

@@ -77,9 +77,9 @@ public partial class TripleToggleLua : ModulePrimitiveLuaBase
         return new JsonObject {["state"] = state};
     }
 
-    public override void LoadSaveObject(JsonObject obj)
+    public override void LoadSaveObject(JsonObject? obj)
     {
-        if (obj["state"] != null && obj["state"]!.AsValue().TryGetValue<int>(out var state))
+        if (obj?["state"] != null && obj["state"]!.AsValue().TryGetValue<int>(out var state))
         {
             _buttonState = state;
             return;

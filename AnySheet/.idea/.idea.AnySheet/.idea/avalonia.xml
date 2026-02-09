@@ -19,6 +19,8 @@
         <entry key="AnySheet/SheetModule/Primitives/TextBoxControl.axaml" value="AnySheet/AnySheet.csproj" />
         <entry key="AnySheet/SheetModule/Primitives/TextBoxPrimitive.axaml" value="AnySheet/AnySheet.csproj" />
         <entry key="AnySheet/SheetModule/Primitives/TextFieldControl.axaml" value="AnySheet/AnySheet.csproj" />
+        <entry key="AnySheet/SheetModule/Primitives/ToggleBox.axaml" value="AnySheet/AnySheet.csproj" />
+        <entry key="AnySheet/SheetModule/Primitives/ToggleButtonPrimitive.axaml" value="AnySheet/AnySheet.csproj" />
         <entry key="AnySheet/SheetModule/Primitives/TripleToggle.axaml" value="AnySheet/AnySheet.csproj" />
         <entry key="AnySheet/SheetModule/Primitives/TripleTogglePrimitive.axaml" value="AnySheet/AnySheet.csproj" />
         <entry key="AnySheet/SheetModule/SheetModule.axaml" value="AnySheet/AnySheet.csproj" />

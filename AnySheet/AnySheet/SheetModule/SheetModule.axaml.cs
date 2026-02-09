@@ -118,6 +118,7 @@ public partial class SheetModule : UserControl
                 ["StaticText"]   = new StaticTextLua(),
                 ["TextBox"]      = new TextBoxLua(),
                 ["TripleToggle"] = new TripleToggleLua(),
+                ["ToggleButton"] = new ToggleButtonLua(),
                 ["NumberBox"]    = new NumberBoxLua(),
                 ["Button"]       = new ButtonLua()
             }
