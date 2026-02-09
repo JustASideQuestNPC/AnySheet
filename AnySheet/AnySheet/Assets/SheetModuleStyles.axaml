@@ -9,7 +9,7 @@
 
     <Style Selector="Border.Module">
         <Setter Property="Background" Value="White" />
-        <Setter Property="Padding" Value="3" />
+        <Setter Property="Padding" Value="4" />
         <Setter Property="BorderBrush" Value="{DynamicResource Accent}"/>
         <Setter Property="BorderThickness" Value="2" />
         <Setter Property="CornerRadius" Value="5" />

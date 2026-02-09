@@ -10,6 +10,21 @@ namespace AnySheet.Behaviors;
 
 public class ModuleDragBehavior : Behavior<Control>
 {
+    
+    public class DragCompletedCommandParameters
+    {
+        public Control Control { get; set; }
+        public Point RawPosition { get; set; }
+        public Point GridPosition { get; set; }
+
+        // private DragCompletedCommandParameters(Control control, Point rawPosition, Point gridPosition)
+        // {
+        //     Control = control;
+        //     RawPosition = rawPosition;
+        //     GridPosition = gridPosition;
+        // }
+    }
+    
     public static readonly StyledProperty<ICommand?> DragCompletedCommandProperty =
         AvaloniaProperty.Register<ModuleDragBehavior, ICommand?>(nameof(DragCompletedCommand));
     public static readonly StyledProperty<int> GridWidthProperty =
@@ -58,6 +73,7 @@ public class ModuleDragBehavior : Behavior<Control>
             AssociatedObject.PointerReleased += Released;
             AssociatedObject.PointerMoved += Moved;
             AssociatedObject.PointerCaptureLost += CaptureLost;
+            Console.WriteLine("Attached module drag behavior.");
         }
     }
     
@@ -101,12 +117,9 @@ public class ModuleDragBehavior : Behavior<Control>
     
     private void Released(object? sender, PointerReleasedEventArgs e)
     {
-        if (_dragging && e.InitialPressMouseButton == MouseButton.Left && IsEnabled)
+        if (_dragging && IsEnabled)
         {
-            DragCompletedCommand?.Execute(AssociatedObject);
-            _dragging = false;
-            _parent = null;
-            _transform = null;
+            EndDrag();
         }
     }
     
@@ -114,10 +127,7 @@ public class ModuleDragBehavior : Behavior<Control>
     {
         if (_dragging && IsEnabled)
         {
-            DragCompletedCommand?.Execute(AssociatedObject);
-            _dragging = false;
-            _parent = null;
-            _transform = null;
+            EndDrag();
         }
     }
     
@@ -160,5 +170,18 @@ public class ModuleDragBehavior : Behavior<Control>
             _gridDy -= GridHeight;
             _transform.Y += GridHeight;
         }
+    }
+
+    private void EndDrag()
+    {
+        DragCompletedCommand?.Execute(new DragCompletedCommandParameters
+        {
+            Control = AssociatedObject!,
+            RawPosition = new Point(_transform!.X, _transform.Y),
+            GridPosition = new Point(Math.Floor(_transform.X / GridWidth), Math.Floor(_transform.Y / GridHeight))
+        });
+        _dragging = false;
+        _parent = null;
+        _transform = null;
     }
 }

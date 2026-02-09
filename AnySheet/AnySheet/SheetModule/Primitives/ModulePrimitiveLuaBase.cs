@@ -39,8 +39,8 @@ public abstract class ModulePrimitiveLuaBase
 
     public LuaSandbox Lua;
     
-    public int GridX { get; protected init; }
-    public int GridY { get; protected init; }
+    public int GridX { get; set; }
+    public int GridY { get; set; }
     public int GridWidth { get; protected init; }
     public int GridHeight { get; protected init; }
     

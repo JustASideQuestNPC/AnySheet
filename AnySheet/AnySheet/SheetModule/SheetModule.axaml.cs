@@ -4,6 +4,7 @@ using System.Reflection;
 using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using System.Windows.Input;
+using AnySheet.Behaviors;
 using AnySheet.SheetModule.Primitives;
 using AnySheet.Views;
 using Avalonia;
@@ -17,6 +18,7 @@ namespace AnySheet.SheetModule;
 
 public partial class SheetModule : UserControl
 {
+    
     public const int GridSize = 25;
     
     private LuaSandbox _lua = null!;
@@ -30,6 +32,13 @@ public partial class SheetModule : UserControl
     // for saving and the trigger system when i get to that
     private readonly List<ModulePrimitiveLuaBase> _items = [];
     public static readonly StyledProperty<bool> DragEnabledProperty = AvaloniaProperty.Register<SheetModule, bool>("DragEnabled");
+
+    [RelayCommand]
+    private void DragCompleted(ModuleDragBehavior.DragCompletedCommandParameters args)
+    {
+        _gridX = (int)args.GridPosition.X;
+        _gridY = (int)args.GridPosition.Y;
+    }
 
     public int GridX
     {
@@ -107,6 +116,8 @@ public partial class SheetModule : UserControl
         GridY = gridY;
         
         InitializeComponent();
+        DataContext = this;
+        
         // hide the module until it finishes loading (without this it'll temporarily cover the entire window)
         Container.IsVisible = false;
 
