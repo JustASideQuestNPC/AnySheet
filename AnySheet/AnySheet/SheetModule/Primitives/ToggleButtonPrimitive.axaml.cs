@@ -16,9 +16,20 @@ public partial class ToggleButtonLua : ModulePrimitiveLuaBase
         ["x"] = LuaValueType.Number,
         ["y"] = LuaValueType.Number
     };
+    private ToggleButtonPrimitive _uiControl = null!;
     
     private bool _state = false;
-    private ToggleButtonPrimitive _uiControl = null!;
+
+    [LuaMember("state")]
+    private bool State
+    {
+        get => _state;
+        set
+        {
+            _state = value;
+            _uiControl.Button.IsChecked = value;
+        }
+    }
     
     [LuaMember("create")]
     private new static ToggleButtonLua CreateLua(LuaTable args)

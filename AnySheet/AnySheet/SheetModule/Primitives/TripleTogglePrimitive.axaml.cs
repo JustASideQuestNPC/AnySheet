@@ -22,9 +22,17 @@ public partial class TripleToggleLua : ModulePrimitiveLuaBase
         ["y"] = LuaValueType.Number
     };
 
-    private int _buttonState = 1;
     private TripleTogglePrimitive _uiControl = null!;
 
+    private int _buttonState = 1;
+
+    [LuaMember("state")]
+    private int State
+    {
+        get => _uiControl.ButtonDisabled ? 0 : _uiControl.Button.IsChecked == true ? 2 : 1;
+        set => _uiControl.SetButtonState(value);
+    }
+    
     [LuaMember("create")]
     private new static TripleToggleLua CreateLua(LuaTable args)
     {
@@ -40,7 +48,7 @@ public partial class TripleToggleLua : ModulePrimitiveLuaBase
             throw new ArgumentException("Module y coordinate must be a positive integer.");
         }
 
-        return new TripleToggleLua()
+        return new TripleToggleLua
         {
             GridX = (int)x,
             GridY = (int)y,

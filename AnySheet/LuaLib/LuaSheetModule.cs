@@ -26,7 +26,7 @@ public partial class LuaSheetModule
 
         var module = new LuaSheetModule
         {
-            NoBorder = LuaSandbox.GetTableValueOrDefault(args, "noBorder", false),
+            NoBorder = LuaSandbox.GetTableValueOrDefault(args, "border", false),
             Elements = elements
         };
         return module;

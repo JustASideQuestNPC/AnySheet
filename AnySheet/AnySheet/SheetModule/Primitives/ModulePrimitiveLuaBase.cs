@@ -39,9 +39,16 @@ public abstract class ModulePrimitiveLuaBase
 
     public LuaSandbox Lua;
     
+    [LuaMember("x")]
     public int GridX { get; set; }
+    
+    [LuaMember("y")]
     public int GridY { get; set; }
+    
+    [LuaMember("width")]
     public int GridWidth { get; protected init; }
+    
+    [LuaMember("height")]
     public int GridHeight { get; protected init; }
     
     public abstract UserControl CreateUiControl();
