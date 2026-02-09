@@ -19,10 +19,14 @@ public partial class TripleToggleLua : ModulePrimitiveLuaBase
     private static readonly Dictionary<string, LuaValueType> ConstructorArgs = new()
     {
         ["x"] = LuaValueType.Number,
-        ["y"] = LuaValueType.Number
+        ["y"] = LuaValueType.Number,
+        ["[onToggle]"] = LuaValueType.Function,
+        ["[onStateChange]"] = LuaValueType.Function,
     };
 
     private TripleTogglePrimitive _uiControl = null!;
+    private LuaFunction? _onToggle = null;
+    private LuaFunction? _onStateChange = null;
 
     private int _buttonState = 1;
 
@@ -48,12 +52,16 @@ public partial class TripleToggleLua : ModulePrimitiveLuaBase
             throw new ArgumentException("Module y coordinate must be a positive integer.");
         }
 
+        var onToggle = args.ContainsKey("onToggle") ? args["onToggle"].Read<LuaFunction>() : null;
+        var onStateChange = args.ContainsKey("onStateChange") ? args["onStateChange"].Read<LuaFunction>() : null;
         return new TripleToggleLua
         {
             GridX = (int)x,
             GridY = (int)y,
             GridWidth = 1,
-            GridHeight = 1
+            GridHeight = 1,
+            _onToggle = onToggle,
+            _onStateChange = onStateChange
         };
     }
 
@@ -64,7 +72,7 @@ public partial class TripleToggleLua : ModulePrimitiveLuaBase
 
     public override UserControl CreateUiControl()
     {
-        _uiControl = new TripleTogglePrimitive(GridX, GridY);
+        _uiControl = new TripleTogglePrimitive(this, GridX, GridY, _onToggle, _onStateChange);
         _uiControl.SetButtonState(_buttonState);
         return _uiControl;
     }
@@ -102,7 +110,12 @@ public partial class TripleTogglePrimitive : UserControl
 {
     public bool ButtonDisabled = false;
     
-    public TripleTogglePrimitive(int x, int y)
+    private TripleToggleLua _parent;
+    private LuaFunction? _onToggle;
+    private LuaFunction? _onStateChange;
+    
+    public TripleTogglePrimitive(TripleToggleLua parent, int x, int y, LuaFunction? onToggle,
+                                 LuaFunction? onStateChange)
     {
         InitializeComponent();
         
@@ -110,6 +123,10 @@ public partial class TripleTogglePrimitive : UserControl
         Grid.SetRow(this, y);
         Grid.SetColumnSpan(this, 1);
         Grid.SetRowSpan(this, 1);
+        
+        _parent = parent;
+        _onToggle = onToggle;
+        _onStateChange = onStateChange;
         
         Button.AddHandler(PointerPressedEvent, ButtonPointerPressed, RoutingStrategies.Tunnel);
     }
@@ -141,12 +158,22 @@ public partial class TripleTogglePrimitive : UserControl
                 Button.Classes.Add("Disabled");
                 Button.Classes.Remove("Enabled");
                 Button.IsChecked = true;
+
+                if (_onStateChange != null)
+                {
+                    _parent.Lua.DoFunctionAsync(_onStateChange, [0]);
+                }
             }
             else
             {
                 Button.Classes.Add("Enabled");
                 Button.Classes.Remove("Disabled");
                 Button.IsChecked = false;
+                
+                if (_onStateChange != null)
+                {
+                    _parent.Lua.DoFunctionAsync(_onStateChange, [1]);
+                }
             }
         }
     }
@@ -157,6 +184,17 @@ public partial class TripleTogglePrimitive : UserControl
         if (ButtonDisabled)
         {
             Button.IsChecked = true;
+            return;
+        }
+
+        if (_onStateChange != null)
+        {
+            _parent.Lua.DoFunctionAsync(_onStateChange, [(Button.IsChecked ?? false) ? 2 : 1]);
+        }
+        
+        if (_onToggle != null)
+        {
+            _parent.Lua.DoFunctionAsync(_onToggle, [Button.IsChecked ?? false]);
         }
     }
 }

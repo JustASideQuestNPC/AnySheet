@@ -200,7 +200,7 @@ public partial class NumberBoxPrimitive : UserControl
         }
         
         NumberBox.FontSize = TextFitHelper.FindBestFontSize(
-            (NumberBox.Value).ToString().PadLeft(3, '0'), NumberBox.FontFamily,
+            (NumberBox.Value).ToString()!.PadLeft(3, '0'), NumberBox.FontFamily,
             (_width * SheetModule.GridSize) - NumberBox.Padding.Left - NumberBox.Padding.Right,
             (_height * SheetModule.GridSize) - NumberBox.Padding.Top - NumberBox.Padding.Bottom,
             NumberBox.TextAlignment, double.NaN);

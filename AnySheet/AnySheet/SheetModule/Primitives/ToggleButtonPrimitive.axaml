@@ -29,6 +29,6 @@
     </UserControl.Styles>
     
     <Border Name="Container" Classes="Primitive">
-        <ToggleButton Name="Button" />
+        <ToggleButton Name="Button" Click="OnToggle" />
     </Border>
 </UserControl>

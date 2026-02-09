@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using Avalonia.Controls;
+using Avalonia.Interactivity;
 using Lua;
 using LuaLib;
 
@@ -14,11 +15,14 @@ public partial class ToggleButtonLua : ModulePrimitiveLuaBase
     private static readonly Dictionary<string, LuaValueType> ConstructorArgs = new()
     {
         ["x"] = LuaValueType.Number,
-        ["y"] = LuaValueType.Number
+        ["y"] = LuaValueType.Number,
+        ["[onToggle]"] = LuaValueType.Function
     };
+    
     private ToggleButtonPrimitive _uiControl = null!;
     
     private bool _state = false;
+    private LuaFunction? _onToggle = null;
 
     [LuaMember("state")]
     private bool State
@@ -46,12 +50,14 @@ public partial class ToggleButtonLua : ModulePrimitiveLuaBase
             throw new ArgumentException("Module y coordinate must be a positive integer.");
         }
 
+        var onToggle = args.ContainsKey("onToggle") ? args["onToggle"].Read<LuaFunction>() : null;
         return new ToggleButtonLua()
         {
             GridX = (int)x,
             GridY = (int)y,
             GridWidth = 1,
-            GridHeight = 1
+            GridHeight = 1,
+            _onToggle = onToggle
         };
     }
 
@@ -62,7 +68,7 @@ public partial class ToggleButtonLua : ModulePrimitiveLuaBase
 
     public override UserControl CreateUiControl()
     {
-        _uiControl = new ToggleButtonPrimitive(GridX, GridY)
+        _uiControl = new ToggleButtonPrimitive(this, GridX, GridY, _onToggle)
         {
             Button =
             {
@@ -101,9 +107,10 @@ public partial class ToggleButtonLua : ModulePrimitiveLuaBase
 
 public partial class ToggleButtonPrimitive : UserControl
 {
-    // public bool GetState() {}
+    private ToggleButtonLua _parent;
+    private LuaFunction? _onToggle;
     
-    public ToggleButtonPrimitive(int x, int y)
+    public ToggleButtonPrimitive(ToggleButtonLua parent, int x, int y, LuaFunction? onToggle)
     {
         InitializeComponent();
         
@@ -111,5 +118,16 @@ public partial class ToggleButtonPrimitive : UserControl
         Grid.SetRow(this, y);
         Grid.SetColumnSpan(this, 1);
         Grid.SetRowSpan(this, 1);
+
+        _parent = parent;
+        _onToggle = onToggle;
+    }
+
+    public void OnToggle(object? sender, RoutedEventArgs? args)
+    {
+        if (_onToggle != null)
+        {
+            _parent.Lua.DoFunctionAsync(_onToggle, [Button.IsChecked ?? false]);
+        }
     }
 }

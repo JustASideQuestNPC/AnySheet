@@ -92,7 +92,8 @@ public partial class TextBoxLua : ModulePrimitiveLuaBase
 
     public override UserControl CreateUiControl()
     {
-        _uiControl = new TextBoxPrimitive(this, GridX, GridY, GridWidth, GridHeight, _alignment, _fontStyle, _color, Text);
+        _uiControl = new TextBoxPrimitive(this, GridX, GridY, GridWidth, GridHeight, _alignment, _fontStyle, _color,
+                                          Text);
         return _uiControl;
     }
 
