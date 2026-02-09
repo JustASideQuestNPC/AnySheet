@@ -19,12 +19,7 @@ public partial class MainWindowViewModel : ViewModelBase
     [ObservableProperty]
     private bool _sheetMenusEnabled;
     
-    public void CreateNewSheet()
-    {
-        Console.WriteLine("Create new sheet");
-        LoadedSheet = new CharacterSheet();
-        SheetMenusEnabled = true;
-    }
+    private string _currentFilePath = "";
 
     public void ChangeUiMode(object? parameter)
     {
@@ -51,6 +46,14 @@ public partial class MainWindowViewModel : ViewModelBase
             }
         }
     }
+    
+    public void CreateNewSheet()
+    {
+        Console.WriteLine("Create new sheet");
+        LoadedSheet = new CharacterSheet();
+        SheetMenusEnabled = true;
+        _currentFilePath = "";
+    }
 
     [RelayCommand]
     private async Task AddModuleFile(CancellationToken token)
@@ -59,6 +62,11 @@ public partial class MainWindowViewModel : ViewModelBase
         if (LoadedSheet == null)
         {
             throw new InvalidOperationException("How did you even get here?");
+        }
+        if (App.TopLevel == null)
+        {
+            Console.WriteLine("No top level window!");
+            return;
         }
         var startFolder = await App.TopLevel.StorageProvider.TryGetFolderFromPathAsync(
             Environment.CurrentDirectory + "/Modules");
@@ -77,7 +85,36 @@ public partial class MainWindowViewModel : ViewModelBase
     }
 
     [RelayCommand]
-    private async Task SaveSheet(CancellationToken token)
+    private async Task SaveSheetToCurrentPath(CancellationToken token)
+    {
+        // menus are disabled until a sheet is loaded, so this *should* be unreachable
+        if (LoadedSheet == null)
+        {
+            throw new InvalidOperationException("How did you even get here?");
+        }
+        
+        if (App.TopLevel == null)
+        {
+            Console.WriteLine("No top level window!");
+            return;
+        }
+        
+        Console.WriteLine($"Saving sheet to {_currentFilePath}");
+        if (_currentFilePath == "")
+        {
+            await SaveSheetToNewPath(token);
+            return;
+        }
+        
+        var file = await App.TopLevel.StorageProvider.TryGetFileFromPathAsync(_currentFilePath);
+        if (file != null)
+        {
+            await SaveSheet(file);
+        }
+    }
+
+    [RelayCommand]
+    private async Task SaveSheetToNewPath(CancellationToken token)
     {
         // menus are disabled until a sheet is loaded, so this *should* be unreachable
         if (LoadedSheet == null)
@@ -105,16 +142,16 @@ public partial class MainWindowViewModel : ViewModelBase
             SuggestedFileName = "CharacterSheet",
             SuggestedStartLocation = startFolder
         });
+        
         if (file != null)
         {
-            await using var writer = new StreamWriter(await file.OpenWriteAsync());
-            var saveData = LoadedSheet.GetSaveData();
-            await writer.WriteAsync(JsonSerializer.Serialize(saveData));
+            await SaveSheet(file);
+            _currentFilePath = file.Path.AbsolutePath;
         }
     }
 
     [RelayCommand]
-    private async Task LoadSheet(CancellationToken token)
+    private async Task OpenSheetFromFile(CancellationToken token)
     {
         if (App.TopLevel == null)
         {
@@ -137,6 +174,7 @@ public partial class MainWindowViewModel : ViewModelBase
             SuggestedStartLocation = startFolder
         });
 
+        var sheetLoaded = false;
         if (files.Count > 0)
         {
             using var reader = new StreamReader(await files[0].OpenReadAsync());
@@ -151,11 +189,24 @@ public partial class MainWindowViewModel : ViewModelBase
                 }
                 LoadedSheet = new CharacterSheet(saveData);
                 SheetMenusEnabled = true;
+                sheetLoaded = true;
             }
             catch (JsonException e)
             {
                 Console.WriteLine($"Error parsing JSON: {e.Message}");
             }
         }
+
+        if (sheetLoaded)
+        {
+            _currentFilePath = files[0].Path.AbsolutePath;
+        }
+    }
+
+    private async Task SaveSheet(IStorageFile file)
+    {
+        await using var writer = new StreamWriter(await file.OpenWriteAsync());
+        var saveData = LoadedSheet!.GetSaveData();
+        await writer.WriteAsync(JsonSerializer.Serialize(saveData));
     }
 }

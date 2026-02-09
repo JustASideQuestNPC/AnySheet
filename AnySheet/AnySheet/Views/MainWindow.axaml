@@ -1,4 +1,3 @@
-
 <Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:vm="using:AnySheet.ViewModels"
@@ -10,7 +9,6 @@
         Icon="/Assets/avalonia-logo.ico"
         Title="AnySheet"
         Focusable="True">
-
     <Design.DataContext>
         <!-- This only sets the DataContext for the previewer in an IDE,
              to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs) -->
@@ -20,19 +18,17 @@
         <Menu DockPanel.Dock="Top" Height="25">
             <MenuItem Header="_File">
                 <MenuItem Header="_New" Command="{Binding CreateNewSheet}" />
-                <Separator />
-                <MenuItem Header="_Open" Command="{Binding LoadSheetCommand}" />
-                <Separator />
-                <!-- <MenuItem Header="_Save" IsEnabled="{Binding SheetMenusEnabled}" /> -->
-                <!-- <Separator /> -->
-                <MenuItem Header="_Save As" Command="{Binding SaveSheetCommand}" IsEnabled="{Binding SheetMenusEnabled}" />
+                <MenuItem Header="_Open" Command="{Binding OpenSheetFromFileCommand}" />
+                <MenuItem Header="_Save" IsEnabled="{Binding SheetMenusEnabled}"
+                          Command="{Binding SaveSheetToCurrentPathCommand}" />
+                <MenuItem Header="_Save As" IsEnabled="{Binding SheetMenusEnabled}"
+                          Command="{Binding SaveSheetToNewPathCommand}" />
             </MenuItem>
             <MenuItem Header="_Modules" IsEnabled="{Binding SheetMenusEnabled}">
                 <MenuItem Header="_Add From File" Command="{Binding AddModuleFileCommand}" />
             </MenuItem>
             <MenuItem Header="_Mode" IsEnabled="{Binding SheetMenusEnabled}">
                 <MenuItem Header="_Module Editor" Command="{Binding ChangeUiMode}" CommandParameter="ModuleEdit" />
-                <Separator />
                 <MenuItem Header="_Gameplay" Command="{Binding ChangeUiMode}" CommandParameter="Gameplay" />
             </MenuItem>
         </Menu>
