@@ -146,6 +146,7 @@ public partial class TextBoxPrimitive : UserControl
         };
         TextBox.FontFamily = AppResources.GetResource<FontFamily>(AppResources.ModuleFonts[fontStyle]);
         TextBox.Foreground = AppResources.GetResource<IBrush>(color);
+        // "X" is just a dummy string to calculate the font size
         TextBox.FontSize = TextFitHelper.FindBestFontSize("X", FontFamily,
                                         (width * SheetModule.GridSize) - TextBox.Padding.Left - TextBox.Padding.Right,
                                         (height * SheetModule.GridSize) - TextBox.Padding.Top - TextBox.Padding.Bottom,

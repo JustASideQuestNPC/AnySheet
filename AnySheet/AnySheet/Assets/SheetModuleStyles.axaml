@@ -47,13 +47,19 @@
         <Setter Property="Background" Value="Transparent" />
     </Style>
     
-    <Style Selector="TextBox.TextInput:focus-within /template/ Border">
+    <Style Selector="TextBox.SingleLine:focus-within /template/ Border">
         <Setter Property="BorderBrush" Value="{DynamicResource Accent}" />
         <Setter Property="BorderThickness" Value="0 0 0 3" />
     </Style>
-    <Style Selector="TextBox.TextInput:pointerover /template/ Border">
+    <Style Selector="TextBox.SingleLine:pointerover /template/ Border">
         <Setter Property="BorderBrush" Value="{DynamicResource Accent}" />
         <Setter Property="BorderThickness" Value="0 0 0 3" />
+    </Style>
+    
+    <Style Selector="TextBox.MultiLine">
+        <Setter Property="Foreground" Value="{DynamicResource Primary}" />
+        <Setter Property="FontFamily" Value="{DynamicResource Lato}" />
+        <Setter Property="FontSize" Value="15" />
     </Style>
     
     <Style Selector="NumericUpDown">

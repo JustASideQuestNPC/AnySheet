@@ -12,6 +12,7 @@
         <entry key="AnySheet/SheetModule/Primitives/ModulePrimitiveControl.axaml" value="AnySheet/AnySheet.csproj" />
         <entry key="AnySheet/SheetModule/Primitives/ModulePrimitiveControlBase.axaml" value="AnySheet/AnySheet.csproj" />
         <entry key="AnySheet/SheetModule/Primitives/ModuleSpacer.axaml" value="AnySheet/AnySheet.csproj" />
+        <entry key="AnySheet/SheetModule/Primitives/MultiLineTextBoxPrimitive.axaml" value="AnySheet/AnySheet.csproj" />
         <entry key="AnySheet/SheetModule/Primitives/NumberBox.axaml" value="AnySheet/AnySheet.csproj" />
         <entry key="AnySheet/SheetModule/Primitives/NumberBoxPrimitive.axaml" value="AnySheet/AnySheet.csproj" />
         <entry key="AnySheet/SheetModule/Primitives/StaticTextControl.axaml" value="AnySheet/AnySheet.csproj" />

@@ -125,13 +125,14 @@ public partial class SheetModule : UserControl
         {
             Environment =
             {
-                ["SheetModule"]  = new LuaSheetModule(),
-                ["StaticText"]   = new StaticTextLua(),
-                ["TextBox"]      = new TextBoxLua(),
-                ["TripleToggle"] = new TripleToggleLua(),
-                ["ToggleButton"] = new ToggleButtonLua(),
-                ["NumberBox"]    = new NumberBoxLua(),
-                ["Button"]       = new ButtonLua()
+                ["SheetModule"]      = new LuaSheetModule(),
+                ["StaticText"]       = new StaticTextLua(),
+                ["TextBox"]          = new TextBoxLua(),
+                ["MultiLineTextBox"] = new MultilineTextBoxLua(),
+                ["TripleToggle"]     = new TripleToggleLua(),
+                ["ToggleButton"]     = new ToggleButtonLua(),
+                ["NumberBox"]        = new NumberBoxLua(),
+                ["Button"]           = new ButtonLua()
             }
         };
 
