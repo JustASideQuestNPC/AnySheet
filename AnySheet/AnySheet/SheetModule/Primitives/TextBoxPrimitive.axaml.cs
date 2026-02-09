@@ -65,10 +65,10 @@ public partial class TextBoxLua : ModulePrimitiveLuaBase
         }
 
         var color = LuaSandbox.GetTableValueOrDefault(args, "color", "primary");
-        if (color != "primary" && color != "secondary" && color != "accent")
+        if (color != "primary" && color != "secondary" && color != "tertiary" && color != "accent")
         {
-            throw new ArgumentException("Invalid color value (expected 'primary', 'secondary' or 'accent', received " +
-                                        $"'{color}').");
+            throw new ArgumentException("Invalid color value (expected 'primary', 'secondary', 'tertiary' or " +
+                                        $"'accent', received '{color}').");
         }
 
         return new TextBoxLua

@@ -24,7 +24,7 @@ public partial class ToggleButtonLua : ModulePrimitiveLuaBase
     private bool _state = false;
     private LuaFunction? _onToggle = null;
 
-    [LuaMember("state")]
+    [LuaMember("toggled")]
     private bool State
     {
         get => _state;
