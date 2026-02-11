@@ -187,10 +187,9 @@ public partial class TextBoxPrimitive : UserControl
         TextBox.FontFamily = AppResources.GetResource<FontFamily>(AppResources.ModuleFonts[fontStyle]);
         TextBox.Foreground = AppResources.GetResource<IBrush>(color);
         // "X" is just a dummy string to calculate the font size
-        TextBox.FontSize = TextFitHelper.FindBestFontSize("X", FontFamily,
-                                        (width * SheetModule.GridSize) - TextBox.Padding.Left - TextBox.Padding.Right,
-                                        (height * SheetModule.GridSize) - TextBox.Padding.Top - TextBox.Padding.Bottom,
-                                        TextBox.TextAlignment, TextBox.LineHeight);
+        TextBox.FontSize = TextFitHelper.FindBestFontSize("X", TextBox.FontFamily,
+                                    (width * SheetModule.GridSize) - TextBox.Padding.Left - TextBox.Padding.Right - 2,
+                                    (height * SheetModule.GridSize) - TextBox.Padding.Top - TextBox.Padding.Bottom - 2);
         TextBox.Text = initialText;
         
         switch (borderType)
@@ -213,9 +212,9 @@ public partial class TextBoxPrimitive : UserControl
     private void TextChanged(object? sender, TextChangedEventArgs e)
     {
         _parent.Text = TextBox.Text!;
-        TextBox.FontSize = TextFitHelper.FindBestFontSize(TextBox.Text ?? "X", FontFamily,
-                                        Bounds.Width - TextBox.Padding.Left - TextBox.Padding.Right,
-                                        Bounds.Height - TextBox.Padding.Top - TextBox.Padding.Bottom,
-                                        TextBox.TextAlignment, TextBox.LineHeight);
+        TextBox.FontSize = TextFitHelper.FindBestFontSize(string.IsNullOrEmpty(TextBox.Text) ? "X" : TextBox.Text,
+                                  TextBox.FontFamily,
+                                  (_width * SheetModule.GridSize) - TextBox.Padding.Left - TextBox.Padding.Right - 2,
+                                  (_height * SheetModule.GridSize) - TextBox.Padding.Top - TextBox.Padding.Bottom - 2);
     }
 }

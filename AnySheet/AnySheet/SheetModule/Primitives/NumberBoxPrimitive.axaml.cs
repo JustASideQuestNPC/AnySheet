@@ -29,7 +29,7 @@ public partial class NumberBoxLua : ModulePrimitiveLuaBase
         ["[allowDecimal]"] = LuaValueType.Boolean,
         ["[borderType]"] = LuaValueType.String,
         ["[borderColor]"] = LuaValueType.String,
-        ["[usePlusCharacter]"] = LuaValueType.Boolean
+        ["[isModifier]"] = LuaValueType.Boolean
     };
 
     public double CurrentValue = 0;
@@ -141,7 +141,7 @@ public partial class NumberBoxLua : ModulePrimitiveLuaBase
             CurrentValue = defaultValue,
             _borderType = borderType,
             _borderColor = string.Concat(borderColor[0].ToString().ToUpper(), borderColor.AsSpan(1)),
-            _usePlusCharacter = LuaSandbox.GetTableValueOrDefault(args, "usePlusCharacter", false)
+            _usePlusCharacter = LuaSandbox.GetTableValueOrDefault(args, "isModifier", false)
         };
     }
     
@@ -202,7 +202,7 @@ public partial class NumberBoxPrimitive : UserControl
         {
             _currentValue = value;
             _parent.CurrentValue = value;
-            TextBox.Text = (_usePlusCharacter && value > 0 ? "+" : "") + value.ToString(CultureInfo.InvariantCulture);
+            TextBox.Text = (_usePlusCharacter && value >= 0 ? "+" : "") + value.ToString(CultureInfo.InvariantCulture);
         }
     }
     
@@ -262,9 +262,8 @@ public partial class NumberBoxPrimitive : UserControl
         
         // "X" is just a dummy string to calculate the font size
         TextBox.FontSize = TextFitHelper.FindBestFontSize("X", FontFamily,
-                                        (width * SheetModule.GridSize) - TextBox.Padding.Left - TextBox.Padding.Right,
-                                        (height * SheetModule.GridSize) - TextBox.Padding.Top - TextBox.Padding.Bottom,
-                                        TextBox.TextAlignment, TextBox.LineHeight);
+                                    (width * SheetModule.GridSize) - TextBox.Padding.Left - TextBox.Padding.Right - 2,
+                                    (height * SheetModule.GridSize) - TextBox.Padding.Top - TextBox.Padding.Bottom - 2);
 
         switch (borderType)
         {
@@ -289,10 +288,10 @@ public partial class NumberBoxPrimitive : UserControl
     
     private void TextChanged(object? sender, TextChangedEventArgs e)
     {
-        TextBox.FontSize = TextFitHelper.FindBestFontSize(TextBox.Text ?? "X", FontFamily,
-                                        (_width * SheetModule.GridSize) - TextBox.Padding.Left - TextBox.Padding.Right,
-                                        (_height * SheetModule.GridSize) - TextBox.Padding.Top - TextBox.Padding.Bottom,
-                                        TextBox.TextAlignment, TextBox.LineHeight);
+        TextBox.FontSize = TextFitHelper.FindBestFontSize(string.IsNullOrEmpty(TextBox.Text) ? "X" : TextBox.Text,
+                                  TextBox.FontFamily,
+                                  (_width * SheetModule.GridSize) - TextBox.Padding.Left - TextBox.Padding.Right - 2,
+                                  (_height * SheetModule.GridSize) - TextBox.Padding.Top - TextBox.Padding.Bottom - 2);
     }
     
     private new void LostFocus(object? sender, RoutedEventArgs e)
@@ -310,7 +309,7 @@ public partial class NumberBoxPrimitive : UserControl
         }
         if (!double.TryParse(currentText, out var newValue) || _integerOnly && newValue % 1 != 0)
         {
-            TextBox.Text = (_usePlusCharacter && _currentValue > 0 ? "+" : "") +
+            TextBox.Text = (_usePlusCharacter && _currentValue >= 0 ? "+" : "") +
                            _currentValue.ToString(CultureInfo.InvariantCulture);
         }
         else

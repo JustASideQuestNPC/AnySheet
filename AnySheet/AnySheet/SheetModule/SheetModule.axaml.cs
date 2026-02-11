@@ -18,8 +18,9 @@ namespace AnySheet.SheetModule;
 
 public partial class SheetModule : UserControl
 {
-    
     public const int GridSize = 20;
+    public const int GridSpacing = 6;
+    private const int BorderWidth = 4;
     
     private LuaSandbox _lua = null!;
     private CharacterSheet _parent = null!;
@@ -34,6 +35,8 @@ public partial class SheetModule : UserControl
     private readonly List<ModulePrimitiveLuaBase> _items = [];
     public static readonly StyledProperty<bool> DragEnabledProperty =
         AvaloniaProperty.Register<SheetModule, bool>("DragEnabled");
+    public static readonly StyledProperty<int> GridSnapProperty =
+        AvaloniaProperty.Register<SheetModule, int>("GridSnap");
 
     [RelayCommand]
     private void DragCompleted(ModuleDragBehavior.DragCompletedCommandParameters args)
@@ -48,7 +51,7 @@ public partial class SheetModule : UserControl
         private set
         {
             _gridX = value;
-            Canvas.SetLeft(this, value * GridSize);
+            Canvas.SetLeft(this, value * (GridSize + GridSpacing));
         }
     }
     public int GridY
@@ -57,7 +60,7 @@ public partial class SheetModule : UserControl
         private set
         {
             _gridY = value;
-            Canvas.SetTop(this, value * GridSize);
+            Canvas.SetTop(this, value * (GridSize + GridSpacing));
         }
     }
 
@@ -67,7 +70,7 @@ public partial class SheetModule : UserControl
         set
         {
             _gridWidth = value;
-            Grid.SetColumnSpan(this, value);
+            //Grid.SetColumnSpan(this, value); 
         }
     }
 
@@ -77,14 +80,20 @@ public partial class SheetModule : UserControl
         set
         {
             _gridHeight = value;
-            Grid.SetRowSpan(this, value);
+            //Grid.SetRowSpan(this, value);
         }
     }
 
-    public object DragEnabled
+    public bool DragEnabled
     {
-        get { return (object)GetValue(DragEnabledProperty); }
-        set { SetValue(DragEnabledProperty, value); }
+        get => GetValue(DragEnabledProperty);
+        set => SetValue(DragEnabledProperty, value);
+    }
+
+    public int GridSnap
+    {
+        get => GetValue(GridSnapProperty);
+        set => SetValue(GridSnapProperty, value);
     }
 
     public SheetModule(CharacterSheet parent, JsonArray saveData)
@@ -115,6 +124,7 @@ public partial class SheetModule : UserControl
         _parent = parent;
         GridX = gridX;
         GridY = gridY;
+        GridSnap = GridSize + GridSpacing;
 
         if (scriptPath.StartsWith("~"))
         {
@@ -159,8 +169,9 @@ public partial class SheetModule : UserControl
                 parent.RemoveModule(this);
                 return;
             }
+
             Console.WriteLine($"Loaded module '{scriptPath}' with {PrimitiveGrid.Children.Count} elements. Module " +
-                              $"size: {Width}x{Height} ({GridWidth}x{GridHeight} on grid).");
+                              $"size: {Width}x{Height} ({GridWidth}x{GridHeight} on grid), position: {GridX},{GridY}.");
             Container.AddHandler(PointerPressedEvent, ContainerPointerPressed, RoutingStrategies.Tunnel);
             Container.IsVisible = true;
         };
@@ -190,7 +201,7 @@ public partial class SheetModule : UserControl
 
         if (module.NoBorder)
         {
-            Container.BorderBrush = Avalonia.Media.Brushes.Transparent;
+            // Container.BorderBrush = Avalonia.Media.Brushes.Transparent;
         }
 
         var i = 0;
@@ -225,13 +236,9 @@ public partial class SheetModule : UserControl
                 PrimitiveGrid.RowDefinitions.Add(new RowDefinition(new GridLength(GridSize)));
                 ++GridHeight;
             }
-            
-            Width = GridWidth * (GridSize + PrimitiveGrid.ColumnSpacing) +
-                    Container.BorderThickness.Left + Container.BorderThickness.Right +
-                    Container.Padding.Left + Container.Padding.Right;
-            Height = GridHeight * (GridSize + PrimitiveGrid.RowSpacing) +
-                     Container.BorderThickness.Top + Container.BorderThickness.Bottom +
-                     Container.Padding.Top + Container.Padding.Bottom;
+
+            Width = GridWidth * (GridSize + PrimitiveGrid.ColumnSpacing) + BorderWidth;
+            Height = GridHeight * (GridSize + PrimitiveGrid.RowSpacing) + BorderWidth;
             
             if (itemData.Count > i)
             {
@@ -241,6 +248,11 @@ public partial class SheetModule : UserControl
             
             primitive.Lua = _lua;
             _items.Add(primitive);
+            
+            // Container.Width = Width + BorderWidth;
+            // Container.Height = Height + BorderWidth;
+            // Container.BorderThickness = new Thickness(BorderWidth);
+            
             PrimitiveGrid.Children.Add(primitive.CreateUiControl());
         }
 

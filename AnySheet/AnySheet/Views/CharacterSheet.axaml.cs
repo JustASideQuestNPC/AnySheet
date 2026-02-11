@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using Avalonia.Controls;
+using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace AnySheet.Views;
 
@@ -17,7 +18,9 @@ public partial class CharacterSheet : UserControl
 
     public SheetMode Mode = SheetMode.Gameplay;
     private readonly List<SheetModule.SheetModule> _modules = [];
-    
+
+    public bool CanvasDragEnabled => Mode == SheetMode.Gameplay;
+
     public CharacterSheet()
     {
         InitializeComponent();

@@ -12,10 +12,12 @@
         <StyleInclude Source="../Assets/SheetModuleStyles.axaml" />
     </UserControl.Styles>
     <Interaction.Behaviors>
-        <behaviors:ModuleDragBehavior GridWidth="20" GridHeight="20" IsEnabled="{Binding DragEnabled}"
+        <behaviors:ModuleDragBehavior GridWidth="{Binding GridSnap}" GridHeight="{Binding GridSnap}"
+                                      IsEnabled="{Binding DragEnabled}"
                                       DragCompletedCommand="{ReflectionBinding DragCompletedCommand}" />
     </Interaction.Behaviors>
-    <Border Name="Container" Background="White" Classes="Module">
-        <Grid Name="PrimitiveGrid" RowSpacing="0" ColumnSpacing="0" />
+    <Border Name="Container" Classes="Module" BorderThickness="4">
+        <Grid Name="PrimitiveGrid" RowSpacing="6" ColumnSpacing="6" VerticalAlignment="Center"
+              HorizontalAlignment="Center" />
     </Border>
 </UserControl>
