@@ -9,7 +9,7 @@
     </UserControl.Styles>
     
     <Border Name="Container" Classes="Primitive">
-        <TextBox Name="TextBox" TextChanged="TextChanged" Classes="SingleLine" VerticalContentAlignment="Center"
-                 AcceptsReturn="False" TextWrapping="NoWrap" ScrollViewer.VerticalScrollBarVisibility="Hidden" />
+        <TextBox Name="TextBox" TextChanged="TextChanged" AcceptsReturn="False" TextWrapping="NoWrap"
+                 ScrollViewer.VerticalScrollBarVisibility="Disabled" />
     </Border>
 </UserControl>

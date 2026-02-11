@@ -12,7 +12,10 @@
     </UserControl.Styles>
     
     <Border Name="Container" Classes="Primitive">
-        <NumericUpDown Name="NumberBox" ValueChanged="ValueChanged" HorizontalAlignment="Center"
-                 VerticalAlignment="Center" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" />
+        <!-- This SHOULD be a NumericUpDown, but I spent 4 hours trying to get text sizing to work correctly and it
+             didn't work, so now I'm faking the whole thing with a TextBox instead (it's really not *that* bad, the
+             original NumericUpDown was just being used as a text box anyway). -->
+        <TextBox Name="TextBox" Classes="NumberBox" TextChanged="TextChanged" LostFocus="LostFocus"
+                 AcceptsReturn="False"  TextWrapping="NoWrap" ScrollViewer.VerticalScrollBarVisibility="Disabled" />
     </Border>
 </UserControl>

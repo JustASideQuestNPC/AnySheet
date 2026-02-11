@@ -31,14 +31,20 @@
         <Setter Property="Padding" Value="3" />
         <Setter Property="Foreground" Value="{DynamicResource Primary}" />
         <Setter Property="Background" Value="Transparent" />
+        <Setter Property="VerticalContentAlignment" Value="Center" />
+        <Setter Property="VerticalAlignment" Value="Stretch" />
     </Style>
     <Style Selector="TextBox:focus-within">
         <Setter Property="Foreground" Value="{DynamicResource Primary}" />
         <Setter Property="CaretBrush" Value="{DynamicResource Primary}" />
+        <Setter Property="VerticalContentAlignment" Value="Center" />
+        <Setter Property="VerticalAlignment" Value="Stretch" />
     </Style>
     <Style Selector="TextBox:pointerover">
         <Setter Property="Foreground" Value="{DynamicResource Primary}" />
         <Setter Property="CaretBrush" Value="{DynamicResource Primary}" />
+        <Setter Property="VerticalContentAlignment" Value="Center" />
+        <Setter Property="VerticalAlignment" Value="Stretch" />
     </Style>
     <Style Selector="TextBox:focus-within /template/ Border">
         <Setter Property="Background" Value="Transparent" />
@@ -53,32 +59,27 @@
         <Setter Property="FontSize" Value="15" />
     </Style>
     
-    <Style Selector="NumericUpDown">
+    <Style Selector="TextBox.NumberBox">
         <Setter Property="FontFamily" Value="{StaticResource Lato}" />
         <Setter Property="Foreground" Value="{DynamicResource Primary}" />
-        <Setter Property="Padding" Value="0" />
-        <Setter Property="Margin" Value="0" />
-        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="HorizontalContentAlignment" Value="Center" />
         <Setter Property="BorderBrush" Value="Transparent" />
-        <Setter Property="ShowButtonSpinner" Value="False" />
     </Style>
-    <Style Selector="NumericUpDown:focus-within">
+    <Style Selector="TextBox.NumberBox:focus-within">
         <Setter Property="Foreground" Value="{DynamicResource Primary}" />
         <Setter Property="BorderBrush" Value="Transparent" />
-        <Setter Property="ShowButtonSpinner" Value="False" />
-        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="HorizontalContentAlignment" Value="Center" />
     </Style>
-    <Style Selector="NumericUpDown:pointerover">
+    <Style Selector="TextBox.NumberBox:pointerover">
         <Setter Property="Foreground" Value="{DynamicResource Primary}" />
         <Setter Property="BorderBrush" Value="Transparent" />
-        <Setter Property="ShowButtonSpinner" Value="False" />
-        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="HorizontalContentAlignment" Value="Center" />
     </Style>
-    <Style Selector="NumericUpDown:focus-within /template/ Border">
+    <Style Selector="TextBox.NumberBox:focus-within /template/ Border">
         <Setter Property="Background" Value="Transparent" />
         <Setter Property="BorderBrush" Value="Transparent" />
     </Style>
-    <Style Selector="NumericUpDown:pointerover /template/ Border">
+    <Style Selector="TextBox.NumberBox:pointerover /template/ Border">
         <Setter Property="Background" Value="Transparent" />
         <Setter Property="BorderBrush" Value="Transparent" />
     </Style>

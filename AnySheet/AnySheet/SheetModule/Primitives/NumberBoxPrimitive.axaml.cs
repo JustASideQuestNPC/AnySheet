@@ -1,11 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
+using System.Net.Mime;
 using System.Reflection;
 using System.Runtime.InteropServices.JavaScript;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Input;
+using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
 using Avalonia.Media;
 using Lua;
@@ -27,52 +31,52 @@ public partial class NumberBoxLua : ModulePrimitiveLuaBase
         ["[borderColor]"] = LuaValueType.String,
     };
 
-    public decimal CurrentValue { get; set; } = 0;
+    private double _currentValue = 0;
     [LuaMember("value")]
-    public double CurrentValueLua
+    private double CurrentValue
     {
-        get => (double)CurrentValue;
+        get => _currentValue;
         set
         {
-            CurrentValue = (decimal)value;
+            _currentValue = value;
             if (_uiControl != null)
             {
-                _uiControl.NumberBox.Value = CurrentValue;
+                _uiControl.CurrentValue = CurrentValue;
             }
         }
     }
     
-    private decimal MinValue { get; set; } = 0;
+    private double _minValue = 0;
     [LuaMember("minValue")]
-    private double MinValueLua
+    private double MinValue
     {
-        get => (double)MinValue;
+        get => _minValue;
         set
         {
-            MinValue = (decimal)value;
+            _minValue = value;
             if (_uiControl != null)
             {
-                _uiControl.NumberBox.Minimum = MinValue;
+                _uiControl.MinValue = MinValue;
             }
         }
     }
     
-    private decimal MaxValue { get; set; } = 10000000;
+    private double _maxValue = double.PositiveInfinity;
     [LuaMember("maxValue")]
-    private double MaxValueLua
+    private double MaxValue
     {
-        get => (double)MaxValue;
+        get => _maxValue;
         set
         {
-            MaxValue = (decimal)value;
+            _maxValue = value;
             if (_uiControl != null)
             {
-                _uiControl.NumberBox.Maximum = MaxValue;
+                _uiControl.MaxValue = MaxValue;
             }
         }
     }
     
-    private bool IntegerOnly { get; init; } = false;
+    private bool IntegerOnly { get; init; }
     
     private NumberBoxPrimitive? _uiControl;
     
@@ -85,10 +89,9 @@ public partial class NumberBoxLua : ModulePrimitiveLuaBase
         VerifyPositionArgs(args);
         LuaSandbox.VerifyTable(args, ConstructorArgs);
         
-        var defaultValue = (decimal)LuaSandbox.GetTableValueOrDefault<double>(args, "defaultValue", 0);
-        var minValue = (decimal)LuaSandbox.GetTableValueOrDefault<double>(args, "minValue", 0);
-        // eventually i need to figure out how to actually set this to infinity
-        var maxValue = (decimal)LuaSandbox.GetTableValueOrDefault<double>(args, "maxValue", 10000000);
+        var defaultValue = LuaSandbox.GetTableValueOrDefault<double>(args, "defaultValue", 0);
+        var minValue = LuaSandbox.GetTableValueOrDefault<double>(args, "minValue", 0);
+        var maxValue = LuaSandbox.GetTableValueOrDefault(args, "maxValue", double.PositiveInfinity);
         var borderType = LuaSandbox.GetTableValueOrDefault(args, "borderType", "underline");
         var integerOnly = !LuaSandbox.GetTableValueOrDefault(args, "allowDecimal", false);
         var borderColor = LuaSandbox.GetTableValueOrDefault(args, "borderColor", "primary");
@@ -103,7 +106,9 @@ public partial class NumberBoxLua : ModulePrimitiveLuaBase
             throw new ArgumentException("Default value must be between minimum and maximum values.");
         }
 
-        if (integerOnly && (defaultValue % 1 != 0 || minValue % 1 != 0 || maxValue % 1 != 0))
+        if (integerOnly && (defaultValue % 1 != 0 || 
+                            (minValue % 1 != 0 && !double.IsNegativeInfinity(minValue)) ||
+                            (maxValue % 1 != 0 && !double.IsPositiveInfinity(maxValue))))
         {
             throw new ArgumentException("Integer only mode requires default, minimum and maximum values to be " +
                                         "integers.");
@@ -130,11 +135,8 @@ public partial class NumberBoxLua : ModulePrimitiveLuaBase
             GridHeight = args["height"].Read<int>(),
             IntegerOnly = integerOnly,
             MinValue = minValue,
-            MinValueLua = (double)minValue,
             MaxValue = maxValue,
-            MaxValueLua = (double)maxValue,
             CurrentValue = defaultValue,
-            CurrentValueLua = (double)defaultValue,
             _borderType = borderType,
             _borderColor = string.Concat(borderColor[0].ToString().ToUpper(), borderColor.AsSpan(1)),
         };
@@ -169,10 +171,9 @@ public partial class NumberBoxLua : ModulePrimitiveLuaBase
 
     public override void LoadSaveObject(JsonObject? obj)
     {
-        if (obj?["value"] != null && obj["value"]!.AsValue().TryGetValue<decimal>(out var value))
+        if (obj?["value"] != null && obj["value"]!.AsValue().TryGetValue<double>(out var value))
         {
             CurrentValue = value;
-            CurrentValueLua = (double)value;
             return;
         }
 
@@ -184,11 +185,45 @@ public partial class NumberBoxPrimitive : UserControl
 {
     private readonly NumberBoxLua _parent;
     private readonly bool _integerOnly;
-    private readonly int _width;
-    private readonly int _height;
+
+    private int _width;
+    private int _height;
+
+    private double _currentValue;
+    public double CurrentValue
+    {
+        get => _currentValue;
+        set
+        {
+            _currentValue = value;
+            TextBox.Text = _currentValue.ToString(CultureInfo.InvariantCulture);
+        }
+    }
     
-    public NumberBoxPrimitive(NumberBoxLua parent, int x, int y, int width, int height, decimal? defaultValue,
-                              decimal minValue, decimal maxValue, bool integerOnly, string borderType,
+    private double _minValue;
+    public double MinValue
+    {
+        get => _minValue;
+        set
+        {
+            _minValue = value;
+            CurrentValue = Math.Max(_currentValue, value);
+        }
+    }
+    
+    private double _maxValue;
+    public double MaxValue
+    {
+        get => _maxValue;
+        set
+        {
+            _maxValue = value;
+            CurrentValue = Math.Min(_currentValue, value);
+        }
+    }
+    
+    public NumberBoxPrimitive(NumberBoxLua parent, int x, int y, int width, int height, double? defaultValue,
+                              double minValue, double maxValue, bool integerOnly, string borderType,
                               string borderColor)
     {
         InitializeComponent();
@@ -199,14 +234,29 @@ public partial class NumberBoxPrimitive : UserControl
         Grid.SetRowSpan(this, height);
         
         _parent = parent;
-        
         _width = width;
         _height = height;
+        
         _integerOnly = integerOnly;
-
-        NumberBox.Minimum = minValue;
-        NumberBox.Maximum = maxValue;
-        NumberBox.Value = defaultValue;
+        
+        if (width == 1 && height == 1)
+        {
+            TextBox.Padding = new Thickness(0);
+        }
+        else if (width == 1)
+        {
+            TextBox.Padding = new Thickness(0, 3);
+        }
+        else if (height == 1)
+        {
+            TextBox.Padding = new Thickness(3, 0);
+        }
+        
+        // "X" is just a dummy string to calculate the font size
+        TextBox.FontSize = TextFitHelper.FindBestFontSize("X", FontFamily,
+                                        (width * SheetModule.GridSize) - TextBox.Padding.Left - TextBox.Padding.Right,
+                                        (height * SheetModule.GridSize) - TextBox.Padding.Top - TextBox.Padding.Bottom,
+                                        TextBox.TextAlignment, TextBox.LineHeight);
 
         switch (borderType)
         {
@@ -223,32 +273,29 @@ public partial class NumberBoxPrimitive : UserControl
                 Container.BorderThickness = new Thickness(2);
                 break;
         }
-        
-        // NumberBox.Classes.Add(borderType switch
-        // {
-        //     "none"      => "BorderNone",
-        //     "underline" => "BorderUnderline",
-        //     _           => "BorderFull"
-        // });
+
+        MinValue = minValue;
+        MaxValue = maxValue;
+        CurrentValue = Math.Clamp(defaultValue ?? 0, MinValue, MaxValue);
     }
-
-    private void ValueChanged(object? sender, NumericUpDownValueChangedEventArgs args)
+    
+    private void TextChanged(object? sender, TextChangedEventArgs e)
     {
-        if (_integerOnly && args.NewValue != null && args.NewValue % 1 != 0)
+        TextBox.FontSize = TextFitHelper.FindBestFontSize("X", FontFamily,
+                                        (_width * SheetModule.GridSize) - TextBox.Padding.Left - TextBox.Padding.Right,
+                                        (_height * SheetModule.GridSize) - TextBox.Padding.Top - TextBox.Padding.Bottom,
+                                        TextBox.TextAlignment, TextBox.LineHeight);
+    }
+    
+    private new void LostFocus(object? sender, RoutedEventArgs e)
+    {
+        if (!double.TryParse(TextBox.Text, out var newValue) || _integerOnly && newValue % 1 != 0)
         {
-            NumberBox.Value = Math.Floor(args.NewValue.Value);
+            TextBox.Text = _currentValue.ToString(CultureInfo.InvariantCulture);
         }
-
-        if (NumberBox.Value != null)
+        else
         {
-            _parent.CurrentValue = (decimal)NumberBox.Value;
-            _parent.CurrentValueLua = (double)NumberBox.Value;
+            CurrentValue = Math.Clamp(newValue, MinValue, MaxValue);
         }
-        
-        NumberBox.FontSize = TextFitHelper.FindBestFontSize(
-            (NumberBox.Value).ToString()!.PadLeft(3, '0'), NumberBox.FontFamily,
-            (_width * SheetModule.GridSize) - NumberBox.Padding.Left - NumberBox.Padding.Right,
-            (_height * SheetModule.GridSize) - NumberBox.Padding.Top - NumberBox.Padding.Bottom,
-            NumberBox.TextAlignment, double.NaN);
     }
 }

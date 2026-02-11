@@ -210,13 +210,12 @@ public partial class TextBoxPrimitive : UserControl
         }
     }
 
-
     private void TextChanged(object? sender, TextChangedEventArgs e)
     {
         _parent.Text = TextBox.Text!;
         TextBox.FontSize = TextFitHelper.FindBestFontSize(TextBox.Text ?? "X", FontFamily,
-                                        (_width * SheetModule.GridSize) - TextBox.Padding.Left - TextBox.Padding.Right,
-                                        (_height * SheetModule.GridSize) - TextBox.Padding.Top - TextBox.Padding.Bottom,
+                                        Bounds.Width - TextBox.Padding.Left - TextBox.Padding.Right,
+                                        Bounds.Height - TextBox.Padding.Top - TextBox.Padding.Bottom,
                                         TextBox.TextAlignment, TextBox.LineHeight);
     }
 }
