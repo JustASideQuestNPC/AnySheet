@@ -133,7 +133,8 @@ public partial class SheetModule : UserControl
                 ["TripleToggle"]     = new TripleToggleLua(),
                 ["ToggleButton"]     = new ToggleButtonLua(),
                 ["NumberBox"]        = new NumberBoxLua(),
-                ["Button"]           = new ButtonLua()
+                ["Button"]           = new ButtonLua(),
+                ["Divider"]          = new DividerLua()
             }
         };
 
