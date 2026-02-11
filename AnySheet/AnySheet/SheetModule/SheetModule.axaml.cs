@@ -154,7 +154,8 @@ public partial class SheetModule : UserControl
                 ["ToggleButton"]     = new ToggleButtonLua(),
                 ["NumberBox"]        = new NumberBoxLua(),
                 ["Button"]           = new ButtonLua(),
-                ["Divider"]          = new DividerLua()
+                ["Divider"]          = new DividerLua(),
+                ["List"]             = new ListPrimitiveLua()
             }
         };
 

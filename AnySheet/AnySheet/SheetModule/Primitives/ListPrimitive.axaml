@@ -1,0 +1,64 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="using:AnySheet.SheetModule.Primitives"
+             xmlns:materialIcons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="AnySheet.SheetModule.Primitives.ListPrimitive"
+             x:DataType="vm:ListPrimitive">
+    <UserControl.Styles>
+        <StyleInclude Source="/Assets/SheetModuleStyles.axaml" />
+        
+        <Style Selector="Button">
+            <Setter Property="Background" Value="Transparent" />
+        </Style>
+        <Style Selector="#Container Button:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="{DynamicResource Tertiary}" />
+        </Style>
+    </UserControl.Styles>
+    
+    <Border Name="Container" Classes="Primitive" Padding="3">
+        <Grid RowDefinitions="*, Auto" ColumnDefinitions="*">
+            <Border BorderBrush="{DynamicResource Primary}" BorderThickness="2">
+                <ScrollViewer Name="ScrollViewer">
+                    <ItemsControl ItemsSource="{Binding Entries}" Margin="0" BorderBrush="Transparent">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Border Margin="3" Padding="0" BorderBrush="{DynamicResource Secondary}"
+                                        BorderThickness="2" CornerRadius="4">
+                                    <Grid Margin="0" ColumnDefinitions="*, 25" RowDefinitions="Auto">
+                                        <TextBox Text="{Binding Text}"
+                                                 Foreground="{DynamicResource Secondary}" Padding="3 0"
+                                                 FontSize="14" />
+                                        <Button Grid.Column="1" Padding="0" Margin="0" Width="25" Height="20"
+                                                Command="{Binding RemoveEntry}"
+                                                VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
+                                            <materialIcons:MaterialIcon Kind="Minus"
+                                                                        Foreground="{DynamicResource Secondary}"
+                                                                        VerticalAlignment="Stretch"
+                                                                        HorizontalAlignment="Stretch" />
+                                        </Button>
+                                    </Grid>
+                                </Border>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </ScrollViewer>
+            </Border>
+            <Border Grid.Row="1" Margin="0" Padding="3" BorderBrush="Transparent">
+                <Grid Margin="0" ColumnDefinitions="*, 25" RowDefinitions="25">
+                    <TextBox Name="NewEntryTextBox" BorderThickness="0 0 0 3"
+                                            BorderBrush="{DynamicResource Secondary}"
+                                            Foreground="{DynamicResource Secondary}"
+                                            Padding="3 0" />
+                    <Button Grid.Column="1" Click="AddEntryButtonClick" Padding="0" Margin="0"
+                            VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
+                        <materialIcons:MaterialIcon Kind="Plus" Foreground="{DynamicResource Secondary}"
+                                                    VerticalAlignment="Stretch" HorizontalAlignment="Stretch" />
+                    </Button>
+                </Grid>
+            </Border>
+        </Grid>
+    </Border>
+</UserControl>

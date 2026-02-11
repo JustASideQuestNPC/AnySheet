@@ -18,8 +18,8 @@
         </Style>
     </UserControl.Styles>
     <Border Name="Container" Classes="Primitive">
-        <Button Name="Button" Click="OnClick" Padding="0" Margin="0" VerticalAlignment="Stretch"
-                HorizontalAlignment="Stretch">
+        <Button Name="Button" Click="OnClick" Padding="0" Margin="0"
+                VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
             <materialIcons:MaterialIcon Name="Icon" Foreground="{DynamicResource Accent}" VerticalAlignment="Stretch"
                                         HorizontalAlignment="Stretch" />
         </Button>

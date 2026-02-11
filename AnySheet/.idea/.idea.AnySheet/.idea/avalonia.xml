@@ -11,6 +11,7 @@
         <entry key="AnySheet/SheetModule/Primitives/Divider.axaml" value="AnySheet/AnySheet.csproj" />
         <entry key="AnySheet/SheetModule/Primitives/DividerPrimitive.axaml" value="AnySheet/AnySheet.csproj" />
         <entry key="AnySheet/SheetModule/Primitives/HorizontalDivider.axaml" value="AnySheet/AnySheet.csproj" />
+        <entry key="AnySheet/SheetModule/Primitives/ListPrimitive.axaml" value="AnySheet/AnySheet.csproj" />
         <entry key="AnySheet/SheetModule/Primitives/ModulePrimitiveBase.axaml" value="AnySheet/AnySheet.csproj" />
         <entry key="AnySheet/SheetModule/Primitives/ModulePrimitiveControl.axaml" value="AnySheet/AnySheet.csproj" />
         <entry key="AnySheet/SheetModule/Primitives/ModulePrimitiveControlBase.axaml" value="AnySheet/AnySheet.csproj" />
