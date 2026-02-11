@@ -167,10 +167,9 @@ public partial class MainWindowViewModel : ViewModelBase
         }
         var files = await App.TopLevel.StorageProvider.OpenFilePickerAsync(new FilePickerOpenOptions
         {
-            Title = "Save sheet as...",
+            Title = "Choose a saved sheet file",
             // .acs files are for "Microsoft Character Agents", so apparently i'm stealing this from Clippy
             SuggestedFileType = new FilePickerFileType("acs"),
-            SuggestedFileName = "CharacterSheet",
             SuggestedStartLocation = startFolder
         });
 

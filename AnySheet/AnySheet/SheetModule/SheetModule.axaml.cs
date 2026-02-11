@@ -24,6 +24,7 @@ public partial class SheetModule : UserControl
     private LuaSandbox _lua = null!;
     private CharacterSheet _parent = null!;
     private string _scriptPath = ""; // for saving
+    private bool _relativeToWorkingDirectory = false;
     private int _gridX;
     private int _gridY;
     private int _gridWidth;
@@ -104,18 +105,27 @@ public partial class SheetModule : UserControl
         }
     }
 
-    public SheetModule(CharacterSheet parent, int gridX, int gridY, string scriptPath)
+    public SheetModule(CharacterSheet parent, int gridX, int gridY, string scriptPath, bool relativeToWorkingDirectory)
     {
-        _setup(parent, gridX, gridY, scriptPath, new JsonArray());
+        _setup(parent, gridX, gridY, (relativeToWorkingDirectory ? "~" : "") + scriptPath, []);
     }
     
     private void _setup(CharacterSheet parent, int gridX, int gridY, string scriptPath, JsonArray itemData)
     {
         _parent = parent;
-        _scriptPath = scriptPath;
         GridX = gridX;
         GridY = gridY;
-        
+
+        if (scriptPath.StartsWith("~"))
+        {
+            _scriptPath = scriptPath.Substring(1);
+            _relativeToWorkingDirectory = true;
+        }
+        else
+        {
+            _scriptPath = scriptPath;
+        }
+
         InitializeComponent();
         DataContext = this;
         
@@ -140,7 +150,8 @@ public partial class SheetModule : UserControl
 
         Loaded += async (_, _) =>
         {
-            var buildScript = _runBuildScript(scriptPath, itemData);
+            var buildScript = _runBuildScript(
+                (_relativeToWorkingDirectory ? Environment.CurrentDirectory + "\\" : "") + _scriptPath, itemData);
             await buildScript;
             // immediately remove the module if the build script fails
             if (!buildScript.Result)
@@ -271,6 +282,6 @@ public partial class SheetModule : UserControl
             itemData.Add(item.GetSaveObject());
         }
         
-        return [_scriptPath, GridX, GridY, itemData];
+        return [(_relativeToWorkingDirectory ? "~" : "") + _scriptPath, GridX, GridY, itemData];
     }
 }

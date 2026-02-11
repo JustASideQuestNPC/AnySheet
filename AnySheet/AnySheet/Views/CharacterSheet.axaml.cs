@@ -41,7 +41,13 @@ public partial class CharacterSheet : UserControl
 
     public void AddModuleFromScript(string path, int gridX, int gridY)
     {
-        var module = new SheetModule.SheetModule(this, gridX, gridY, path);
+        var relativeToWorkingDirectory = App.PathContainsWorkingDirectory(path);
+        if (relativeToWorkingDirectory)
+        {
+            path = path[(Environment.CurrentDirectory.Length + 1)..];
+        }
+        
+        var module = new SheetModule.SheetModule(this, gridX, gridY, path, relativeToWorkingDirectory);
         _modules.Add(module);
         ModuleGrid.Children.Add(module);
         module.SetModuleMode(Mode);

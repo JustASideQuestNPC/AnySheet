@@ -22,6 +22,14 @@ public partial class App : Application
                                     .Assembly.GetTypes()
                                     .Where(t => t.IsSubclassOf(typeof(ModulePrimitiveLuaBase)) &&!t.IsAbstract)
                                     .Select(t => t.GetMethod("TryReadLua", BindingFlags.Static | BindingFlags.Public))!;
+
+    private static readonly string WorkingDirectoryForwardSlash = Environment.CurrentDirectory.Replace('\\', '/');
+    
+    // i should probably make a utils class or something but whatever
+    public static bool PathContainsWorkingDirectory(string path)
+    {
+        return path.StartsWith(WorkingDirectoryForwardSlash) || path.StartsWith(Environment.CurrentDirectory);
+    }
     
     public override void Initialize()
     {
