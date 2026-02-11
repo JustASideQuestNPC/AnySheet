@@ -17,7 +17,7 @@
                                       DragCompletedCommand="{ReflectionBinding DragCompletedCommand}" />
     </Interaction.Behaviors>
     <Border Name="Container" Classes="Module" BorderThickness="4">
-        <Grid Name="PrimitiveGrid" RowSpacing="6" ColumnSpacing="6" VerticalAlignment="Center"
+        <Grid Name="PrimitiveGrid" RowSpacing="4" ColumnSpacing="4" VerticalAlignment="Center"
               HorizontalAlignment="Center" />
     </Border>
 </UserControl>

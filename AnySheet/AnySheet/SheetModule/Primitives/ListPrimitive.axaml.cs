@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.ObjectModel;
+using System.Text.Json;
 using System.Text.Json.Nodes;
 using AnySheet.ViewModels;
 using Avalonia;
@@ -51,9 +52,31 @@ public partial class ListPrimitiveLua : ModulePrimitiveLuaBase
     
     public override JsonObject? GetSaveObject()
     {
-        return null;
+        var entries = new JsonArray();
+        foreach (var entry in _uiControl.Entries)
+        {
+            entries.Add(entry.Text);
+        }
+        
+        return new JsonObject { ["entries"] = entries };
     }
-    public override void LoadSaveObject(JsonObject obj) {}
+
+    public override void LoadSaveObject(JsonObject obj)
+    {
+        if (obj["entries"] == null || obj["entries"] is not JsonArray entries)
+        {
+            throw new JsonException("Invalid save data for ListPrimitive.");
+        }
+
+        foreach (var entry in entries)
+        {
+            if (entry is not JsonValue text)
+            {
+                throw new JsonException("Invalid save data for ListPrimitive.");
+            }
+            _uiControl!.Entries.Add(new ListPrimitiveEntryViewModel(_uiControl, entry.ToString()));
+        }
+    }
 }
 
 public partial class ListPrimitive : UserControl

@@ -8,6 +8,6 @@
         <StyleInclude Source="/Assets/SheetModuleStyles.axaml" />
     </UserControl.Styles>
     <Border Name="Container" Classes="Primitive" Padding="0">
-        <TextBox Name="TextBox" Classes="MultiLine" AcceptsReturn="True" />
+        <TextBox Name="TextBox" Classes="MultiLine" AcceptsReturn="True" TextWrapping="Wrap" />
     </Border>
 </UserControl>

@@ -19,7 +19,7 @@ namespace AnySheet.SheetModule;
 public partial class SheetModule : UserControl
 {
     public const int GridSize = 20;
-    public const int GridSpacing = 6;
+    public const int GridSpacing = 4;
     private const int BorderWidth = 4;
     
     private LuaSandbox _lua = null!;

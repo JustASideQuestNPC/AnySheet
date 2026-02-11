@@ -23,7 +23,8 @@ public partial class DividerLua : ModulePrimitiveLuaBase
         ["length"] = LuaValueType.Number,
         ["[thickness]"] = LuaValueType.Number,
         ["[capStart]"] = LuaValueType.Boolean,
-        ["[capEnd]"] = LuaValueType.Boolean
+        ["[capEnd]"] = LuaValueType.Boolean,
+        ["[betweenSquares]"] = LuaValueType.Boolean,
     };
 
     private bool _horizontal = true;
@@ -32,6 +33,7 @@ public partial class DividerLua : ModulePrimitiveLuaBase
     private bool _capStart = true;
     private bool _capEnd = true;
     private int _thickness = 1;
+    private bool _betweenSquares = false;
 
     [LuaMember("create")]
     private new static DividerLua CreateLua(LuaTable args)
@@ -94,7 +96,8 @@ public partial class DividerLua : ModulePrimitiveLuaBase
             _thickness = thickness,
             _color = string.Concat(color[0].ToString().ToUpper(), color.AsSpan(1)),
             _capStart = LuaSandbox.GetTableValueOrDefault(args, "capStart", false),
-            _capEnd = LuaSandbox.GetTableValueOrDefault(args, "capEnd", false)
+            _capEnd = LuaSandbox.GetTableValueOrDefault(args, "capEnd", false),
+            _betweenSquares = LuaSandbox.GetTableValueOrDefault(args, "betweenSquares", false)
         };
     }
 
@@ -105,7 +108,8 @@ public partial class DividerLua : ModulePrimitiveLuaBase
     
     public override UserControl CreateUiControl()
     {
-        return new DividerPrimitive(GridX, GridY, _horizontal, _length, _thickness, _color, _capStart, _capEnd);
+        return new DividerPrimitive(GridX, GridY, _horizontal, _length, _thickness, _color, _capStart, _capEnd,
+                                    _betweenSquares);
     }
     
     // dividers aren't interactive and save no data
@@ -121,7 +125,7 @@ public partial class DividerLua : ModulePrimitiveLuaBase
 public partial class DividerPrimitive : UserControl
 {
     public DividerPrimitive(int x, int y, bool horizontal, int length, int thickness, string color, bool capStart,
-        bool capEnd)
+        bool capEnd, bool betweenSquares)
     {
         InitializeComponent();
 
@@ -133,7 +137,7 @@ public partial class DividerPrimitive : UserControl
         if (horizontal)
         {
             Grid.SetColumnSpan(this, length);
-            Grid.SetRowSpan(this, 1);
+            Grid.SetRowSpan(this, betweenSquares ? 2 : 1);
             
             Divider.Height = thickness;
             Divider.VerticalAlignment = VerticalAlignment.Center;
@@ -154,7 +158,7 @@ public partial class DividerPrimitive : UserControl
         }
         else
         {
-            Grid.SetColumnSpan(this, 1);
+            Grid.SetColumnSpan(this, betweenSquares ? 2 : 1);
             Grid.SetRowSpan(this, length);
             
             Divider.Width = thickness;
