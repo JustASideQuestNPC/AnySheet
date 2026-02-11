@@ -29,16 +29,17 @@ public partial class NumberBoxLua : ModulePrimitiveLuaBase
         ["[allowDecimal]"] = LuaValueType.Boolean,
         ["[borderType]"] = LuaValueType.String,
         ["[borderColor]"] = LuaValueType.String,
+        ["[usePlusCharacter]"] = LuaValueType.Boolean
     };
 
-    private double _currentValue = 0;
+    public double CurrentValue = 0;
     [LuaMember("value")]
-    private double CurrentValue
+    private double CurrentValueLua
     {
-        get => _currentValue;
+        get => CurrentValue;
         set
         {
-            _currentValue = value;
+            CurrentValue = value;
             if (_uiControl != null)
             {
                 _uiControl.CurrentValue = CurrentValue;
@@ -82,6 +83,7 @@ public partial class NumberBoxLua : ModulePrimitiveLuaBase
     
     private string _borderType = "";
     private string _borderColor = "";
+    private bool _usePlusCharacter = false;
     
     [LuaMember("create")]
     private new static NumberBoxLua CreateLua(LuaTable args)
@@ -90,7 +92,7 @@ public partial class NumberBoxLua : ModulePrimitiveLuaBase
         LuaSandbox.VerifyTable(args, ConstructorArgs);
         
         var defaultValue = LuaSandbox.GetTableValueOrDefault<double>(args, "defaultValue", 0);
-        var minValue = LuaSandbox.GetTableValueOrDefault<double>(args, "minValue", 0);
+        var minValue = LuaSandbox.GetTableValueOrDefault(args, "minValue", double.NegativeInfinity);
         var maxValue = LuaSandbox.GetTableValueOrDefault(args, "maxValue", double.PositiveInfinity);
         var borderType = LuaSandbox.GetTableValueOrDefault(args, "borderType", "underline");
         var integerOnly = !LuaSandbox.GetTableValueOrDefault(args, "allowDecimal", false);
@@ -139,6 +141,7 @@ public partial class NumberBoxLua : ModulePrimitiveLuaBase
             CurrentValue = defaultValue,
             _borderType = borderType,
             _borderColor = string.Concat(borderColor[0].ToString().ToUpper(), borderColor.AsSpan(1)),
+            _usePlusCharacter = LuaSandbox.GetTableValueOrDefault(args, "usePlusCharacter", false)
         };
     }
     
@@ -150,7 +153,7 @@ public partial class NumberBoxLua : ModulePrimitiveLuaBase
     public override UserControl CreateUiControl()
     {
         _uiControl = new NumberBoxPrimitive(this, GridX, GridY, GridWidth, GridHeight, CurrentValue, MinValue, MaxValue,
-                                            IntegerOnly, _borderType, _borderColor);
+                                            IntegerOnly, _borderType, _borderColor, _usePlusCharacter);
         return _uiControl;
     }
 
@@ -185,6 +188,8 @@ public partial class NumberBoxPrimitive : UserControl
 {
     private readonly NumberBoxLua _parent;
     private readonly bool _integerOnly;
+    private readonly bool _usePlusCharacter;
+    private readonly double _defaultValue;
 
     private int _width;
     private int _height;
@@ -196,7 +201,8 @@ public partial class NumberBoxPrimitive : UserControl
         set
         {
             _currentValue = value;
-            TextBox.Text = _currentValue.ToString(CultureInfo.InvariantCulture);
+            _parent.CurrentValue = value;
+            TextBox.Text = (_usePlusCharacter && value > 0 ? "+" : "") + value.ToString(CultureInfo.InvariantCulture);
         }
     }
     
@@ -222,9 +228,9 @@ public partial class NumberBoxPrimitive : UserControl
         }
     }
     
-    public NumberBoxPrimitive(NumberBoxLua parent, int x, int y, int width, int height, double? defaultValue,
+    public NumberBoxPrimitive(NumberBoxLua parent, int x, int y, int width, int height, double defaultValue,
                               double minValue, double maxValue, bool integerOnly, string borderType,
-                              string borderColor)
+                              string borderColor, bool usePlusCharacter)
     {
         InitializeComponent();
         
@@ -238,6 +244,8 @@ public partial class NumberBoxPrimitive : UserControl
         _height = height;
         
         _integerOnly = integerOnly;
+        _usePlusCharacter = usePlusCharacter;
+        _defaultValue = defaultValue;
         
         if (width == 1 && height == 1)
         {
@@ -276,12 +284,12 @@ public partial class NumberBoxPrimitive : UserControl
 
         MinValue = minValue;
         MaxValue = maxValue;
-        CurrentValue = Math.Clamp(defaultValue ?? 0, MinValue, MaxValue);
+        CurrentValue = Math.Clamp(defaultValue, MinValue, MaxValue);
     }
     
     private void TextChanged(object? sender, TextChangedEventArgs e)
     {
-        TextBox.FontSize = TextFitHelper.FindBestFontSize("X", FontFamily,
+        TextBox.FontSize = TextFitHelper.FindBestFontSize(TextBox.Text ?? "X", FontFamily,
                                         (_width * SheetModule.GridSize) - TextBox.Padding.Left - TextBox.Padding.Right,
                                         (_height * SheetModule.GridSize) - TextBox.Padding.Top - TextBox.Padding.Bottom,
                                         TextBox.TextAlignment, TextBox.LineHeight);
@@ -289,9 +297,21 @@ public partial class NumberBoxPrimitive : UserControl
     
     private new void LostFocus(object? sender, RoutedEventArgs e)
     {
-        if (!double.TryParse(TextBox.Text, out var newValue) || _integerOnly && newValue % 1 != 0)
+        if (string.IsNullOrEmpty(TextBox.Text))
         {
-            TextBox.Text = _currentValue.ToString(CultureInfo.InvariantCulture);
+            CurrentValue = _defaultValue;
+            return;
+        }
+        
+        var currentText = TextBox.Text;
+        if (_usePlusCharacter && currentText.StartsWith('+') && !currentText.StartsWith("+-"))
+        {
+            currentText = currentText[1..];
+        }
+        if (!double.TryParse(currentText, out var newValue) || _integerOnly && newValue % 1 != 0)
+        {
+            TextBox.Text = (_usePlusCharacter && _currentValue > 0 ? "+" : "") +
+                           _currentValue.ToString(CultureInfo.InvariantCulture);
         }
         else
         {
