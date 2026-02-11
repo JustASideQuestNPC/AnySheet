@@ -23,7 +23,8 @@ public partial class NumberBoxLua : ModulePrimitiveLuaBase
         ["[minValue]"] = LuaValueType.Number,
         ["[maxValue]"] = LuaValueType.Number,
         ["[allowDecimal]"] = LuaValueType.Boolean,
-        ["[borderType]"] = LuaValueType.String
+        ["[borderType]"] = LuaValueType.String,
+        ["[borderColor]"] = LuaValueType.String,
     };
 
     public decimal CurrentValue { get; set; } = 0;
@@ -76,6 +77,7 @@ public partial class NumberBoxLua : ModulePrimitiveLuaBase
     private NumberBoxPrimitive? _uiControl;
     
     private string _borderType = "";
+    private string _borderColor = "";
     
     [LuaMember("create")]
     private new static NumberBoxLua CreateLua(LuaTable args)
@@ -87,7 +89,9 @@ public partial class NumberBoxLua : ModulePrimitiveLuaBase
         var minValue = (decimal)LuaSandbox.GetTableValueOrDefault<double>(args, "minValue", 0);
         // eventually i need to figure out how to actually set this to infinity
         var maxValue = (decimal)LuaSandbox.GetTableValueOrDefault<double>(args, "maxValue", 10000000);
+        var borderType = LuaSandbox.GetTableValueOrDefault(args, "borderType", "underline");
         var integerOnly = !LuaSandbox.GetTableValueOrDefault(args, "allowDecimal", false);
+        var borderColor = LuaSandbox.GetTableValueOrDefault(args, "borderColor", "primary");
 
         if (minValue > maxValue)
         {
@@ -105,11 +109,17 @@ public partial class NumberBoxLua : ModulePrimitiveLuaBase
                                         "integers.");
         }
         
-        var borderType = LuaSandbox.GetTableValueOrDefault(args, "borderType", "underline");
         if (borderType != "underline" && borderType != "none" && borderType != "full")
         {
             throw new ArgumentException("Invalid border type value (expected 'underline', 'none' or 'full', received " +
                                         $"'{borderType}').");
+        }
+        
+        if (borderColor != "primary" && borderColor != "secondary" && borderColor != "tertiary" &&
+            borderColor != "accent")
+        {
+            throw new ArgumentException("Invalid color value (expected 'primary', 'secondary', 'tertiary' or " +
+                                        $"'accent', received '{borderColor}').");
         }
 
         return new NumberBoxLua
@@ -125,7 +135,8 @@ public partial class NumberBoxLua : ModulePrimitiveLuaBase
             MaxValueLua = (double)maxValue,
             CurrentValue = defaultValue,
             CurrentValueLua = (double)defaultValue,
-            _borderType = borderType
+            _borderType = borderType,
+            _borderColor = string.Concat(borderColor[0].ToString().ToUpper(), borderColor.AsSpan(1)),
         };
     }
     
@@ -137,7 +148,7 @@ public partial class NumberBoxLua : ModulePrimitiveLuaBase
     public override UserControl CreateUiControl()
     {
         _uiControl = new NumberBoxPrimitive(this, GridX, GridY, GridWidth, GridHeight, CurrentValue, MinValue, MaxValue,
-                                            IntegerOnly, _borderType);
+                                            IntegerOnly, _borderType, _borderColor);
         return _uiControl;
     }
 
@@ -177,7 +188,8 @@ public partial class NumberBoxPrimitive : UserControl
     private readonly int _height;
     
     public NumberBoxPrimitive(NumberBoxLua parent, int x, int y, int width, int height, decimal? defaultValue,
-                              decimal minValue, decimal maxValue, bool integerOnly, string borderType)
+                              decimal minValue, decimal maxValue, bool integerOnly, string borderType,
+                              string borderColor)
     {
         InitializeComponent();
         
@@ -195,13 +207,29 @@ public partial class NumberBoxPrimitive : UserControl
         NumberBox.Minimum = minValue;
         NumberBox.Maximum = maxValue;
         NumberBox.Value = defaultValue;
-        
-        NumberBox.Classes.Add(borderType switch
+
+        switch (borderType)
         {
-            "none"      => "BorderNone",
-            "underline" => "BorderUnderline",
-            _           => "BorderFull"
-        });
+            case "none":
+                Container.BorderBrush = Brushes.Transparent;
+                Container.BorderThickness = new Thickness(0);
+                break;
+            case "underline":
+                Container.BorderBrush = AppResources.GetResource<IBrush>(borderColor);
+                Container.BorderThickness = new Thickness(0, 0, 0, 2);
+                break;
+            case "full":
+                Container.BorderBrush = AppResources.GetResource<IBrush>(borderColor);
+                Container.BorderThickness = new Thickness(2);
+                break;
+        }
+        
+        // NumberBox.Classes.Add(borderType switch
+        // {
+        //     "none"      => "BorderNone",
+        //     "underline" => "BorderUnderline",
+        //     _           => "BorderFull"
+        // });
     }
 
     private void ValueChanged(object? sender, NumericUpDownValueChangedEventArgs args)

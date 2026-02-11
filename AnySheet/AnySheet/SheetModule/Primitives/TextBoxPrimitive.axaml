@@ -6,41 +6,6 @@
              x:Class="AnySheet.SheetModule.Primitives.TextBoxPrimitive">
     <UserControl.Styles>
         <StyleInclude Source="/Assets/SheetModuleStyles.axaml" />
-        <Style Selector="TextBox.BorderNone">
-            <Setter Property="BorderBrush" Value="Transparent" />
-        </Style>
-        <Style Selector="TextBox.BorderNone:focus-within /template/ Border">
-            <Setter Property="BorderBrush" Value="Transparent" />
-        </Style>
-        <Style Selector="TextBox.BorderNone:pointerover /template/ Border">
-            <Setter Property="BorderBrush" Value="Transparent" />
-        </Style>
-        
-        <Style Selector="TextBox.BorderUnderline">
-            <Setter Property="BorderBrush" Value="{DynamicResource Accent}" />
-            <Setter Property="BorderThickness" Value="0 0 0 3" />
-        </Style>
-        <Style Selector="TextBox.BorderUnderline:focus-within /template/ Border">
-            <Setter Property="BorderBrush" Value="{DynamicResource Accent}" />
-            <Setter Property="BorderThickness" Value="0 0 0 3" />
-        </Style>
-        <Style Selector="TextBox.BorderUnderline:pointerover /template/ Border">
-            <Setter Property="BorderBrush" Value="{DynamicResource Accent}" />
-            <Setter Property="BorderThickness" Value="0 0 0 3" />
-        </Style>
-        
-        <Style Selector="TextBox.BorderFull">
-            <Setter Property="BorderBrush" Value="{DynamicResource Accent}" />
-            <Setter Property="BorderThickness" Value="3" />
-        </Style>
-        <Style Selector="TextBox.BorderFull:focus-within /template/ Border">
-            <Setter Property="BorderBrush" Value="{DynamicResource Accent}" />
-            <Setter Property="BorderThickness" Value="3" />
-        </Style>
-        <Style Selector="TextBox.BorderFull:pointerover /template/ Border">
-            <Setter Property="BorderBrush" Value="{DynamicResource Accent}" />
-            <Setter Property="BorderThickness" Value="3" />
-        </Style>
     </UserControl.Styles>
     
     <Border Name="Container" Classes="Primitive">

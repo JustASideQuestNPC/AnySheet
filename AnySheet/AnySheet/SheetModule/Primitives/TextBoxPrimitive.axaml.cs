@@ -21,6 +21,7 @@ public partial class TextBoxLua : ModulePrimitiveLuaBase
     {
         ["[defaultText]"] = LuaValueType.String,
         ["[color]"] = LuaValueType.String,
+        ["[borderColor]"] = LuaValueType.String,
         ["[alignment]"] = LuaValueType.String,
         ["[style]"] = LuaValueType.String,
         ["[borderType]"] = LuaValueType.String
@@ -42,6 +43,7 @@ public partial class TextBoxLua : ModulePrimitiveLuaBase
     private string _alignment = "";
     private string _fontStyle = "";
     private string _color = "";
+    private string _borderColor = "";
     private string _borderType = "";
 
     private TextBoxPrimitive? _uiControl;
@@ -72,6 +74,15 @@ public partial class TextBoxLua : ModulePrimitiveLuaBase
             throw new ArgumentException("Invalid color value (expected 'primary', 'secondary', 'tertiary' or " +
                                         $"'accent', received '{color}').");
         }
+        
+        var borderColor = args.ContainsKey("borderColor") ? args["borderColor"].Read<string>() :
+            LuaSandbox.GetTableValueOrDefault(args, "color", "primary");
+        if (borderColor != "primary" && borderColor != "secondary" && borderColor != "tertiary" &&
+            borderColor != "accent")
+        {
+            throw new ArgumentException("Invalid color value (expected 'primary', 'secondary', 'tertiary' or " +
+                                        $"'accent', received '{borderColor}').");
+        }
 
         var borderType = LuaSandbox.GetTableValueOrDefault(args, "borderType", "underline");
         if (borderType != "underline" && borderType != "none" && borderType != "full")
@@ -90,6 +101,7 @@ public partial class TextBoxLua : ModulePrimitiveLuaBase
             _alignment = alignment,
             _fontStyle = fontStyle,
             _color = string.Concat(color[0].ToString().ToUpper(), color.AsSpan(1)),
+            _borderColor = string.Concat(borderColor[0].ToString().ToUpper(), borderColor.AsSpan(1)),
             _borderType = borderType
         };
     }
@@ -103,7 +115,7 @@ public partial class TextBoxLua : ModulePrimitiveLuaBase
     public override UserControl CreateUiControl()
     {
         _uiControl = new TextBoxPrimitive(this, GridX, GridY, GridWidth, GridHeight, _alignment, _fontStyle, _color,
-                                          Text, _borderType);
+                                          Text, _borderType, _borderColor);
         return _uiControl;
     }
 
@@ -141,7 +153,7 @@ public partial class TextBoxPrimitive : UserControl
     private int _height;
     
     public TextBoxPrimitive(TextBoxLua parent, int x, int y, int width, int height, string alignment, string fontStyle,
-                            string color, string initialText, string borderType)
+                            string color, string initialText, string borderType, string borderColor)
     {
         InitializeComponent();
         
@@ -180,12 +192,22 @@ public partial class TextBoxPrimitive : UserControl
                                         (height * SheetModule.GridSize) - TextBox.Padding.Top - TextBox.Padding.Bottom,
                                         TextBox.TextAlignment, TextBox.LineHeight);
         TextBox.Text = initialText;
-        TextBox.Classes.Add(borderType switch
+        
+        switch (borderType)
         {
-            "none"      => "BorderNone",
-            "underline" => "BorderUnderline",
-            _           => "BorderFull"
-        });
+            case "none":
+                Container.BorderBrush = Brushes.Transparent;
+                Container.BorderThickness = new Thickness(0);
+                break;
+            case "underline":
+                Container.BorderBrush = AppResources.GetResource<IBrush>(borderColor);
+                Container.BorderThickness = new Thickness(0, 0, 0, 2);
+                break;
+            case "full":
+                Container.BorderBrush = AppResources.GetResource<IBrush>(borderColor);
+                Container.BorderThickness = new Thickness(2);
+                break;
+        }
     }
 
 

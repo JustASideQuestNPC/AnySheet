@@ -77,7 +77,6 @@
     <Style Selector="NumericUpDown:focus-within /template/ Border">
         <Setter Property="Background" Value="Transparent" />
         <Setter Property="BorderBrush" Value="Transparent" />
-        <Setter Property="BorderThickness" Value="0 0 0 3" />
     </Style>
     <Style Selector="NumericUpDown:pointerover /template/ Border">
         <Setter Property="Background" Value="Transparent" />
