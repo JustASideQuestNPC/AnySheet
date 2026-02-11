@@ -14,8 +14,6 @@ public partial class CharacterSheet : UserControl
         ModuleEdit,
         TriggerEdit // currently unused
     }
-    
-    public const int GridSize = 26;
 
     public SheetMode Mode = SheetMode.Gameplay;
     private readonly List<SheetModule.SheetModule> _modules = [];

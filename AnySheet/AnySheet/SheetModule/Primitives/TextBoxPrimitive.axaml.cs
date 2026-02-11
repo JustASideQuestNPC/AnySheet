@@ -22,7 +22,8 @@ public partial class TextBoxLua : ModulePrimitiveLuaBase
         ["[defaultText]"] = LuaValueType.String,
         ["[color]"] = LuaValueType.String,
         ["[alignment]"] = LuaValueType.String,
-        ["[style]"] = LuaValueType.String
+        ["[style]"] = LuaValueType.String,
+        ["[borderType]"] = LuaValueType.String
     };
 
     private string _text = "";
@@ -41,6 +42,7 @@ public partial class TextBoxLua : ModulePrimitiveLuaBase
     private string _alignment = "";
     private string _fontStyle = "";
     private string _color = "";
+    private string _borderType = "";
 
     private TextBoxPrimitive? _uiControl;
 
@@ -71,6 +73,13 @@ public partial class TextBoxLua : ModulePrimitiveLuaBase
                                         $"'accent', received '{color}').");
         }
 
+        var borderType = LuaSandbox.GetTableValueOrDefault(args, "borderType", "underline");
+        if (borderType != "underline" && borderType != "none" && borderType != "full")
+        {
+            throw new ArgumentException("Invalid border type value (expected 'underline', 'none' or 'full', received " +
+                                        $"'{borderType}').");
+        }
+
         return new TextBoxLua
         {
             GridX = args["x"].Read<int>(),
@@ -80,7 +89,8 @@ public partial class TextBoxLua : ModulePrimitiveLuaBase
             Text = LuaSandbox.GetTableValueOrDefault(args, "defaultText", ""),
             _alignment = alignment,
             _fontStyle = fontStyle,
-            _color = string.Concat(color[0].ToString().ToUpper(), color.AsSpan(1))
+            _color = string.Concat(color[0].ToString().ToUpper(), color.AsSpan(1)),
+            _borderType = borderType
         };
     }
 
@@ -93,7 +103,7 @@ public partial class TextBoxLua : ModulePrimitiveLuaBase
     public override UserControl CreateUiControl()
     {
         _uiControl = new TextBoxPrimitive(this, GridX, GridY, GridWidth, GridHeight, _alignment, _fontStyle, _color,
-                                          Text);
+                                          Text, _borderType);
         return _uiControl;
     }
 
@@ -127,9 +137,11 @@ public partial class TextBoxLua : ModulePrimitiveLuaBase
 public partial class TextBoxPrimitive : UserControl
 {
     private readonly TextBoxLua _parent;
+    private int _width;
+    private int _height;
     
     public TextBoxPrimitive(TextBoxLua parent, int x, int y, int width, int height, string alignment, string fontStyle,
-                            string color, string initialText)
+                            string color, string initialText, string borderType)
     {
         InitializeComponent();
         
@@ -139,6 +151,21 @@ public partial class TextBoxPrimitive : UserControl
         Grid.SetRowSpan(this, height);
         
         _parent = parent;
+        _width = width;
+        _height = height;
+
+        if (width == 1 && height == 1)
+        {
+            TextBox.Padding = new Thickness(0);
+        }
+        else if (width == 1)
+        {
+            TextBox.Padding = new Thickness(0, 3);
+        }
+        else if (height == 1)
+        {
+            TextBox.Padding = new Thickness(3, 0);
+        }
         
         TextBox.HorizontalContentAlignment = alignment switch {
             "left"   => HorizontalAlignment.Left,
@@ -153,11 +180,21 @@ public partial class TextBoxPrimitive : UserControl
                                         (height * SheetModule.GridSize) - TextBox.Padding.Top - TextBox.Padding.Bottom,
                                         TextBox.TextAlignment, TextBox.LineHeight);
         TextBox.Text = initialText;
+        TextBox.Classes.Add(borderType switch
+        {
+            "none"      => "BorderNone",
+            "underline" => "BorderUnderline",
+            _           => "BorderFull"
+        });
     }
 
 
     private void TextChanged(object? sender, TextChangedEventArgs e)
     {
         _parent.Text = TextBox.Text!;
+        TextBox.FontSize = TextFitHelper.FindBestFontSize(TextBox.Text ?? "X", FontFamily,
+                                        (_width * SheetModule.GridSize) - TextBox.Padding.Left - TextBox.Padding.Right,
+                                        (_height * SheetModule.GridSize) - TextBox.Padding.Top - TextBox.Padding.Bottom,
+                                        TextBox.TextAlignment, TextBox.LineHeight);
     }
 }

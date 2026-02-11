@@ -22,7 +22,8 @@ public partial class NumberBoxLua : ModulePrimitiveLuaBase
         ["[defaultValue]"] = LuaValueType.Number,
         ["[minValue]"] = LuaValueType.Number,
         ["[maxValue]"] = LuaValueType.Number,
-        ["[allowDecimal]"] = LuaValueType.Boolean
+        ["[allowDecimal]"] = LuaValueType.Boolean,
+        ["[borderType]"] = LuaValueType.String
     };
 
     public decimal CurrentValue { get; set; } = 0;
@@ -74,6 +75,8 @@ public partial class NumberBoxLua : ModulePrimitiveLuaBase
     
     private NumberBoxPrimitive? _uiControl;
     
+    private string _borderType = "";
+    
     [LuaMember("create")]
     private new static NumberBoxLua CreateLua(LuaTable args)
     {
@@ -101,6 +104,13 @@ public partial class NumberBoxLua : ModulePrimitiveLuaBase
             throw new ArgumentException("Integer only mode requires default, minimum and maximum values to be " +
                                         "integers.");
         }
+        
+        var borderType = LuaSandbox.GetTableValueOrDefault(args, "borderType", "underline");
+        if (borderType != "underline" && borderType != "none" && borderType != "full")
+        {
+            throw new ArgumentException("Invalid border type value (expected 'underline', 'none' or 'full', received " +
+                                        $"'{borderType}').");
+        }
 
         return new NumberBoxLua
         {
@@ -114,7 +124,8 @@ public partial class NumberBoxLua : ModulePrimitiveLuaBase
             MaxValue = maxValue,
             MaxValueLua = (double)maxValue,
             CurrentValue = defaultValue,
-            CurrentValueLua = (double)defaultValue
+            CurrentValueLua = (double)defaultValue,
+            _borderType = borderType
         };
     }
     
@@ -126,7 +137,7 @@ public partial class NumberBoxLua : ModulePrimitiveLuaBase
     public override UserControl CreateUiControl()
     {
         _uiControl = new NumberBoxPrimitive(this, GridX, GridY, GridWidth, GridHeight, CurrentValue, MinValue, MaxValue,
-                                            IntegerOnly);
+                                            IntegerOnly, _borderType);
         return _uiControl;
     }
 
@@ -166,7 +177,7 @@ public partial class NumberBoxPrimitive : UserControl
     private readonly int _height;
     
     public NumberBoxPrimitive(NumberBoxLua parent, int x, int y, int width, int height, decimal? defaultValue,
-                              decimal minValue, decimal maxValue, bool integerOnly)
+                              decimal minValue, decimal maxValue, bool integerOnly, string borderType)
     {
         InitializeComponent();
         
@@ -184,6 +195,13 @@ public partial class NumberBoxPrimitive : UserControl
         NumberBox.Minimum = minValue;
         NumberBox.Maximum = maxValue;
         NumberBox.Value = defaultValue;
+        
+        NumberBox.Classes.Add(borderType switch
+        {
+            "none"      => "BorderNone",
+            "underline" => "BorderUnderline",
+            _           => "BorderFull"
+        });
     }
 
     private void ValueChanged(object? sender, NumericUpDownValueChangedEventArgs args)

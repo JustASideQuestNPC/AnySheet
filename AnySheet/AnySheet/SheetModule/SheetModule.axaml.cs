@@ -19,7 +19,7 @@ namespace AnySheet.SheetModule;
 public partial class SheetModule : UserControl
 {
     
-    public const int GridSize = 25;
+    public const int GridSize = 20;
     
     private LuaSandbox _lua = null!;
     private CharacterSheet _parent = null!;
@@ -31,7 +31,8 @@ public partial class SheetModule : UserControl
 
     // for saving and the trigger system when i get to that
     private readonly List<ModulePrimitiveLuaBase> _items = [];
-    public static readonly StyledProperty<bool> DragEnabledProperty = AvaloniaProperty.Register<SheetModule, bool>("DragEnabled");
+    public static readonly StyledProperty<bool> DragEnabledProperty =
+        AvaloniaProperty.Register<SheetModule, bool>("DragEnabled");
 
     [RelayCommand]
     private void DragCompleted(ModuleDragBehavior.DragCompletedCommandParameters args)

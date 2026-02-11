@@ -111,6 +111,19 @@ public partial class StaticTextPrimitive : UserControl
         Grid.SetRow(this, y);
         Grid.SetColumnSpan(this, width);
         Grid.SetRowSpan(this, height);
+        
+        if (width == 1 && height == 1)
+        {
+            TextBlock.Padding = new Thickness(0);
+        }
+        else if (width == 1)
+        {
+            TextBlock.Padding = new Thickness(0, 3);
+        }
+        else if (height == 1)
+        {
+            TextBlock.Padding = new Thickness(3, 0);
+        }
 
         DisplayText = text;
         TextBlock.TextAlignment = alignment switch {
