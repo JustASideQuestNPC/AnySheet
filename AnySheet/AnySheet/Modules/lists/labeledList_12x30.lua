@@ -13,7 +13,7 @@ return SheetModule.create({
             x = 0,
             y = 2,
             width = 12,
-            height = 22
+            height = 28
         })
     }
 })

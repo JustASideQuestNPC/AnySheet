@@ -4,16 +4,17 @@ return SheetModule.create({
             x = 0,
             y = 0,
             width = 12,
-            height = 2,
+            height = 1,
             color = "accent",
-            defaultText = "List",
+            defaultText = "Multiline Box",
             alignment = "center"
         }),
-        List.create({
+        MultiLineTextBox.create({
             x = 0,
-            y = 2,
+            y = 1,
             width = 12,
-            height = 22
+            height = 5,
+            borderType = "full"
         })
     }
 })

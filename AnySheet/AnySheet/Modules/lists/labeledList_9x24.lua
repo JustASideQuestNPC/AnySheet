@@ -3,7 +3,7 @@ return SheetModule.create({
         TextBox.create({
             x = 0,
             y = 0,
-            width = 12,
+            width = 9,
             height = 2,
             color = "accent",
             defaultText = "List",
@@ -12,7 +12,7 @@ return SheetModule.create({
         List.create({
             x = 0,
             y = 2,
-            width = 12,
+            width = 9,
             height = 22
         })
     }

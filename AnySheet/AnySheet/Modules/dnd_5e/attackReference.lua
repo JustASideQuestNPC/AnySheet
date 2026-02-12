@@ -2,22 +2,30 @@ local elements = {
     StaticText.create({
         x = 0,
         y = 0,
-        width = 12,
-        height = 2,
+        width = 9,
+        height = 1,
         color = "accent",
-        style = "bold",
         text = "Attacks",
         alignment = "center"
     }),
+    Divider.create({
+        x = 0,
+        y = 0,
+        direction = "horizontal",
+        length = 9,
+        color = "accent",
+        thickness = 2,
+        betweenSquares = true
+    })
 }
 
-for i = 2, 8, 2 do
+for i = 1, 7, 1 do
     -- name
     table.insert(elements, TextBox.create({
         x = 0,
         y = i,
-        width = 5,
-        height = 2,
+        width = 4,
+        height = 1,
         color = "primary",
         alignment = "left",
         defaultText = "Name",
@@ -26,10 +34,10 @@ for i = 2, 8, 2 do
 
     -- attack modifier
     table.insert(elements, NumberBox.create({
-        x = 5,
+        x = 4,
         y = i,
         width = 2,
-        height = 2,
+        height = 1,
         color = "primary",
         borderType = "underline",
         isModifier = true
@@ -37,13 +45,13 @@ for i = 2, 8, 2 do
 
     -- damage
     table.insert(elements, TextBox.create({
-        x = 7,
+        x = 6,
         y = i,
-        width = 5,
-        height = 2,
+        width = 3,
+        height = 1,
         color = "primary",
         alignment = "left",
-        defaultText = "Name",
+        defaultText = "Damage",
         borderType = "underline"
     }))
 end

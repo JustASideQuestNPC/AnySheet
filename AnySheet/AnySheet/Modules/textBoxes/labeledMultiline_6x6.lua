@@ -13,7 +13,7 @@ return SheetModule.create({
             x = 0,
             y = 1,
             width = 6,
-            height = 4,
+            height = 5,
             borderType = "full"
         })
     }
