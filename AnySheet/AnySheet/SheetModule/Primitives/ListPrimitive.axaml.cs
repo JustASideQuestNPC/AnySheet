@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Text.Json;
 using System.Text.Json.Nodes;
@@ -15,6 +16,7 @@ namespace AnySheet.SheetModule.Primitives;
 public partial class ListPrimitiveLua : ModulePrimitiveLuaBase
 {
     private ListPrimitive? _uiControl;
+    private readonly List<string> _entries = [];
 
     [LuaMember("create")]
     public new static ListPrimitiveLua CreateLua(LuaTable args)
@@ -37,7 +39,12 @@ public partial class ListPrimitiveLua : ModulePrimitiveLuaBase
 
     public override UserControl CreateUiControl()
     {
-        return _uiControl = new ListPrimitive(GridX, GridY, GridWidth, GridHeight);
+        _uiControl = new ListPrimitive(GridX, GridY, GridWidth, GridHeight);
+        foreach (var entry in _entries)
+        {
+            _uiControl.Entries.Add(new ListPrimitiveEntryViewModel(_uiControl, entry));
+        }
+        return _uiControl;
     }
     
     public override void EnableUiControl()
@@ -74,7 +81,8 @@ public partial class ListPrimitiveLua : ModulePrimitiveLuaBase
             {
                 throw new JsonException("Invalid save data for ListPrimitive.");
             }
-            _uiControl!.Entries.Add(new ListPrimitiveEntryViewModel(_uiControl, entry.ToString()));
+
+            _entries.Add(entry.ToString());
         }
     }
 }

@@ -61,7 +61,7 @@ public partial class MultilineTextBoxLua : ModulePrimitiveLuaBase
     
     public override JsonObject GetSaveObject()
     {
-        return new JsonObject { ["text"] = Text };
+        return new JsonObject { ["text"] = _uiControl.TextBox.Text };
     }
     
     public override void LoadSaveObject(JsonObject obj)
