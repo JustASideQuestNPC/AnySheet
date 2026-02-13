@@ -14,7 +14,7 @@ using Avalonia.Markup.Xaml;
 using Avalonia.Media;
 using Lua;
 using LuaLib;
-using CCLibrary;
+using CustomControls;
 
 namespace AnySheet.SheetModule.Primitives;
 

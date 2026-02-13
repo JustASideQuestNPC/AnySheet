@@ -3,7 +3,7 @@ using Avalonia.Input;
 using Avalonia.Media;
 using Avalonia.Media.TextFormatting;
 
-namespace CCLibrary;
+namespace CustomControls;
 using Avalonia.Controls;
 
 public static class TextFitHelper

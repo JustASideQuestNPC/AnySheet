@@ -10,7 +10,7 @@ using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
 using Avalonia.Media;
-using CCLibrary;
+using CustomControls;
 using Lua;
 
 namespace AnySheet.SheetModule.Primitives;

@@ -8,7 +8,7 @@ using Avalonia.Controls;
 using Avalonia.Layout;
 using Avalonia.Markup.Xaml;
 using Avalonia.Media;
-using CCLibrary;
+using CustomControls;
 using Lua;
 using LuaLib;
 
