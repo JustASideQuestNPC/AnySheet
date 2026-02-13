@@ -6,8 +6,11 @@ using System.Text.Json.Nodes;
 using AnySheet.ViewModels;
 using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
+using Avalonia.Media;
+using CCLibrary;
 using Lua;
 
 namespace AnySheet.SheetModule.Primitives;
@@ -106,12 +109,31 @@ public partial class ListPrimitive : UserControl
     {
         if (!string.IsNullOrEmpty(NewEntryTextBox.Text))
         {
-            Console.WriteLine($"Added list entry: '{NewEntryTextBox.Text}'");
-            var entry = new ListPrimitiveEntryViewModel(this, NewEntryTextBox.Text);
-            Entries.Add(entry);
-            Console.WriteLine(Entries.Count);
+            AddEntry(NewEntryTextBox.Text);
             NewEntryTextBox.Text = "";
         }
+    }
+
+    public void NewEntryTextBoxEnterPress()
+    {
+        if (!string.IsNullOrEmpty(NewEntryTextBox.Text))
+        {
+            AddEntry(NewEntryTextBox.Text);
+            NewEntryTextBox.Text = "";
+        }
+    }
+
+    private void AddEntry(string text)
+    {
+        Console.WriteLine($"Added list entry: '{text}'");
+        var entry = new ListPrimitiveEntryViewModel(this, text);
+        Entries.Add(entry);
+        Console.WriteLine(Entries.Count);
+    }
+    
+    public void ClearEntryButtonClick(object? sender, RoutedEventArgs? args)
+    {
+        NewEntryTextBox.Text = "";
     }
 
     public void RemoveEntry(ListPrimitiveEntryViewModel entry)

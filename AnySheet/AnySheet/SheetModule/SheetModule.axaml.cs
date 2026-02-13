@@ -254,7 +254,8 @@ public partial class SheetModule : UserControl
             // Container.Height = Height + BorderWidth;
             // Container.BorderThickness = new Thickness(BorderWidth);
             
-            PrimitiveGrid.Children.Add(primitive.CreateUiControl());
+            var uiControl = primitive.CreateUiControl();
+            PrimitiveGrid.Children.Add(uiControl);
         }
 
         return true;
