@@ -42,11 +42,7 @@ public partial class ListPrimitiveLua : ModulePrimitiveLuaBase
 
     public override UserControl CreateUiControl()
     {
-        _uiControl = new ListPrimitive(GridX, GridY, GridWidth, GridHeight);
-        foreach (var entry in _entries)
-        {
-            _uiControl.Entries.Add(new ListPrimitiveEntryViewModel(_uiControl, entry));
-        }
+        _uiControl = new ListPrimitive(GridX, GridY, GridWidth, GridHeight, _entries);
         return _uiControl;
     }
     
@@ -60,6 +56,7 @@ public partial class ListPrimitiveLua : ModulePrimitiveLuaBase
         _uiControl.IsEnabled = false;
     }
     
+    public override bool HasBeenModified => _uiControl.HasBeenModified();
     public override JsonObject? GetSaveObject()
     {
         var entries = new JsonArray();
@@ -93,8 +90,9 @@ public partial class ListPrimitiveLua : ModulePrimitiveLuaBase
 public partial class ListPrimitive : UserControl
 {
     public ObservableCollection<ListPrimitiveEntryViewModel> Entries { get; } = [];
+    private bool _listItemAddedOrRemoved;
     
-    public ListPrimitive(int x, int y, int width, int height)
+    public ListPrimitive(int x, int y, int width, int height, List<string> entries)
     {
         InitializeComponent();
         DataContext = this;
@@ -103,6 +101,12 @@ public partial class ListPrimitive : UserControl
         Grid.SetRow(this, y);
         Grid.SetColumnSpan(this, width);
         Grid.SetRowSpan(this, height);
+
+        foreach (var entry in entries)
+        {
+            AddEntry(entry);
+        }
+        _listItemAddedOrRemoved = false; // AddEntry sets this to true
     }
 
     public void AddEntryButtonClick(object? sender, RoutedEventArgs? args)
@@ -129,6 +133,7 @@ public partial class ListPrimitive : UserControl
         var entry = new ListPrimitiveEntryViewModel(this, text);
         Entries.Add(entry);
         Console.WriteLine(Entries.Count);
+        _listItemAddedOrRemoved = true;
     }
     
     public void ClearEntryButtonClick(object? sender, RoutedEventArgs? args)
@@ -139,5 +144,24 @@ public partial class ListPrimitive : UserControl
     public void RemoveEntry(ListPrimitiveEntryViewModel entry)
     {
         Entries.Remove(entry);
+        _listItemAddedOrRemoved = true;
+    }
+
+    public bool HasBeenModified()
+    {
+        if (_listItemAddedOrRemoved)
+        {
+            return true;
+        }
+
+        foreach (var entry in Entries)
+        {
+            if (entry.HasBeenModified)
+            {
+                return true;
+            }
+        }
+        
+        return false;
     }
 }

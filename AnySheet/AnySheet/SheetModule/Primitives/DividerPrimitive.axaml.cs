@@ -49,6 +49,7 @@ public partial class DividerLua : ModulePrimitiveLuaBase
         {
             throw new ArgumentException("Module x coordinate must be a positive integer.");
         }
+
         if (y % 1 != 0 || y < 0)
         {
             throw new ArgumentException("Module y coordinate must be a positive integer.");
@@ -59,14 +60,17 @@ public partial class DividerLua : ModulePrimitiveLuaBase
             throw new ArgumentException("Invalid divider direction (expected 'horizontal' or 'vertical', received " +
                                         $"'{direction}').");
         }
+
         if (length % 1 != 0 || length <= 0)
         {
             throw new ArgumentException("Divider length must be a positive integer.");
         }
+
         if (thickness % 1 != 0 || thickness <= 0)
         {
             throw new ArgumentException("Divider thickness must be a positive integer.");
         }
+
         if (color != "primary" && color != "secondary" && color != "tertiary" && color != "accent")
         {
             throw new ArgumentException("Invalid color value (expected 'primary', 'secondary', 'tertiary' or " +
@@ -105,21 +109,28 @@ public partial class DividerLua : ModulePrimitiveLuaBase
     {
         return value.TryRead(out module);
     }
-    
+
     public override UserControl CreateUiControl()
     {
         return new DividerPrimitive(GridX, GridY, _horizontal, _length, _thickness, _color, _capStart, _capEnd,
                                     _betweenSquares);
     }
-    
+
     // dividers aren't interactive and save no data
-    public override void EnableUiControl() {}
-    public override void DisableUiControl() {}
-    public override JsonObject? GetSaveObject()
+    public override void EnableUiControl()
     {
-        return null;
     }
-    public override void LoadSaveObject(JsonObject obj) {}
+
+    public override void DisableUiControl()
+    {
+    }
+
+    public override bool HasBeenModified => false;
+    public override JsonObject? GetSaveObject() => null;
+
+    public override void LoadSaveObject(JsonObject? obj)
+    {
+    }
 }
 
 public partial class DividerPrimitive : UserControl

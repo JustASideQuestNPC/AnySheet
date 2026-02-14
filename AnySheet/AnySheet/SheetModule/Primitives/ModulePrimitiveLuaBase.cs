@@ -50,6 +50,7 @@ public abstract class ModulePrimitiveLuaBase
     
     [LuaMember("height")]
     public int GridHeight { get; protected init; }
+    public abstract bool HasBeenModified { get; }
     
     public abstract UserControl CreateUiControl();
     public abstract void EnableUiControl();

@@ -3,6 +3,8 @@
         xmlns:vm="using:AnySheet.ViewModels"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:dialogs="using:AvaloniaDialogs.Views"
+        xmlns:popups="clr-namespace:AnySheet.Popups"
         mc:Ignorable="d" d:DesignWidth="1200" d:DesignHeight="750"
         x:Class="AnySheet.Views.MainWindow"
         x:DataType="vm:MainWindowViewModel"
@@ -14,24 +16,31 @@
              to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs) -->
         <vm:MainWindowViewModel/>
     </Design.DataContext>
-    <DockPanel>
-        <Menu DockPanel.Dock="Top" Height="25">
-            <MenuItem Header="_File">
-                <MenuItem Header="_New" Command="{Binding CreateNewSheet}" />
-                <MenuItem Header="_Open" Command="{Binding OpenSheetFromFileCommand}" />
-                <MenuItem Header="_Save" IsEnabled="{Binding SheetMenusEnabled}"
-                          Command="{Binding SaveSheetToCurrentPathCommand}" />
-                <MenuItem Header="_Save As" IsEnabled="{Binding SheetMenusEnabled}"
-                          Command="{Binding SaveSheetToNewPathCommand}" />
-            </MenuItem>
-            <MenuItem Header="_Modules" IsEnabled="{Binding SheetMenusEnabled}">
-                <MenuItem Header="_Add From File" Command="{Binding AddModuleFileCommand}" />
-            </MenuItem>
-            <MenuItem Header="_Mode" IsEnabled="{Binding SheetMenusEnabled}">
-                <MenuItem Header="_Module Editor" Command="{Binding ChangeUiMode}" CommandParameter="ModuleEdit" />
-                <MenuItem Header="_Gameplay" Command="{Binding ChangeUiMode}" CommandParameter="Gameplay" />
-            </MenuItem>
-        </Menu>
-        <ContentControl Content="{Binding LoadedSheet}" />
-    </DockPanel>
+    
+    <Window.Styles>
+        <StyleInclude Source="/Assets/PopupStyles.axaml" />
+    </Window.Styles>
+    
+    <dialogs:ReactiveDialogHost Background="Transparent" Padding="0">
+        <DockPanel>
+            <Menu DockPanel.Dock="Top" Height="25">
+                <MenuItem Header="_File">
+                    <MenuItem Header="_New" Command="{Binding CreateNewSheet}" />
+                    <MenuItem Header="_Open" Command="{Binding OpenSheetFromFileCommand}" />
+                    <MenuItem Header="_Save" IsEnabled="{Binding SheetMenusEnabled}"
+                              Command="{Binding SaveSheetToCurrentPathCommand}" />
+                    <MenuItem Header="_Save As" IsEnabled="{Binding SheetMenusEnabled}"
+                              Command="{Binding SaveSheetToNewPathCommand}" />
+                </MenuItem>
+                <MenuItem Header="_Modules" IsEnabled="{Binding SheetMenusEnabled}">
+                    <MenuItem Header="_Add From File" Command="{Binding AddModuleFileCommand}" />
+                </MenuItem>
+                <MenuItem Header="_Mode" IsEnabled="{Binding SheetMenusEnabled}">
+                    <MenuItem Header="_Module Editor" Command="{Binding ChangeUiMode}" CommandParameter="ModuleEdit" />
+                    <MenuItem Header="_Gameplay" Command="{Binding ChangeUiMode}" CommandParameter="Gameplay" />
+                </MenuItem>
+            </Menu>
+            <ContentControl Content="{Binding LoadedSheet}" />
+        </DockPanel>
+    </dialogs:ReactiveDialogHost>
 </Window>

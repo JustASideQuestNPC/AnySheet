@@ -3,6 +3,7 @@
              x:Class="AnySheet.App"
              xmlns:local="using:AnySheet"
              xmlns:materialIcons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+             xmlns:dialogHostAvalonia="using:DialogHostAvalonia"
              RequestedThemeVariant="Default">
              <!-- "Default" ThemeVariant follows system theme variant. "Dark" or "Light" are other available options. -->
 
@@ -13,6 +14,7 @@
     <Application.Styles>
         <FluentTheme />
         <materialIcons:MaterialIconStyles />
+        <dialogHostAvalonia:DialogHostStyles />
     </Application.Styles>
              
     <Application.Resources>

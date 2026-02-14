@@ -4,10 +4,17 @@ using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Threading;
 using System.Threading.Tasks;
+using AnySheet.Popups;
 using AnySheet.Views;
+using Avalonia.Controls;
+using Avalonia.Markup.Xaml.Styling;
+using Avalonia.Media;
 using Avalonia.Platform.Storage;
+using Avalonia.Styling;
+using AvaloniaDialogs.Views;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using DialogHostAvalonia;
 
 namespace AnySheet.ViewModels;
 
@@ -47,8 +54,31 @@ public partial class MainWindowViewModel : ViewModelBase
         }
     }
     
-    public void CreateNewSheet()
+    [RelayCommand]
+    public async Task CreateNewSheet()
     {
+        if (_loadedSheet != null && _loadedSheet.HasBeenModified)
+        {
+            var dialog = new ThreefoldDialog
+            {
+                Message = "Do you want to save the current sheet? Unsaved changes will be lost.",
+                PositiveText = "Save",
+                NegativeText = "Discard",
+                NeutralText = "Cancel"
+            };
+            var result = await dialog.ShowAsync();
+
+            if (result == ThreefoldDialog.ButtonType.Neutral)
+            {
+                return;
+            }
+
+            if (result == ThreefoldDialog.ButtonType.Positive)
+            {
+                await SaveSheetToCurrentPath(CancellationToken.None);
+            }
+        }
+        
         Console.WriteLine("Create new sheet");
         LoadedSheet = new CharacterSheet();
         SheetMenusEnabled = true;
@@ -153,6 +183,28 @@ public partial class MainWindowViewModel : ViewModelBase
     [RelayCommand]
     private async Task OpenSheetFromFile(CancellationToken token)
     {
+        if (_loadedSheet != null && _loadedSheet.HasBeenModified)
+        {
+            var dialog = new ThreefoldDialog
+            {
+                Message = "Do you want to save the current sheet? Unsaved changes will be lost.",
+                PositiveText = "Save",
+                NegativeText = "Discard",
+                NeutralText = "Cancel"
+            };
+            var result = await dialog.ShowAsync();
+
+            if (result == ThreefoldDialog.ButtonType.Neutral)
+            {
+                return;
+            }
+
+            if (result == ThreefoldDialog.ButtonType.Positive)
+            {
+                await SaveSheetToCurrentPath(CancellationToken.None);
+            }
+        }
+        
         if (App.TopLevel == null)
         {
             Console.WriteLine("No top level window!");
@@ -199,6 +251,35 @@ public partial class MainWindowViewModel : ViewModelBase
         if (sheetLoaded)
         {
             _currentFilePath = files[0].Path.AbsolutePath;
+        }
+    }
+
+    private bool _forceClose = false;
+    public void OnWindowClosed(object? sender, WindowClosingEventArgs e)
+    {
+        if (_loadedSheet != null && _loadedSheet.HasBeenModified && !_forceClose)
+        {
+            e.Cancel = true;
+            var dialog = new ThreefoldDialog
+            {
+                Message = "Do you want to save the current sheet? Unsaved changes will be lost.",
+                PositiveText = "Save",
+                NegativeText = "Discard",
+                NeutralText = "Cancel"
+            };
+            dialog.ShowAsync().ContinueWith(t =>
+            {
+                if (t.Result == ThreefoldDialog.ButtonType.Positive)
+                {
+                    SaveSheetToCurrentPath(CancellationToken.None);
+                }
+
+                if (t.Result != ThreefoldDialog.ButtonType.Neutral)
+                {
+                    _forceClose = true;
+                    // App.Current
+                }
+            });
         }
     }
 

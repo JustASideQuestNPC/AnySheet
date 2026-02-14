@@ -45,7 +45,7 @@ public partial class MultilineTextBoxLua : ModulePrimitiveLuaBase
     
     public override UserControl CreateUiControl()
     {
-        _uiControl = new MultiLineTextBoxPrimitive(this, GridX, GridY, GridWidth, GridHeight, Text);
+        _uiControl = new MultiLineTextBoxPrimitive(GridX, GridY, GridWidth, GridHeight, Text);
         return _uiControl;
     }
     
@@ -59,6 +59,7 @@ public partial class MultilineTextBoxLua : ModulePrimitiveLuaBase
         _uiControl.IsEnabled = false;
     }
     
+    public override bool HasBeenModified => _uiControl.TextBox.Text != Text;
     public override JsonObject GetSaveObject()
     {
         return new JsonObject { ["text"] = _uiControl.TextBox.Text };
@@ -78,10 +79,7 @@ public partial class MultilineTextBoxLua : ModulePrimitiveLuaBase
 
 public partial class MultiLineTextBoxPrimitive : UserControl
 {
-    private readonly MultilineTextBoxLua _parent;
-
-    public MultiLineTextBoxPrimitive(MultilineTextBoxLua parent, int x, int y, int width, int height,
-        string initialText)
+    public MultiLineTextBoxPrimitive(int x, int y, int width, int height, string initialText)
     {
         InitializeComponent();
         
@@ -89,8 +87,6 @@ public partial class MultiLineTextBoxPrimitive : UserControl
         Grid.SetRow(this, y);
         Grid.SetColumnSpan(this, width);
         Grid.SetRowSpan(this, height);
-        
-        _parent = parent;
         
         TextBox.Text = initialText;
     }

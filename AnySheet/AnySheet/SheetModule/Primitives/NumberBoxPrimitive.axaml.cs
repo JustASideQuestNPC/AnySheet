@@ -32,6 +32,8 @@ public partial class NumberBoxLua : ModulePrimitiveLuaBase
         ["[isModifier]"] = LuaValueType.Boolean
     };
 
+    private double _initialValue = 0;
+    
     public double CurrentValue = 0;
     [LuaMember("value")]
     private double CurrentValueLua
@@ -166,6 +168,7 @@ public partial class NumberBoxLua : ModulePrimitiveLuaBase
     {
         _uiControl.IsEnabled = false;
     }
+    public override bool HasBeenModified => CurrentValue != _initialValue;
 
     public override JsonObject GetSaveObject()
     {
@@ -177,6 +180,7 @@ public partial class NumberBoxLua : ModulePrimitiveLuaBase
         if (obj?["value"] != null && obj["value"]!.AsValue().TryGetValue<double>(out var value))
         {
             CurrentValue = value;
+            _initialValue = value;
             return;
         }
 

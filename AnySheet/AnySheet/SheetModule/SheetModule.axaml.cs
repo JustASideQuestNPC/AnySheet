@@ -30,6 +30,7 @@ public partial class SheetModule : UserControl
     private int _gridY;
     private int _gridWidth;
     private int _gridHeight;
+    private bool _moduleWasDragged = false;
 
     // for saving and the trigger system when i get to that
     private readonly List<ModulePrimitiveLuaBase> _items = [];
@@ -41,6 +42,11 @@ public partial class SheetModule : UserControl
     [RelayCommand]
     private void DragCompleted(ModuleDragBehavior.DragCompletedCommandParameters args)
     {
+        if (_gridX != (int)args.GridPosition.X || _gridY != (int)args.GridPosition.Y)
+        {
+            _moduleWasDragged = true;
+        }
+        
         _gridX = (int)args.GridPosition.X;
         _gridY = (int)args.GridPosition.Y;
     }
@@ -95,6 +101,27 @@ public partial class SheetModule : UserControl
         get => GetValue(GridSnapProperty);
         set => SetValue(GridSnapProperty, value);
     }
+    
+    public bool HasBeenModified
+    {
+        get
+        {
+            if (_moduleWasDragged)
+            {
+                return true;
+            }
+            
+            foreach (var item in _items)
+            {
+                if (item.HasBeenModified)
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+    }
+
 
     public SheetModule(CharacterSheet parent, JsonArray saveData)
     {
@@ -249,10 +276,6 @@ public partial class SheetModule : UserControl
             
             primitive.Lua = _lua;
             _items.Add(primitive);
-            
-            // Container.Width = Width + BorderWidth;
-            // Container.Height = Height + BorderWidth;
-            // Container.BorderThickness = new Thickness(BorderWidth);
             
             var uiControl = primitive.CreateUiControl();
             PrimitiveGrid.Children.Add(uiControl);

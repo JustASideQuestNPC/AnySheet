@@ -34,7 +34,7 @@ public partial class TripleToggleLua : ModulePrimitiveLuaBase
     private int State
     {
         get => _uiControl.ButtonDisabled ? 0 : _uiControl.Button.IsChecked == true ? 2 : 1;
-        set => _uiControl.SetButtonState(value);
+        set => _uiControl.CurrentState = value;
     }
     
     [LuaMember("create")]
@@ -73,7 +73,7 @@ public partial class TripleToggleLua : ModulePrimitiveLuaBase
     public override UserControl CreateUiControl()
     {
         _uiControl = new TripleTogglePrimitive(this, GridX, GridY, _onToggle, _onStateChange);
-        _uiControl.SetButtonState(_buttonState);
+        _uiControl.CurrentState = _buttonState;
         return _uiControl;
     }
     
@@ -86,7 +86,8 @@ public partial class TripleToggleLua : ModulePrimitiveLuaBase
     {
         _uiControl.IsEnabled = false;
     }
-
+    
+    public override bool HasBeenModified => _uiControl.CurrentState != _buttonState;
     public override JsonObject GetSaveObject()
     {
         var state = _uiControl.ButtonDisabled ? 0 : _uiControl.Button.IsChecked == true ? 2 : 1;
@@ -109,6 +110,28 @@ public partial class TripleToggleLua : ModulePrimitiveLuaBase
 public partial class TripleTogglePrimitive : UserControl
 {
     public bool ButtonDisabled = false;
+
+    private int _currentState = 0;
+    public int CurrentState
+    {
+        get => _currentState;
+        set
+        {
+            _currentState = value;
+            if (value == 0)
+            {
+                Button.Classes.Add("Disabled");
+                Button.Classes.Remove("Enabled");
+                Button.IsChecked = true;
+            }
+            else
+            {
+                Button.Classes.Add("Enabled");
+                Button.Classes.Remove("Disabled");
+                Button.IsChecked = (value == 2);
+            }
+        }
+    }
     
     private TripleToggleLua _parent;
     private LuaFunction? _onToggle;
@@ -129,22 +152,6 @@ public partial class TripleTogglePrimitive : UserControl
         _onStateChange = onStateChange;
         
         Button.AddHandler(PointerPressedEvent, ButtonPointerPressed, RoutingStrategies.Tunnel);
-    }
-
-    public void SetButtonState(int state)
-    {
-        if (state == 0)
-        {
-            Button.Classes.Add("Disabled");
-            Button.Classes.Remove("Enabled");
-            Button.IsChecked = true;
-        }
-        else
-        {
-            Button.Classes.Add("Enabled");
-            Button.Classes.Remove("Disabled");
-            Button.IsChecked = (state == 2);
-        }
     }
 
     private void ButtonPointerPressed(object? sender, PointerPressedEventArgs args)

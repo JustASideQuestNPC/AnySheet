@@ -18,8 +18,30 @@ public partial class CharacterSheet : UserControl
 
     public SheetMode Mode = SheetMode.Gameplay;
     private readonly List<SheetModule.SheetModule> _modules = [];
+    private bool _moduleAddedOrRemoved = false;
 
     public bool CanvasDragEnabled => Mode == SheetMode.Gameplay;
+
+    public bool HasBeenModified
+    {
+        get
+        {
+            if (_moduleAddedOrRemoved)
+            {
+                return true;
+            }
+            
+            foreach (var module in _modules)
+            {
+                if (module.HasBeenModified)
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+    }
 
     public CharacterSheet()
     {
@@ -54,12 +76,14 @@ public partial class CharacterSheet : UserControl
         _modules.Add(module);
         ModuleGrid.Children.Add(module);
         module.SetModuleMode(Mode);
+        _moduleAddedOrRemoved = true;
     }
     
     public void RemoveModule(SheetModule.SheetModule module)
     {
         _modules.Remove(module);
         ModuleGrid.Children.Remove(module);
+        _moduleAddedOrRemoved = true;
     }
 
     public void ChangeSheetMode(SheetMode mode)

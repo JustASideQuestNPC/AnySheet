@@ -4,9 +4,12 @@
     <option name="projectPerEditor">
       <map>
         <entry key="AnySheet/App.axaml" value="AnySheet/AnySheet.csproj" />
+        <entry key="AnySheet/Assets/PopupStyles.axaml" value="AnySheet/AnySheet.csproj" />
         <entry key="AnySheet/Assets/SheetModuleStyles.axaml" value="AnySheet/AnySheet.csproj" />
         <entry key="AnySheet/CharacterSheetPanel/CharacterSheetModule.axaml" value="AnySheet/AnySheet.csproj" />
         <entry key="AnySheet/CharacterSheetPanel/SheetModuleContainer.axaml" value="AnySheet/AnySheet.csproj" />
+        <entry key="AnySheet/Popups/ConfirmUnsavedSheetDialog.axaml" value="AnySheet/AnySheet.csproj" />
+        <entry key="AnySheet/Popups/ConfirmUnsavedSheetPopup.axaml" value="AnySheet/AnySheet.csproj" />
         <entry key="AnySheet/Popups/UnsavedSheetPrompt.axaml" value="AnySheet/AnySheet.csproj" />
         <entry key="AnySheet/SheetModule/Primitives/ButtonPrimitive.axaml" value="AnySheet/AnySheet.csproj" />
         <entry key="AnySheet/SheetModule/Primitives/Divider.axaml" value="AnySheet/AnySheet.csproj" />
