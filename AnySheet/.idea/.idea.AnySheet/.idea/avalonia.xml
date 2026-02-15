@@ -37,6 +37,8 @@
         <entry key="AnySheet/SheetViewer.axaml" value="AnySheet/AnySheet.csproj" />
         <entry key="AnySheet/Views/CharacterSheet.axaml" value="AnySheet/AnySheet.csproj" />
         <entry key="AnySheet/Views/MainWindow.axaml" value="AnySheet/AnySheet.csproj" />
+        <entry key="CrashHandler/App.axaml" value="CrashHandler/CrashHandler.csproj" />
+        <entry key="CrashHandler/Views/MainWindow.axaml" value="CrashHandler/CrashHandler.csproj" />
       </map>
     </option>
   </component>

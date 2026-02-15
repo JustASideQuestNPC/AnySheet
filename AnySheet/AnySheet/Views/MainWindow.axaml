@@ -20,6 +20,10 @@
         <StyleInclude Source="/Assets/DialogStyles.axaml" />
     </Window.Styles>
     
+    <Window.KeyBindings>
+        <KeyBinding Command="{Binding CrashProgramCommand}" Gesture="Ctrl+Alt+OemOpenBrackets" />
+    </Window.KeyBindings>
+    
     <dialogs:ReactiveDialogHost Background="White" Padding="0" CloseOnClickAway="False"
                                 Identifier="RootDialog">
         <DockPanel>

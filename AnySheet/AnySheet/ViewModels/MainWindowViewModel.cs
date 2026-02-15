@@ -244,6 +244,17 @@ public partial class MainWindowViewModel : ViewModelBase
         }
     }
 
+    // press Ctrl+Alt+[ to crash the program. this was for testing the crash handler and isn't useful anymore, but i'm
+    // leaving it in because i think it's funny
+    [RelayCommand]
+    private void CrashProgram()
+    {
+        throw new Exception("You probably know why this happened because you have to press a really obscure key " +
+                            "combo to get it. If you don't, then\n" +
+                            "A. This \"error\" is for testing and shouldn't be reported.\n" +
+                            "B. How did you even find the key combo? I'm both confused and impressed.");
+    }
+
     private bool _forceClose = false;
     public async void OnWindowClosed(object? sender, WindowClosingEventArgs e)
     {

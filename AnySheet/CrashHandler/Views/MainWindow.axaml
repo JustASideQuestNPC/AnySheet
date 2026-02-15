@@ -1,0 +1,49 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:CrashHandler.ViewModels"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+        x:Class="CrashHandler.Views.MainWindow"
+        x:DataType="vm:MainWindowViewModel"
+        Icon="/Assets/avalonia-logo.ico"
+        Title="CrashHandler">
+
+    <Design.DataContext>
+        <!-- This only sets the DataContext for the previewer in an IDE,
+             to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs) -->
+        <vm:MainWindowViewModel/>
+    </Design.DataContext>
+
+    <Window.Styles>
+        <Style Selector="Button">
+            <Setter Property="Background" Value="White" />
+            <Setter Property="Foreground" Value="Black" />
+            <Setter Property="BorderThickness" Value="2" />
+            <Setter Property="BorderBrush" Value="LightGray" />
+        </Style>
+        
+        <Style Selector="Button:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="LightGray" />
+            <Setter Property="Foreground" Value="Black" />
+            <Setter Property="BorderThickness" Value="2" />
+            <Setter Property="BorderBrush" Value="LightGray" />
+        </Style> 
+        
+        <Style Selector="TextBlock">
+            <Setter Property="Foreground" Value="Black" />
+        </Style>
+    </Window.Styles>
+    
+    <Border Background="White" Padding="30">
+        <Grid ColumnDefinitions="*, Auto" RowDefinitions="Auto, Auto, *, Auto" ColumnSpacing="10" RowSpacing="10">
+            <TextBlock Text="{Binding HeaderText}" FontSize="30" />
+            <TextBlock Grid.Column="0" Grid.Row="1" Text="{Binding SubtitleText}" FontSize="18" />
+            <Panel Grid.Column="0" Grid.Row="2" Grid.ColumnSpan="2" Background="LightGray">
+                <TextBlock Text="{Binding BodyText}" FontSize="14" TextWrapping="Wrap" Padding="5" />
+            </Panel>
+            <Button Grid.Column="1" Grid.Row="3" IsEnabled="{Binding ButtonsEnabled}"
+                    Command="{Binding SaveErrorToFileCommand}">Log Error to File</Button>
+        </Grid>
+    </Border>
+</Window>
