@@ -1,13 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Threading;
 using System.Threading.Tasks;
+using AnySheet.Behaviors;
 using Avalonia.Controls;
+using Avalonia.Controls.PanAndZoom;
 using Avalonia.Platform.Storage;
+using Avalonia.Xaml.Interactivity;
 using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace AnySheet.Views;
@@ -22,7 +26,7 @@ public partial class CharacterSheet : UserControl
     }
 
     public SheetMode Mode = SheetMode.Gameplay;
-    private readonly List<SheetModule.SheetModule> _modules = [];
+    public ObservableCollection<SheetModule.SheetModule> Modules { get; } = [];
     private bool _moduleAddedOrRemoved = false;
 
     public bool CanvasDragEnabled => Mode == SheetMode.Gameplay;
@@ -37,7 +41,7 @@ public partial class CharacterSheet : UserControl
                 return true;
             }
             
-            foreach (var module in _modules)
+            foreach (var module in Modules)
             {
                 if (module.HasBeenModified)
                 {
@@ -48,10 +52,18 @@ public partial class CharacterSheet : UserControl
             return false;
         }
     }
+    
+    private readonly SheetDragBehavior _dragBehavior;
 
     public CharacterSheet()
     {
         InitializeComponent();
+        _dragBehavior = new SheetDragBehavior
+        {
+            Modules = Modules,
+            DragCompleted = OnDragCompleted
+        };
+        Interaction.GetBehaviors(this).Add(_dragBehavior);
     }
 
     public async Task<bool> LoadSaveFile(IStorageFile file, CancellationToken token)
@@ -90,7 +102,7 @@ public partial class CharacterSheet : UserControl
                 }
                 else
                 {
-                    _modules.Add(module);
+                    Modules.Add(module);
                     ModuleGrid.Children.Add(module);
                     module.SetModuleMode(Mode);
                 }
@@ -127,16 +139,35 @@ public partial class CharacterSheet : UserControl
             return (false, loadErrors);
         }
         
-        _modules.Add(module);
+        Modules.Add(module);
         ModuleGrid.Children.Add(module);
         module.SetModuleMode(Mode);
         _moduleAddedOrRemoved = true;
         return (true, []);
     }
+
+    private void OnDragCompleted()
+    {
+        foreach (var module in Modules)
+        {
+            module.OnCameraMoveCompleted();
+        }
+    }
     
+    private void OnZoomChanged(object sender, ZoomChangedEventArgs e)
+    {
+        // ZoomX and ZoomY are always the same
+        _dragBehavior.ZoomScale = e.ZoomX;
+        
+        foreach (var module in Modules)
+        {
+            module.OnCameraMoveCompleted();
+        }
+    }
+
     public void RemoveModule(SheetModule.SheetModule module)
     {
-        _modules.Remove(module);
+        Modules.Remove(module);
         ModuleGrid.Children.Remove(module);
         _moduleAddedOrRemoved = true;
     }
@@ -144,7 +175,7 @@ public partial class CharacterSheet : UserControl
     public void ChangeSheetMode(SheetMode mode)
     {
         Mode = mode;
-        foreach (var module in _modules)
+        foreach (var module in Modules)
         {
             module.SetModuleMode(mode);
         }
@@ -153,7 +184,7 @@ public partial class CharacterSheet : UserControl
     public JsonArray GetSaveData()
     {
         var saveData = new JsonArray();
-        foreach (var module in _modules)
+        foreach (var module in Modules)
         {
             saveData.Add(module.GetSaveData());
         }

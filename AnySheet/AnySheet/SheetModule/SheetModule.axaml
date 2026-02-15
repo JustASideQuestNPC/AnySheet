@@ -12,14 +12,14 @@
         <StyleInclude Source="../Assets/SheetModuleStyles.axaml" />
     </UserControl.Styles>
     <Interaction.Behaviors>
-        <behaviors:ModuleDragBehavior GridWidth="{Binding GridSnap}" GridHeight="{Binding GridSnap}"
+        <behaviors:ModuleDragBehavior GridWidth="{Binding GridWidth}" GridHeight="{Binding GridHeight}"
                                       IsEnabled="{Binding DragEnabled}"
                                       DragCompletedCommand="{ReflectionBinding DragCompletedCommand}" />
     </Interaction.Behaviors>
     <Border Name="Container" Classes="Module" BorderThickness="4">
         <Border.ContextMenu>
-            <ContextMenu>
-                <MenuItem Header="Remove" />
+            <ContextMenu Name="ContextMenu">
+                <MenuItem Header="Remove" Command="{Binding RemoveModuleCommand}" />
             </ContextMenu>
         </Border.ContextMenu>
         <Grid Name="PrimitiveGrid" RowSpacing="4" ColumnSpacing="4" VerticalAlignment="Center"

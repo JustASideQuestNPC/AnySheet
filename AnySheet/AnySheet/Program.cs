@@ -8,6 +8,7 @@ namespace AnySheet;
 sealed class Program
 {
     private static string _crashHandlerPath = "CrashHandler.exe";
+    private static bool _noCrashHandler = false;
     
     // Initialization code. Don't use any Avalonia, third-party APIs or any
     // SynchronizationContext-reliant code before AppMain is called: things aren't initialized
@@ -19,7 +20,11 @@ sealed class Program
         if (args.Length > 0)
         {
             _crashHandlerPath = args[0];
-            if (!Path.Exists(Path.GetFullPath(_crashHandlerPath)))
+            if (_crashHandlerPath == "--nocrashhandler")
+            {
+                _noCrashHandler = true;
+            }
+            else if (!Path.Exists(Path.GetFullPath(_crashHandlerPath)))
             {
                 throw new FileNotFoundException("Go fix your crash handler path.");
             }
@@ -32,6 +37,11 @@ sealed class Program
         }
         catch (Exception e)
         {
+            if (_noCrashHandler)
+            {
+                throw;
+            }
+            
             OpenCrashHandler(e);
         }
     }

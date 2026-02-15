@@ -85,6 +85,11 @@ public partial class ListPrimitiveLua : ModulePrimitiveLuaBase
             _entries.Add(entry.ToString());
         }
     }
+
+    public override void OnCameraMoveCompleted()
+    {
+        _uiControl?.InvalidateVisual();
+    }
 }
 
 public partial class ListPrimitive : UserControl

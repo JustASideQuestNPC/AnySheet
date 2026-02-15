@@ -1,9 +1,11 @@
 ﻿<UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:behaviors="clr-namespace:AnySheet.Behaviors"
              xmlns:vm="using:AnySheet.Views"
+             xmlns:behaviors="clr-namespace:AnySheet.Behaviors"
              x:Class="AnySheet.Views.CharacterSheet"
              x:DataType="vm:CharacterSheet">
-    <Canvas Name="ModuleGrid" Background="LightGray" HorizontalAlignment="Stretch"
-            VerticalAlignment="Stretch" />
+    <ZoomBorder WheelBehavior="None" WheelWithShift="Zoom" ZoomChanged="OnZoomChanged">
+        <Canvas Name="ModuleGrid" Background="LightGray" HorizontalAlignment="Stretch"
+                VerticalAlignment="Stretch" />
+    </ZoomBorder>
 </UserControl>

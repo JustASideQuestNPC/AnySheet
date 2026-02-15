@@ -58,6 +58,8 @@ public abstract class ModulePrimitiveLuaBase
     public abstract JsonObject? GetSaveObject();
     public abstract void LoadSaveObject(JsonObject? obj);
 
+    public virtual void OnCameraMoveCompleted() { }
+
     protected static void VerifyPositionArgs(LuaTable args)
     {
         LuaSandbox.VerifyTable(args, PositionArgs);

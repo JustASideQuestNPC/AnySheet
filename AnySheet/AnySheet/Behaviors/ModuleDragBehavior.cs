@@ -10,19 +10,11 @@ namespace AnySheet.Behaviors;
 
 public class ModuleDragBehavior : Behavior<Control>
 {
-    
     public class DragCompletedCommandParameters
     {
         public Control Control { get; set; }
         public Point RawPosition { get; set; }
         public Point GridPosition { get; set; }
-
-        // private DragCompletedCommandParameters(Control control, Point rawPosition, Point gridPosition)
-        // {
-        //     Control = control;
-        //     RawPosition = rawPosition;
-        //     GridPosition = gridPosition;
-        // }
     }
     
     public static readonly StyledProperty<ICommand?> DragCompletedCommandProperty =
@@ -147,25 +139,25 @@ public class ModuleDragBehavior : Behavior<Control>
         _gridDx += dx;
         _gridDy += dy;
 
-        if (_gridDx <= -GridWidth)
+        while (_gridDx <= -GridWidth)
         {
             _gridDx += GridWidth;
             _transform.X -= GridWidth;
         }
 
-        if (_gridDx >= GridWidth)
+        while (_gridDx >= GridWidth)
         {
             _gridDx -= GridWidth;
             _transform.X += GridWidth;
         }
         
-        if (_gridDy <= -GridHeight)
+        while (_gridDy <= -GridHeight)
         {
             _gridDy += GridHeight;
             _transform.Y -= GridHeight;
         }
 
-        if (_gridDy >= GridHeight)
+        while (_gridDy >= GridHeight)
         {
             _gridDy -= GridHeight;
             _transform.Y += GridHeight;

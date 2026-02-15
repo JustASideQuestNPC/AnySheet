@@ -26,8 +26,8 @@
     
     <dialogs:ReactiveDialogHost Background="White" Padding="0" CloseOnClickAway="False"
                                 Identifier="RootDialog">
-        <DockPanel>
-            <Menu DockPanel.Dock="Top" Height="25">
+        <DockPanel Background="LightGray">
+            <Menu DockPanel.Dock="Top" Height="25" Background="Black">
                 <MenuItem Header="_File">
                     <MenuItem Header="_New" Command="{Binding CreateNewSheet}" />
                     <MenuItem Header="_Open" Command="{Binding OpenSheetFromFileCommand}" />

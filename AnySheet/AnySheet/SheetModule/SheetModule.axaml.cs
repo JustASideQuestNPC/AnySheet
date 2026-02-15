@@ -323,6 +323,12 @@ public partial class SheetModule : UserControl
         return !primitiveLoadFailure;
     }
 
+    [RelayCommand]
+    private void RemoveModule(object? _)
+    {
+        _parent.RemoveModule(this);
+    }
+
     public void SetModuleMode(CharacterSheet.SheetMode mode)
     {
         switch (mode)
@@ -330,26 +336,18 @@ public partial class SheetModule : UserControl
             case CharacterSheet.SheetMode.Gameplay:
                 foreach (var item in _items) item.EnableUiControl();
                 DragEnabled = false;
+                ContextMenu.IsEnabled = false;
                 break;
             case CharacterSheet.SheetMode.ModuleEdit:
                 foreach (var item in _items) item.DisableUiControl();
                 DragEnabled = true;
+                ContextMenu.IsEnabled = true;
                 break;
             case CharacterSheet.SheetMode.TriggerEdit:
                 // currently unused
                 break;
         }
     }
-
-    // private void ContainerPointerPressed(object? sender, PointerPressedEventArgs args)
-    // {
-    //     if (args.GetCurrentPoint(this).Properties.IsRightButtonPressed &&
-    //         _parent.Mode == CharacterSheet.SheetMode.ModuleEdit)
-    //     {
-    //         _parent.RemoveModule(this);
-    //     }
-    // }
-    
 
     public JsonArray GetSaveData()
     {
@@ -360,5 +358,13 @@ public partial class SheetModule : UserControl
         }
         
         return [(_relativeToWorkingDirectory ? "~" : "") + _scriptPath, GridX, GridY, itemData];
+    }
+
+    public void OnCameraMoveCompleted()
+    {
+        foreach (var item in _items)
+        {
+            item.OnCameraMoveCompleted();
+        }
     }
 }
