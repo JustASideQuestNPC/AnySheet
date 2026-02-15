@@ -12,7 +12,7 @@ public class LuaSandbox
     
     public LuaTable Environment => _state.Environment;
 
-    public LuaSandbox(bool noLibraries = false)
+    public LuaSandbox()
     {
         _state = LuaState.Create();
         // only open safe libraries
@@ -54,31 +54,31 @@ public class LuaSandbox
         throw new TimeoutException();
     }
     
-    private static async Task<LuaValue[]> RunLuaTaskAsync(ValueTask<LuaValue[]> luaTask)
+    private static async Task<(LuaValue[], bool, string)> RunLuaTaskAsync(ValueTask<LuaValue[]> luaTask)
     {
         try
         {
             var task = await TimeoutTask(luaTask.AsTask());
-            return task;
+            return (task, true, "");
         }
         catch (TimeoutException)
         {
             Console.WriteLine("Lua execution timed out.");
-            return [];
+            return ([], false, "Lua execution timed out.");
         }
         catch (LuaRuntimeException e)
         {
             Console.WriteLine($"Lua execution failed: {e.Message}");
-            return [];
+            return ([], false, e.Message);
         }
     }
     
-    public Task<LuaValue[]> DoStringAsync(string code) => RunLuaTaskAsync(_state.DoStringAsync(code));
+    public Task<(LuaValue[], bool, string)> DoStringAsync(string code) => RunLuaTaskAsync(_state.DoStringAsync(code));
     
-    public Task<LuaValue[]> DoFileAsync(string path) => RunLuaTaskAsync(_state.DoFileAsync(path));
+    public Task<(LuaValue[], bool, string)> DoFileAsync(string path) => RunLuaTaskAsync(_state.DoFileAsync(path));
     
-    public Task<LuaValue[]> DoFunctionAsync(LuaFunction function) => RunLuaTaskAsync(_state.CallAsync(function, []));
-    public Task<LuaValue[]> DoFunctionAsync(LuaFunction function, LuaValue[] args) =>
+    public Task<(LuaValue[], bool, string)> DoFunctionAsync(LuaFunction function) => RunLuaTaskAsync(_state.CallAsync(function, []));
+    public Task<(LuaValue[], bool, string)> DoFunctionAsync(LuaFunction function, LuaValue[] args) =>
         RunLuaTaskAsync(_state.CallAsync(function, args));
 
     public static T GetTableValueOrDefault<T>(LuaTable table, LuaValue key, T defaultValue)

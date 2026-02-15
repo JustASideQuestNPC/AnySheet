@@ -7,7 +7,7 @@
         </Border>
     </Design.PreviewWith>
 
-    <Style Selector="dialogs|ThreefoldDialog">
+    <Style Selector="dialogs|BaseDialog">
         <Setter Property="Background" Value="White" />
         <Setter Property="CornerRadius" Value="5" />
         <Setter Property="Padding" Value="5" />

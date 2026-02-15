@@ -17,10 +17,11 @@
     </Design.DataContext>
     
     <Window.Styles>
-        <StyleInclude Source="/Assets/PopupStyles.axaml" />
+        <StyleInclude Source="/Assets/DialogStyles.axaml" />
     </Window.Styles>
     
-    <dialogs:ReactiveDialogHost Background="Transparent" Padding="0">
+    <dialogs:ReactiveDialogHost Background="White" Padding="0" CloseOnClickAway="False"
+                                Identifier="RootDialog">
         <DockPanel>
             <Menu DockPanel.Dock="Top" Height="25">
                 <MenuItem Header="_File">

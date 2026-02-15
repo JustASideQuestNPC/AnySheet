@@ -1,8 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using System.Text.Json;
 using System.Text.Json.Nodes;
+using System.Threading;
+using System.Threading.Tasks;
 using Avalonia.Controls;
+using Avalonia.Platform.Storage;
 using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace AnySheet.Views;
@@ -21,6 +26,7 @@ public partial class CharacterSheet : UserControl
     private bool _moduleAddedOrRemoved = false;
 
     public bool CanvasDragEnabled => Mode == SheetMode.Gameplay;
+    public List<string> SaveDataLoadErrorMessages { get; private set; } = [];
 
     public bool HasBeenModified
     {
@@ -48,20 +54,55 @@ public partial class CharacterSheet : UserControl
         InitializeComponent();
     }
 
-    public CharacterSheet(JsonArray saveData) : this()
+    public async Task<bool> LoadSaveFile(IStorageFile file, CancellationToken token)
     {
-        foreach (var moduleData in saveData)
+        using var reader = new StreamReader(await file.OpenReadAsync());
+        var saveString = await reader.ReadToEndAsync(cancellationToken: token);
+        // why is there no JsonArray.TryParse?
+        try
         {
-            if (moduleData == null)
+            var saveData = JsonSerializer.Deserialize<JsonArray>(saveString);
+            if (saveData == null)
             {
-                throw new JsonException("Invalid save data for SheetModule: null element found.");
+                SaveDataLoadErrorMessages.Add("Save data is null.");
+                return false;
             }
-            
-            var module = new SheetModule.SheetModule(this, moduleData.AsArray());
-            _modules.Add(module);
-            ModuleGrid.Children.Add(module);
-            module.SetModuleMode(Mode);
+
+            var currentModule = 0;
+            foreach (var moduleData in saveData)
+            {
+                if (moduleData is not JsonArray)
+                {
+                    // "catch" the error but keep going so i can log every error
+                    var dataType = moduleData != null ? moduleData.GetType().Name : "null";
+                    SaveDataLoadErrorMessages.Add($"Invalid save data for module {currentModule}: Expected array, " +
+                                                  $"got {dataType}.");
+                    continue;
+                }
+                
+                
+                var module = new SheetModule.SheetModule(this, moduleData.AsArray());
+                await module.RunBuildScript();
+                if (module.SaveDataLoadError)
+                {
+                    SaveDataLoadErrorMessages.Add($"Error(s) while loading module {currentModule}:");
+                    SaveDataLoadErrorMessages.AddRange(module.SaveDataLoadErrorMessages.Select(msg => $"- {msg}"));
+                }
+                
+                _modules.Add(module);
+                ModuleGrid.Children.Add(module);
+                module.SetModuleMode(Mode);
+                
+                ++currentModule;
+            }
         }
+        catch (JsonException e)
+        {
+            SaveDataLoadErrorMessages.Add($"Error while parsing JSON: {e.Message}");
+            return false;
+        }
+        
+        return SaveDataLoadErrorMessages.Count == 0;
     }
 
     public void AddModuleFromScript(string path, int gridX, int gridY)

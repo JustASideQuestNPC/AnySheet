@@ -168,7 +168,7 @@ public partial class NumberBoxLua : ModulePrimitiveLuaBase
     {
         _uiControl.IsEnabled = false;
     }
-    public override bool HasBeenModified => CurrentValue != _initialValue;
+    public override bool HasBeenModified => _uiControl.HasBeenModified;
 
     public override JsonObject GetSaveObject()
     {
@@ -231,6 +231,8 @@ public partial class NumberBoxPrimitive : UserControl
             CurrentValue = Math.Min(_currentValue, value);
         }
     }
+
+    public bool HasBeenModified { get; private set; } = false;
     
     public NumberBoxPrimitive(NumberBoxLua parent, int x, int y, int width, int height, double defaultValue,
                               double minValue, double maxValue, bool integerOnly, string borderType,
@@ -296,6 +298,7 @@ public partial class NumberBoxPrimitive : UserControl
                                   TextBox.FontFamily,
                                   (_width * SheetModule.GridSize) - TextBox.Padding.Left - TextBox.Padding.Right - 2,
                                   (_height * SheetModule.GridSize) - TextBox.Padding.Top - TextBox.Padding.Bottom - 2);
+        HasBeenModified = true;
     }
     
     private new void LostFocus(object? sender, RoutedEventArgs e)

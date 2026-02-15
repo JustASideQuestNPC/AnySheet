@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Reflection;
 using System.Text.Json.Nodes;
 using System.Threading.Tasks;
@@ -31,6 +32,7 @@ public partial class SheetModule : UserControl
     private int _gridWidth;
     private int _gridHeight;
     private bool _moduleWasDragged = false;
+    private JsonArray _saveData;
 
     // for saving and the trigger system when i get to that
     private readonly List<ModulePrimitiveLuaBase> _items = [];
@@ -122,40 +124,65 @@ public partial class SheetModule : UserControl
         }
     }
 
+    public bool SaveDataLoadError => SaveDataLoadErrorMessages.Count > 0;
+    public List<string> SaveDataLoadErrorMessages { get; } = [];
+
+    private void LogErrorMessage(string message)
+    {
+        SaveDataLoadErrorMessages.Add(message);
+        Console.WriteLine(message);
+    }
 
     public SheetModule(CharacterSheet parent, JsonArray saveData)
     {
         if (saveData.Count != 4)
         {
-            throw new ArgumentException("Cannot load module: save data must contain 4 elements.");
+            LogErrorMessage($"Save data must contain 4 elements, but contains {saveData.Count}.");
+            return;
         }
 
         if (
-            saveData[0] != null && saveData[0]!.AsValue().TryGetValue<string>(out var path) &&
-            saveData[1] != null && saveData[1]!.AsValue().TryGetValue<int>(out var x) &&
-            saveData[2] != null && saveData[2]!.AsValue().TryGetValue<int>(out var y) &&
-            saveData[3] != null && saveData[3]!.AsArray() is { Count: > 0 } itemData
+            saveData[0] == null || !saveData[0]!.AsValue().TryGetValue<string>(out var path) ||
+            saveData[1] == null || !saveData[1]!.AsValue().TryGetValue<int>(out var x) ||
+            saveData[2] == null || !saveData[2]!.AsValue().TryGetValue<int>(out var y) ||
+            saveData[3] == null ||  saveData[3]!.AsArray() is not { Count: > 0 } itemData
         )
         {
-            _setup(parent, x, y, path, itemData);
+            var dataType1 = saveData[0]?.GetType().Name ?? "null";
+            var dataType2 = saveData[1]?.GetType().Name ?? "null";
+            var dataType3 = saveData[2]?.GetType().Name ?? "null";
+            var dataType4 = saveData[3]?.GetType().Name ?? "null";
+            LogErrorMessage("Save data must be an array of type [string, int, int, JsonArray], but " +
+                                          $"contains [{dataType1}, {dataType2}, {dataType3}, {dataType4}].");
+        }
+        else
+        {
+            _parent = parent;
+            GridX = x;
+            GridY = y;
+            _saveData = itemData;
+            _setup(path);
         }
     }
 
     public SheetModule(CharacterSheet parent, int gridX, int gridY, string scriptPath, bool relativeToWorkingDirectory)
     {
-        _setup(parent, gridX, gridY, (relativeToWorkingDirectory ? "~" : "") + scriptPath, []);
-    }
-    
-    private void _setup(CharacterSheet parent, int gridX, int gridY, string scriptPath, JsonArray itemData)
-    {
         _parent = parent;
         GridX = gridX;
         GridY = gridY;
+        _scriptPath = (relativeToWorkingDirectory ? "~" : "") + scriptPath;
+        _saveData = [];
+        
+        _setup(scriptPath);
+    }
+    
+    private void _setup(string scriptPath)
+    {
         GridSnap = GridSize + GridSpacing;
 
-        if (scriptPath.StartsWith("~"))
+        if (scriptPath.StartsWith('~'))
         {
-            _scriptPath = scriptPath.Substring(1);
+            _scriptPath = scriptPath[1..];
             _relativeToWorkingDirectory = true;
         }
         else
@@ -168,7 +195,10 @@ public partial class SheetModule : UserControl
         
         // hide the module until it finishes loading (without this it'll temporarily cover the entire window)
         Container.IsVisible = false;
+    }
 
+    public async Task RunBuildScript()
+    {
         _lua = new LuaSandbox
         {
             Environment =
@@ -185,45 +215,53 @@ public partial class SheetModule : UserControl
                 ["List"]             = new ListPrimitiveLua()
             }
         };
-
-        Loaded += async (_, _) =>
+        
+        var buildScriptSuccessful = await _runBuildScript(
+            (_relativeToWorkingDirectory ? Environment.CurrentDirectory + "\\" : "") + _scriptPath, _saveData);
+        // immediately remove the module if the build script fails
+        if (!buildScriptSuccessful)
         {
-            var buildScript = _runBuildScript(
-                (_relativeToWorkingDirectory ? Environment.CurrentDirectory + "\\" : "") + _scriptPath, itemData);
-            await buildScript;
-            // immediately remove the module if the build script fails
-            if (!buildScript.Result)
-            {
-                parent.RemoveModule(this);
-                return;
-            }
+            _parent.RemoveModule(this);
+            return;
+        }
 
-            Console.WriteLine($"Loaded module '{scriptPath}' with {PrimitiveGrid.Children.Count} elements. Module " +
-                              $"size: {Width}x{Height} ({GridWidth}x{GridHeight} on grid), position: {GridX},{GridY}.");
-            Container.AddHandler(PointerPressedEvent, ContainerPointerPressed, RoutingStrategies.Tunnel);
-            Container.IsVisible = true;
-        };
+        Console.WriteLine($"Loaded module '{_scriptPath}' with {PrimitiveGrid.Children.Count} elements. Module " +
+                          $"size: {Width}x{Height} ({GridWidth}x{GridHeight} on grid), position: {GridX},{GridY}.");
+        Container.AddHandler(PointerPressedEvent, ContainerPointerPressed, RoutingStrategies.Tunnel);
+        Container.IsVisible = true;
     }
 
     private async Task<bool> _runBuildScript(string path, JsonArray itemData)
     {
-        var task = await _lua.DoFileAsync(path);
+        if (!File.Exists(path))
+        {
+            LogErrorMessage($"Module script '{path}' does not exist.");
+            return false;
+        }
+        
+        var (returnValue, success, errorMessage) = await _lua.DoFileAsync(path);
+
+        if (!success)
+        {
+            LogErrorMessage($"Error in module script: {errorMessage}");
+            return false;
+        }
         
         // do way too much error checking
-        if (task.Length != 1)
+        if (returnValue.Length != 1)
         {
-            Console.WriteLine("Module script must return a SheetModule instance.");
+            LogErrorMessage("Module script must return a SheetModule instance.");
             return false;
         }
 
         LuaSheetModule module;
         try
         {
-            module = task[0].Read<LuaSheetModule>();
+            module = returnValue[0].Read<LuaSheetModule>();
         }
         catch (InvalidOperationException)
         {
-            Console.WriteLine("Module script must return a SheetModule instance.");
+            LogErrorMessage("Module script must return a SheetModule instance.");
             return false;
         }
 
@@ -233,6 +271,7 @@ public partial class SheetModule : UserControl
         }
 
         var i = 0;
+        var primitiveLoadFailure = false;
         foreach (var (_, e) in module.Elements)
         {
             // afaik the only way to read the luaValue to the correct primitive class is to brute-force it by trying
@@ -250,8 +289,9 @@ public partial class SheetModule : UserControl
 
             if (primitive == null)
             {
-                Console.WriteLine($"Element '{e}' is not a valid primitive.");
-                return false;
+                LogErrorMessage($"Element '{e}' is not a valid primitive.");
+                primitiveLoadFailure = true;
+                continue;
             }
 
             while (PrimitiveGrid.ColumnDefinitions.Count < primitive.GridX + primitive.GridWidth)
@@ -281,7 +321,7 @@ public partial class SheetModule : UserControl
             PrimitiveGrid.Children.Add(uiControl);
         }
 
-        return true;
+        return !primitiveLoadFailure;
     }
 
     public void SetModuleMode(CharacterSheet.SheetMode mode)

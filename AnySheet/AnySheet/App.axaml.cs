@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Data.Core;
@@ -24,6 +25,7 @@ public partial class App : Application
                                     .Select(t => t.GetMethod("TryReadLua", BindingFlags.Static | BindingFlags.Public))!;
 
     private static readonly string WorkingDirectoryForwardSlash = Environment.CurrentDirectory.Replace('\\', '/');
+    public static readonly DirectoryInfo LogDir = Directory.CreateDirectory(Environment.CurrentDirectory + "/logs/");
     
     // i should probably make a utils class or something but whatever
     public static bool PathContainsWorkingDirectory(string path)
@@ -40,6 +42,8 @@ public partial class App : Application
     public static TopLevel? TopLevel =>
         Application.Current?.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop ?
             desktop.MainWindow : null;
+    
+    public static MainWindow Window { get; private set; }
 
     public override void OnFrameworkInitializationCompleted()
     {
@@ -56,6 +60,7 @@ public partial class App : Application
             window.Closing += (sender, e) => windowContext.OnWindowClosed(sender, e);
             
             desktop.MainWindow = window;
+            Window = window;
         }
 
         base.OnFrameworkInitializationCompleted();

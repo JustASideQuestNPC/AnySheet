@@ -1,4 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Globalization;
 using System.IO;
 using System.Text.Json;
 using System.Text.Json.Nodes;
@@ -14,6 +17,7 @@ using AvaloniaDialogs.Views;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using DialogHostAvalonia;
+using Microsoft.VisualBasic.CompilerServices;
 
 namespace AnySheet.ViewModels;
 
@@ -56,7 +60,7 @@ public partial class MainWindowViewModel : ViewModelBase
     [RelayCommand]
     public async Task CreateNewSheet()
     {
-        if (_loadedSheet != null && _loadedSheet.HasBeenModified)
+        if (LoadedSheet != null && LoadedSheet.HasBeenModified)
         {
             var dialog = new ThreefoldDialog
             {
@@ -182,7 +186,7 @@ public partial class MainWindowViewModel : ViewModelBase
     [RelayCommand]
     private async Task OpenSheetFromFile(CancellationToken token)
     {
-        if (_loadedSheet != null && _loadedSheet.HasBeenModified)
+        if (LoadedSheet != null && LoadedSheet.HasBeenModified)
         {
             var dialog = new ThreefoldDialog
             {
@@ -224,61 +228,71 @@ public partial class MainWindowViewModel : ViewModelBase
             SuggestedStartLocation = startFolder
         });
 
-        var sheetLoaded = false;
         if (files.Count > 0)
         {
-            using var reader = new StreamReader(await files[0].OpenReadAsync());
-            var saveString = await reader.ReadToEndAsync(cancellationToken: token);
-            // why is there no JsonArray.TryParse?
-            try
-            {
-                var saveData = JsonSerializer.Deserialize<JsonArray>(saveString);
-                if (saveData == null)
-                {
-                    throw new JsonException("Invalid save data.");
-                }
-                LoadedSheet = new CharacterSheet(saveData);
-                SheetMenusEnabled = true;
-                sheetLoaded = true;
-            }
-            catch (JsonException e)
-            {
-                Console.WriteLine($"Error parsing JSON: {e.Message}");
-            }
-        }
+            var characterSheet = new CharacterSheet();
 
-        if (sheetLoaded)
-        {
-            _currentFilePath = files[0].Path.AbsolutePath;
+            if (await characterSheet.LoadSaveFile(files[0], token))
+            {
+                LoadedSheet = characterSheet;
+                _currentFilePath = files[0].Path.AbsolutePath;
+            }
+            else
+            {
+                await LogSheetLoadError(characterSheet.SaveDataLoadErrorMessages);
+            }
         }
     }
 
     private bool _forceClose = false;
-    public void OnWindowClosed(object? sender, WindowClosingEventArgs e)
+    public async void OnWindowClosed(object? sender, WindowClosingEventArgs e)
     {
-        if (_loadedSheet != null && _loadedSheet.HasBeenModified && !_forceClose)
+        if (LoadedSheet != null && LoadedSheet.HasBeenModified && !_forceClose)
         {
             e.Cancel = true;
-            var dialog = new ThreefoldDialog
+            if (!DialogHost.IsDialogOpen("RootDialog"))
             {
-                Message = "Do you want to save the current sheet? Unsaved changes will be lost.",
-                PositiveText = "Save",
-                NegativeText = "Discard",
-                NeutralText = "Cancel"
-            };
-            dialog.ShowAsync().ContinueWith(t =>
-            {
-                if (t.Result == ThreefoldDialog.ButtonType.Positive)
+                var dialog = new ThreefoldDialog
                 {
-                    SaveSheetToCurrentPath(CancellationToken.None);
+                    Message = "Do you want to save the current sheet? Unsaved changes will be lost.",
+                    PositiveText = "Save",
+                    NegativeText = "Discard",
+                    NeutralText = "Cancel",
+                };
+                var result = await dialog.ShowAsync();
+                if (result == ThreefoldDialog.ButtonType.Positive)
+                {
+                    await SaveSheetToCurrentPath(CancellationToken.None);
                 }
-
-                if (t.Result != ThreefoldDialog.ButtonType.Neutral)
+                
+                if (result != ThreefoldDialog.ButtonType.Neutral)
                 {
                     _forceClose = true;
-                    // App.Current
+                    e.Cancel = false;
+                    App.Window.Close();
                 }
-            });
+            }
+        }
+    }
+
+    private async Task LogSheetLoadError(List<string> errors)
+    {
+        var dialog = new TwofoldDialog
+        {
+            Message = "An error occurred while loading this character sheet. The full error will be logged to a file.",
+            PositiveText = "Open log folder",
+            NegativeText = "OK"
+        };
+        var task = dialog.ShowAsync();
+        
+        var dateString = DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss", CultureInfo.InvariantCulture);
+        var logFile = new FileInfo(App.LogDir.FullName + $"/sheetLoadError_{dateString}.log");
+        await File.WriteAllLinesAsync(logFile.FullName, errors);
+
+        await task;
+        if (task.Result == true)
+        {
+            Process.Start("explorer.exe", App.LogDir.FullName);
         }
     }
 

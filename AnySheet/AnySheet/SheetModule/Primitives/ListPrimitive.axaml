@@ -61,7 +61,8 @@
                 </ScrollViewer>
             </Border>
             <Border Grid.Row="1" Margin="0" Padding="3" BorderBrush="Transparent">
-                <Grid Margin="0" Name="NewEntryContainerGrid" ColumnDefinitions="*, 25, 25" RowDefinitions="25">
+                <Grid Margin="0" Name="NewEntryContainerGrid" ColumnDefinitions="*, Auto, Auto"
+                      RowDefinitions="25" ColumnSpacing="5">
                     <TextBox Name="NewEntryTextBox" BorderThickness="0 0 0 3"
                              BorderBrush="{DynamicResource Primary}"
                              Foreground="{DynamicResource Primary}"
@@ -70,13 +71,13 @@
                             <KeyBinding Command="{Binding NewEntryTextBoxEnterPress}" Gesture="Enter" />
                         </TextBox.KeyBindings>
                     </TextBox>
-                    <Button Grid.Column="1" Click="ClearEntryButtonClick" Padding="0" Margin="0"
-                            VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
+                    <Button Grid.Column="1" Click="ClearEntryButtonClick" VerticalAlignment="Stretch"
+                            HorizontalAlignment="Stretch">
                         <materialIcons:MaterialIcon Kind="Close" Foreground="{DynamicResource Primary}"
                                                     VerticalAlignment="Stretch" HorizontalAlignment="Stretch" />
                     </Button>
-                    <Button Grid.Column="2" Click="AddEntryButtonClick" Padding="0" Margin="0"
-                            VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
+                    <Button Grid.Column="2" Click="AddEntryButtonClick" VerticalAlignment="Stretch"
+                            HorizontalAlignment="Stretch">
                         <materialIcons:MaterialIcon Kind="Plus" Foreground="{DynamicResource Primary}"
                                                     VerticalAlignment="Stretch" HorizontalAlignment="Stretch" />
                     </Button>

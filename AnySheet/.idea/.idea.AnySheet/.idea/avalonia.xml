@@ -4,6 +4,7 @@
     <option name="projectPerEditor">
       <map>
         <entry key="AnySheet/App.axaml" value="AnySheet/AnySheet.csproj" />
+        <entry key="AnySheet/Assets/DialogStyles.axaml" value="AnySheet/AnySheet.csproj" />
         <entry key="AnySheet/Assets/PopupStyles.axaml" value="AnySheet/AnySheet.csproj" />
         <entry key="AnySheet/Assets/SheetModuleStyles.axaml" value="AnySheet/AnySheet.csproj" />
         <entry key="AnySheet/CharacterSheetPanel/CharacterSheetModule.axaml" value="AnySheet/AnySheet.csproj" />
