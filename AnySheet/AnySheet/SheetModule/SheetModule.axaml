@@ -17,6 +17,11 @@
                                       DragCompletedCommand="{ReflectionBinding DragCompletedCommand}" />
     </Interaction.Behaviors>
     <Border Name="Container" Classes="Module" BorderThickness="4">
+        <Border.ContextMenu>
+            <ContextMenu>
+                <MenuItem Header="Remove" />
+            </ContextMenu>
+        </Border.ContextMenu>
         <Grid Name="PrimitiveGrid" RowSpacing="4" ColumnSpacing="4" VerticalAlignment="Center"
               HorizontalAlignment="Center" />
     </Border>

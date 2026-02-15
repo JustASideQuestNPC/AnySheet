@@ -113,7 +113,11 @@ public partial class MainWindowViewModel : ViewModelBase
 
         if (files.Count > 0)
         {
-            LoadedSheet.AddModuleFromScript(files[0].Path.AbsolutePath, 0, 0);
+            var (success, errorMessages) = await LoadedSheet.AddModuleFromScript(files[0].Path.AbsolutePath, 0, 0);
+            if (!success)
+            {
+                await LogModuleLoadError(errorMessages);
+            }
         }
     }
 
@@ -298,6 +302,27 @@ public partial class MainWindowViewModel : ViewModelBase
         
         var dateString = DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss", CultureInfo.InvariantCulture);
         var logFile = new FileInfo(App.LogDir.FullName + $"/sheetLoadError_{dateString}.log");
+        await File.WriteAllLinesAsync(logFile.FullName, errors);
+
+        await task;
+        if (task.Result == true)
+        {
+            Process.Start("explorer.exe", App.LogDir.FullName);
+        }
+    }
+    
+    private async Task LogModuleLoadError(List<string> errors)
+    {
+        var dialog = new TwofoldDialog
+        {
+            Message = "An error occurred while loading this module. The full error will be logged to a file.",
+            PositiveText = "Open log folder",
+            NegativeText = "OK"
+        };
+        var task = dialog.ShowAsync();
+        
+        var dateString = DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss", CultureInfo.InvariantCulture);
+        var logFile = new FileInfo(App.LogDir.FullName + $"/moduleLoadError_{dateString}.log");
         await File.WriteAllLinesAsync(logFile.FullName, errors);
 
         await task;

@@ -5,6 +5,7 @@ using Avalonia.Data.Core;
 using Avalonia.Data.Core.Plugins;
 using System.Linq;
 using Avalonia.Controls;
+using Avalonia.Input;
 using Avalonia.Markup.Xaml;
 using CrashHandler.ViewModels;
 using CrashHandler.Views;
@@ -16,7 +17,7 @@ public partial class App : Application
     // i have ai suggestions enabled in my editor. i got 3 characters into this link and it perfectly autocompleted the
     // rest of it. i didn't even get to "youtube", it was just "htt" and then boom there's the entire thing. i haven't
     // changed any of the settings either so apparently it's just built this way.
-    private const string TargetLink = "https://www.youtube.com/watch?v=dQw4w9WgXcQ";
+    private const string TargetLink = "https://www.youtube.com/watch?v=dQw4w9WgXcQ?autoplay=1";
 
     private MainWindow _window = null!;
     
@@ -41,12 +42,22 @@ public partial class App : Application
             // strip off the first argument, which is the path to the executable
             var logPathStart = commandLine.IndexOf(' ', 1);
             var logPathEnd = commandLine.IndexOf(' ', logPathStart + 1);
-            var logPath = commandLine[(logPathStart + 1)..logPathEnd];
-            var errorMessage = commandLine[(logPathEnd + 1)..];
-            
+
+            MainWindowViewModel dataContext;
+            if (logPathStart == -1)
+            {
+                dataContext = new MainWindowViewModel("", "");
+            }
+            else
+            {
+                var logPath = commandLine[(logPathStart + 1)..logPathEnd];
+                var errorMessage = commandLine[(logPathEnd + 1)..];
+                dataContext = new MainWindowViewModel(logPath, errorMessage);
+            }
+
             _window = new MainWindow
             {
-                DataContext = new MainWindowViewModel(logPath, errorMessage),
+                DataContext = dataContext
             };
 
             if (logPathStart == -1)

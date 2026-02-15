@@ -227,7 +227,6 @@ public partial class SheetModule : UserControl
 
         Console.WriteLine($"Loaded module '{_scriptPath}' with {PrimitiveGrid.Children.Count} elements. Module " +
                           $"size: {Width}x{Height} ({GridWidth}x{GridHeight} on grid), position: {GridX},{GridY}.");
-        Container.AddHandler(PointerPressedEvent, ContainerPointerPressed, RoutingStrategies.Tunnel);
         Container.IsVisible = true;
     }
 
@@ -342,14 +341,15 @@ public partial class SheetModule : UserControl
         }
     }
 
-    private void ContainerPointerPressed(object? sender, PointerPressedEventArgs args)
-    {
-        if (args.GetCurrentPoint(this).Properties.IsRightButtonPressed &&
-            _parent.Mode == CharacterSheet.SheetMode.ModuleEdit)
-        {
-            _parent.RemoveModule(this);
-        }
-    }
+    // private void ContainerPointerPressed(object? sender, PointerPressedEventArgs args)
+    // {
+    //     if (args.GetCurrentPoint(this).Properties.IsRightButtonPressed &&
+    //         _parent.Mode == CharacterSheet.SheetMode.ModuleEdit)
+    //     {
+    //         _parent.RemoveModule(this);
+    //     }
+    // }
+    
 
     public JsonArray GetSaveData()
     {

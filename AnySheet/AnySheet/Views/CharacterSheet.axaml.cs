@@ -88,10 +88,12 @@ public partial class CharacterSheet : UserControl
                     SaveDataLoadErrorMessages.Add($"Error(s) while loading module {currentModule}:");
                     SaveDataLoadErrorMessages.AddRange(module.SaveDataLoadErrorMessages.Select(msg => $"- {msg}"));
                 }
-                
-                _modules.Add(module);
-                ModuleGrid.Children.Add(module);
-                module.SetModuleMode(Mode);
+                else
+                {
+                    _modules.Add(module);
+                    ModuleGrid.Children.Add(module);
+                    module.SetModuleMode(Mode);
+                }
                 
                 ++currentModule;
             }
@@ -105,8 +107,10 @@ public partial class CharacterSheet : UserControl
         return SaveDataLoadErrorMessages.Count == 0;
     }
 
-    public void AddModuleFromScript(string path, int gridX, int gridY)
+    public async Task<(bool, List<string>)> AddModuleFromScript(string path, int gridX, int gridY)
     {
+        var loadErrors = new List<string>();
+        
         var relativeToWorkingDirectory = App.PathContainsWorkingDirectory(path);
         if (relativeToWorkingDirectory)
         {
@@ -114,10 +118,20 @@ public partial class CharacterSheet : UserControl
         }
         
         var module = new SheetModule.SheetModule(this, gridX, gridY, path, relativeToWorkingDirectory);
+        await module.RunBuildScript();
+
+        if (module.SaveDataLoadError)
+        {
+            loadErrors.Add($"Error(s) while loading module:");
+            loadErrors.AddRange(module.SaveDataLoadErrorMessages.Select(msg => $"- {msg}"));
+            return (false, loadErrors);
+        }
+        
         _modules.Add(module);
         ModuleGrid.Children.Add(module);
         module.SetModuleMode(Mode);
         _moduleAddedOrRemoved = true;
+        return (true, []);
     }
     
     public void RemoveModule(SheetModule.SheetModule module)
