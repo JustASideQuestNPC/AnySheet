@@ -5,6 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:dialogs="using:AvaloniaDialogs.Views"
         xmlns:materialIcons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+        xmlns:cc="using:CustomControls"
         mc:Ignorable="d" d:DesignWidth="1200" d:DesignHeight="750"
         x:Class="AnySheet.Views.MainWindow"
         x:DataType="vm:MainWindowViewModel"
@@ -20,18 +21,17 @@
     <Window.Styles>
         <StyleInclude Source="/Assets/DialogStyles.axaml" />
         
-        <Style Selector="#TopButtonBar Button">
+        <Style Selector="Button.SquareIconButton">
             <Setter Property="Background" Value="Transparent" />
             <Setter Property="BorderBrush" Value="Transparent" />
             <Setter Property="Margin" Value="4" />
             <Setter Property="VerticalAlignment" Value="Stretch" />
             <Setter Property="Width" Value="{Binding $self.Bounds.Height}" />
         </Style>
-        <Style Selector="#TopButtonBar Button:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+        <Style Selector="Button.SquareIconButton:pointerover /template/ ContentPresenter#PART_ContentPresenter">
             <Setter Property="Background" Value="{DynamicResource Tertiary}" />
         </Style>
-        
-        <Style Selector="#TopButtonBar Button ToolTip">
+        <Style Selector="Button.SquareIconButton ToolTip">
             <Setter Property="Foreground" Value="Black" />
             <Setter Property="Background" Value="White" />
             <Setter Property="BorderBrush" Value="LightGray" />
@@ -39,8 +39,7 @@
             <Setter Property="FontFamily" Value="{DynamicResource Lato}" />
             <Setter Property="ShowDelay" Value="200" />
         </Style>
-        
-        <Style Selector="#TopButtonBar Button materialIcons|MaterialIcon">
+        <Style Selector="Button.SquareIconButton materialIcons|MaterialIcon">
             <Setter Property="Foreground" Value="Black" />
             <Setter Property="VerticalAlignment" Value="Stretch" />
             <Setter Property="HorizontalAlignment" Value="Stretch" />
@@ -48,8 +47,7 @@
             <Setter Property="Padding" Value="0" />
             <Setter Property="IconSize" Value="20" />
         </Style>
-        
-        <Style Selector="#TopButtonBar Button:disabled materialIcons|MaterialIcon">
+        <Style Selector="Button.SquareIconButton:disabled materialIcons|MaterialIcon">
             <Setter Property="Opacity" Value="0.5" />
         </Style>
         
@@ -58,6 +56,30 @@
             <Setter Property="Margin" Value="4" />
             <Setter Property="VerticalAlignment" Value="Stretch" />
             <Setter Property="Width" Value="{Binding $self.Bounds.Height}" />
+        </Style>
+        
+        <Style Selector="StackPanel.ModuleFolderList TextBlock">
+            <Setter Property="FontFamily" Value="{StaticResource LatoBold}" />
+            <Setter Property="Foreground" Value="Black" /> 
+            <Setter Property="FontSize" Value="16" />
+            <Setter Property="Margin" Value="4" />
+        </Style>
+        
+        <Style Selector="StackPanel.ModuleFileList Button">
+            <Setter Property="Foreground" Value="Black" />
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="BorderBrush" Value="Transparent" />
+            <Setter Property="Margin" Value="2" />
+            <Setter Property="FontFamily" Value="{DynamicResource Lato}" />
+            <Setter Property="FontSize" Value="13" />
+        </Style>
+        <Style Selector="StackPanel.ModuleFileList Button:pointerover /template/ ContentPresenter">
+            <Setter Property="Background" Value="{DynamicResource Tertiary}" />
+        </Style>
+        
+        <Style Selector="StackPanel.ModuleFileList cc|AutoFitTextBlock">
+            <Setter Property="FontFamily" Value="{DynamicResource Lato}" />
+            <Setter Property="FontSize" Value="13" />
         </Style>
     </Window.Styles>
     
@@ -68,37 +90,90 @@
     <dialogs:ReactiveDialogHost Background="White" Padding="0" CloseOnClickAway="False"
                                 Identifier="RootDialog">
         <DockPanel Background="White">
+            <!-- Top menu -->
             <StackPanel Name="TopButtonBar" DockPanel.Dock="Top" Orientation="Horizontal" Height="40"
                         Background="White" Margin="6 0">
-                <Button Command="{Binding CreateNewSheet}" ToolTip.Tip="New Sheet">
+                <Button Command="{Binding CreateNewSheetCommand}" Classes="SquareIconButton" ToolTip.Tip="New Sheet">
                     <materialIcons:MaterialIcon Kind="FilePlus" />
                 </Button>
-                <Button Command="{Binding OpenSheetFromFileCommand}" ToolTip.Tip="Open Sheet">
+                <Button Command="{Binding OpenSheetFromFileCommand}" Classes="SquareIconButton"
+                        ToolTip.Tip="Open Sheet">
                     <materialIcons:MaterialIcon Kind="FolderOpen" />
                 </Button>
-                <Button Command="{Binding SaveSheetToCurrentPathCommand}" IsEnabled="{Binding SheetMenusEnabled}"
-                        ToolTip.Tip="Save">
+                <Button Command="{Binding SaveSheetToCurrentPathCommand}" Classes="SquareIconButton"
+                        IsEnabled="{Binding SheetMenusEnabled}" ToolTip.Tip="Save">
                     <materialIcons:MaterialIcon Kind="ContentSave" />
                 </Button>
-                <Button Command="{Binding SaveSheetToNewPathCommand}" IsEnabled="{Binding SheetMenusEnabled}"
-                        ToolTip.Tip="Save As">
+                <Button Command="{Binding SaveSheetToNewPathCommand}" Classes="SquareIconButton"
+                        IsEnabled="{Binding SheetMenusEnabled}" ToolTip.Tip="Save As">
                     <materialIcons:MaterialIcon Kind="ContentSavePlus" />
                 </Button>
                 
                 <Panel Classes="Spacer" />
                 
-                <Button Command="{Binding ChangeUiMode}" CommandParameter="Gameplay"
+                <Button Command="{Binding ChangeUiModeCommand}" CommandParameter="Gameplay" Classes="SquareIconButton"
                         IsEnabled="{Binding GameplayModeButtonEnabled}" ToolTip.Tip="Gameplay Mode">
                     <materialIcons:MaterialIcon Kind="Controller" Foreground="{Binding GameplayModeIconColor}"
                                                 Opacity="{Binding ModeIconOpacity}" />
                 </Button>
                 
-                <Button Command="{Binding ChangeUiMode}" CommandParameter="ModuleEdit"
+                <Button Command="{Binding ChangeUiModeCommand}" CommandParameter="ModuleEdit" Classes="SquareIconButton"
                         IsEnabled="{Binding ModuleEditModeButtonEnabled}" ToolTip.Tip="Module Editor Mode">
                     <materialIcons:MaterialIcon Kind="Wall" Foreground="{Binding ModuleEditModeIconColor}"
                                                 Opacity="{Binding ModeIconOpacity}" />
                 </Button>
             </StackPanel>
+            
+            <!-- Module Sidebar -->
+            <Border Margin="0" Padding="10" BorderBrush="Black" BorderThickness="0 2 2 0"
+                    IsVisible="{Binding ModuleSidebarEnabled}" DockPanel.Dock="Left" Width="210">
+                <Grid ColumnDefinitions="40, *" RowDefinitions="40, *" RowSpacing="5">
+                    <Button Command="{Binding ReloadModuleTreeCommand}"
+                            Classes="SquareIconButton" ToolTip.Tip="Reload Module List">
+                        <materialIcons:MaterialIcon Kind="Reload" />
+                    </Button>
+                    <TextBlock Grid.Column="1" Grid.Row="1" Foreground="Black"
+                               FontFamily="{DynamicResource LatoBold}" FontSize="20">Modules</TextBlock>
+                    <Border Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="2" Background="LightGray"
+                            CornerRadius="7">
+                        
+                        <!-- Folder List -->
+                        <StackPanel Classes="ModuleFolderList">
+                            <ItemsControl ItemsSource="{Binding ModuleFolders}"><ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                <Border Background="White" BorderBrush="Black" CornerRadius="3"
+                                        BorderThickness="2" Margin="3">
+                                    <Grid RowDefinitions="30, Auto" ColumnDefinitions="*, 30">
+                                        <TextBlock Text="{Binding FolderName}" />
+                                        <Button Grid.Row="0" Grid.Column="1" Classes="SquareIconButton"
+                                                Command="{Binding ToggleFiles}">
+                                            <materialIcons:MaterialIcon Kind="ChevronDown" />
+                                        </Button>
+                                        
+                                        <!-- File List -->
+                                        <Border Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2"
+                                                IsVisible="{Binding ShowFiles}" BorderBrush="Black"
+                                                BorderThickness="0 2 0 0">
+                                            <StackPanel Classes="ModuleFileList">
+                                                <ItemsControl ItemsSource="{Binding FileButtons}">
+                                                <ItemsControl.ItemTemplate><DataTemplate>
+                                                    <Button Command="{Binding AddModule}">
+                                                        <cc:AutoFitTextBlock Text="{Binding DisplayName}" />
+                                                    </Button>
+                                                </DataTemplate></ItemsControl.ItemTemplate>
+                                                </ItemsControl>
+                                            </StackPanel>
+                                        </Border>
+                                    </Grid>
+                                </Border>
+                            </DataTemplate>
+                            </ItemsControl.ItemTemplate></ItemsControl>
+                        </StackPanel>
+                    </Border>
+                </Grid>
+            </Border>
+            
+            <!-- Character Sheet -->
             <Panel Background="LightGray">
                 <ContentControl Content="{Binding LoadedSheet}" />
             </Panel>

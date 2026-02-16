@@ -28,9 +28,15 @@ public partial class MainWindowViewModel : ViewModelBase
 {
     [ObservableProperty]
     private CharacterSheet? _loadedSheet;
+    
+    [ObservableProperty]
+    private ObservableCollection<ModuleFolderViewModel> _moduleFolders = [];
 
     [ObservableProperty]
     private bool _sheetMenusEnabled;
+    
+    [ObservableProperty]
+    private bool _moduleSidebarEnabled;
     
     [ObservableProperty]
     private double _modeIconOpacity = 0.5;
@@ -48,7 +54,17 @@ public partial class MainWindowViewModel : ViewModelBase
     private IBrush _moduleEditModeIconColor = Brushes.Black;
     
     private string _currentFilePath = "";
+
+    public void UpdateModuleFileTree(Dictionary<string, List<(string, string)>> moduleFileTree)
+    {
+        ModuleFolders.Clear();
+        foreach (var (folderName, files) in moduleFileTree)
+        {
+            ModuleFolders.Add(new ModuleFolderViewModel(folderName, files));
+        }
+    }
     
+    [RelayCommand]
     public void ChangeUiMode(object? parameter)
     {
         // menus are disabled until a sheet is loaded, so this *should* be unreachable
@@ -69,6 +85,7 @@ public partial class MainWindowViewModel : ViewModelBase
                     ModuleEditModeIconColor = AppResources.GetResource<IBrush>("Accent");
                     GameplayModeButtonEnabled = true;
                     GameplayModeIconColor = Brushes.Black;
+                    ModuleSidebarEnabled = true;
                     break;
                 case "Gameplay":
                     LoadedSheet.ChangeSheetMode(CharacterSheet.SheetMode.Gameplay);
@@ -76,6 +93,7 @@ public partial class MainWindowViewModel : ViewModelBase
                     GameplayModeIconColor = AppResources.GetResource<IBrush>("Accent");
                     ModuleEditModeButtonEnabled = true;
                     ModuleEditModeIconColor = Brushes.Black;
+                    ModuleSidebarEnabled = false;
                     break;
                 // currently unused
                 case "TriggerEdit":
@@ -108,9 +126,9 @@ public partial class MainWindowViewModel : ViewModelBase
                 await SaveSheetToCurrentPath(CancellationToken.None);
             }
         }
-        
+
         Console.WriteLine("Create new sheet");
-        LoadedSheet = new CharacterSheet();
+        LoadedSheet = new CharacterSheet(this);
         SheetMenusEnabled = true;
         _currentFilePath = "";
         ChangeUiMode("Gameplay");
@@ -262,12 +280,13 @@ public partial class MainWindowViewModel : ViewModelBase
 
         if (files.Count > 0)
         {
-            var characterSheet = new CharacterSheet();
+            var characterSheet = new CharacterSheet(this);
 
             if (await characterSheet.LoadSaveFile(files[0], token))
             {
                 LoadedSheet = characterSheet;
                 _currentFilePath = files[0].Path.AbsolutePath;
+                SheetMenusEnabled = true;
                 ChangeUiMode("Gameplay");
             }
             else
@@ -286,6 +305,13 @@ public partial class MainWindowViewModel : ViewModelBase
                             "combo to get it. If you don't, then\n" +
                             "A. This \"error\" is for testing and shouldn't be reported.\n" +
                             "B. How did you even find the key combo? I'm both confused and impressed.");
+    }
+
+    [RelayCommand]
+    private void ReloadModuleTree()
+    {
+        Utils.RebuildModuleTree();
+        UpdateModuleFileTree(Utils.ModuleFileTree);
     }
 
     private bool _forceClose = false;
@@ -330,17 +356,17 @@ public partial class MainWindowViewModel : ViewModelBase
         var task = dialog.ShowAsync();
         
         var dateString = DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss", CultureInfo.InvariantCulture);
-        var logFile = new FileInfo(App.LogDir.FullName + $"/sheetLoadError_{dateString}.log");
+        var logFile = new FileInfo(Utils.LogDir.FullName + $"/sheetLoadError_{dateString}.log");
         await File.WriteAllLinesAsync(logFile.FullName, errors);
 
         await task;
         if (task.Result == true)
         {
-            Process.Start("explorer.exe", App.LogDir.FullName);
+            Process.Start("explorer.exe", Utils.LogDir.FullName);
         }
     }
     
-    private async Task LogModuleLoadError(List<string> errors)
+    public async Task LogModuleLoadError(List<string> errors)
     {
         var dialog = new TwofoldDialog
         {
@@ -351,13 +377,13 @@ public partial class MainWindowViewModel : ViewModelBase
         var task = dialog.ShowAsync();
         
         var dateString = DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss", CultureInfo.InvariantCulture);
-        var logFile = new FileInfo(App.LogDir.FullName + $"/moduleLoadError_{dateString}.log");
+        var logFile = new FileInfo(Utils.LogDir.FullName + $"/moduleLoadError_{dateString}.log");
         await File.WriteAllLinesAsync(logFile.FullName, errors);
 
         await task;
         if (task.Result == true)
         {
-            Process.Start("explorer.exe", App.LogDir.FullName);
+            Process.Start("explorer.exe", Utils.LogDir.FullName);
         }
     }
 

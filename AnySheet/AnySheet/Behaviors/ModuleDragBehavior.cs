@@ -65,7 +65,7 @@ public class ModuleDragBehavior : Behavior<Control>
             AssociatedObject.PointerReleased += Released;
             AssociatedObject.PointerMoved += Moved;
             AssociatedObject.PointerCaptureLost += CaptureLost;
-            Console.WriteLine("Attached module drag behavior.");
+            Console.WriteLine($"Attached module drag behavior with grid size {GridWidth}x{GridHeight}.");
         }
     }
     

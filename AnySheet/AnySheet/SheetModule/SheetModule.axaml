@@ -12,7 +12,7 @@
         <StyleInclude Source="../Assets/SheetModuleStyles.axaml" />
     </UserControl.Styles>
     <Interaction.Behaviors>
-        <behaviors:ModuleDragBehavior GridWidth="{Binding GridWidth}" GridHeight="{Binding GridHeight}"
+        <behaviors:ModuleDragBehavior GridWidth="{Binding GridSnap}" GridHeight="{Binding GridSnap}"
                                       IsEnabled="{Binding DragEnabled}"
                                       DragCompletedCommand="{ReflectionBinding DragCompletedCommand}" />
     </Interaction.Behaviors>

@@ -8,6 +8,7 @@ using System.Text.Json.Nodes;
 using System.Threading;
 using System.Threading.Tasks;
 using AnySheet.Behaviors;
+using AnySheet.ViewModels;
 using Avalonia.Controls;
 using Avalonia.Controls.PanAndZoom;
 using Avalonia.Platform.Storage;
@@ -54,10 +55,12 @@ public partial class CharacterSheet : UserControl
     }
     
     private readonly SheetDragBehavior _dragBehavior;
+    private readonly MainWindowViewModel _parent;
 
-    public CharacterSheet()
+    public CharacterSheet(MainWindowViewModel parent)
     {
         InitializeComponent();
+        _parent = parent;
         _dragBehavior = new SheetDragBehavior
         {
             Modules = Modules,
@@ -123,7 +126,7 @@ public partial class CharacterSheet : UserControl
     {
         var loadErrors = new List<string>();
         
-        var relativeToWorkingDirectory = App.PathContainsWorkingDirectory(path);
+        var relativeToWorkingDirectory = Utils.PathContainsWorkingDirectory(path);
         if (relativeToWorkingDirectory)
         {
             path = path[(Environment.CurrentDirectory.Length + 1)..];
@@ -144,6 +147,15 @@ public partial class CharacterSheet : UserControl
         module.SetModuleMode(Mode);
         _moduleAddedOrRemoved = true;
         return (true, []);
+    }
+
+    public async Task TryAddModuleFromFile(string path)
+    {
+        var (success, errorMessages) = await AddModuleFromScript(path, 0, 0);
+        if (!success)
+        {
+            await _parent.LogModuleLoadError(errorMessages);
+        }
     }
 
     private void OnDragCompleted()
@@ -179,6 +191,7 @@ public partial class CharacterSheet : UserControl
         {
             module.SetModuleMode(mode);
         }
+        _dragBehavior.IsEnabled = (mode == SheetMode.Gameplay);
     }
 
     public JsonArray GetSaveData()

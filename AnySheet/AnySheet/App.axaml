@@ -24,7 +24,7 @@
         <FontFamily x:Key="PtSerifBoldItalic">avares://AnySheet/Assets/Fonts/PTSerif-BoldItalic.ttf#PT Serif Bold Italic</FontFamily>
         <FontFamily x:Key="LatoBlack">avares://AnySheet/Assets/Fonts/Lato-Black.ttf#Lato Black</FontFamily>
         <FontFamily x:Key="LatoBlackItalic">avares://AnySheet/Assets/Fonts/Lato-BlackItalic.ttf#Lato Black Italic</FontFamily>
-        <FontFamily x:Key="LatoBold">avares://AnySheet/Assets/Fonts/Lato-Bolx.ttf#Lato Bold</FontFamily>
+        <FontFamily x:Key="LatoBold">avares://AnySheet/Assets/Fonts/Lato-Bold.ttf#Lato Bold</FontFamily>
         <FontFamily x:Key="LatoBoldItalic">avares://AnySheet/Assets/Fonts/Lato-BolxItalic.ttf#Lato Bold Italic</FontFamily>
         <FontFamily x:Key="Lato">avares://AnySheet/Assets/Fonts/Lato-Regular.ttf#Lato</FontFamily>
         <FontFamily x:Key="LatoItalic">avares://AnySheet/Assets/Fonts/Lato-Italic.ttf#Lato Italic</FontFamily>

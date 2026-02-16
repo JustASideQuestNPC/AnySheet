@@ -217,7 +217,7 @@ public partial class SheetModule : UserControl
         };
         
         var buildScriptSuccessful = await _runBuildScript(
-            (_relativeToWorkingDirectory ? Environment.CurrentDirectory + "\\" : "") + _scriptPath, _saveData);
+            (_relativeToWorkingDirectory ? Environment.CurrentDirectory + @"\Modules\" : "") + _scriptPath, _saveData);
         // immediately remove the module if the build script fails
         if (!buildScriptSuccessful)
         {
@@ -276,7 +276,7 @@ public partial class SheetModule : UserControl
             // afaik the only way to read the luaValue to the correct primitive class is to brute-force it by trying
             // with every single class until it works
             ModulePrimitiveLuaBase? primitive = null;
-            foreach (var reader in App.PrimitiveReaders)
+            foreach (var reader in Utils.PrimitiveReaders)
             {
                 var args = new object[] { e, primitive! };
                 if (reader.Invoke(null, args) is true)
@@ -334,12 +334,18 @@ public partial class SheetModule : UserControl
         switch (mode)
         {
             case CharacterSheet.SheetMode.Gameplay:
-                foreach (var item in _items) item.EnableUiControl();
+                foreach (var item in _items)
+                {
+                    item.EnableUiControl();
+                }
                 DragEnabled = false;
                 ContextMenu.IsEnabled = false;
                 break;
             case CharacterSheet.SheetMode.ModuleEdit:
-                foreach (var item in _items) item.DisableUiControl();
+                foreach (var item in _items)
+                {
+                    
+                }
                 DragEnabled = true;
                 ContextMenu.IsEnabled = true;
                 break;
