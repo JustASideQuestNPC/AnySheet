@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
@@ -17,6 +18,8 @@ using AvaloniaDialogs.Views;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using DialogHostAvalonia;
+using Material.Icons;
+using Material.Icons.Avalonia;
 using Microsoft.VisualBasic.CompilerServices;
 
 namespace AnySheet.ViewModels;
@@ -29,8 +32,23 @@ public partial class MainWindowViewModel : ViewModelBase
     [ObservableProperty]
     private bool _sheetMenusEnabled;
     
-    private string _currentFilePath = "";
+    [ObservableProperty]
+    private double _modeIconOpacity = 0.5;
 
+    [ObservableProperty]
+    private bool _gameplayModeButtonEnabled;
+    
+    [ObservableProperty]
+    private IBrush _gameplayModeIconColor = Brushes.Black;
+    
+    [ObservableProperty]
+    private bool _moduleEditModeButtonEnabled;
+    
+    [ObservableProperty]
+    private IBrush _moduleEditModeIconColor = Brushes.Black;
+    
+    private string _currentFilePath = "";
+    
     public void ChangeUiMode(object? parameter)
     {
         // menus are disabled until a sheet is loaded, so this *should* be unreachable
@@ -42,13 +60,22 @@ public partial class MainWindowViewModel : ViewModelBase
         if (parameter != null)
         {
             Console.WriteLine($"Changing UI mode to {parameter}");
+            ModeIconOpacity = 1;
             switch ((string)parameter)
             {
                 case "ModuleEdit":
                     LoadedSheet.ChangeSheetMode(CharacterSheet.SheetMode.ModuleEdit);
+                    ModuleEditModeButtonEnabled = false;
+                    ModuleEditModeIconColor = AppResources.GetResource<IBrush>("Accent");
+                    GameplayModeButtonEnabled = true;
+                    GameplayModeIconColor = Brushes.Black;
                     break;
                 case "Gameplay":
                     LoadedSheet.ChangeSheetMode(CharacterSheet.SheetMode.Gameplay);
+                    GameplayModeButtonEnabled = false;
+                    GameplayModeIconColor = AppResources.GetResource<IBrush>("Accent");
+                    ModuleEditModeButtonEnabled = true;
+                    ModuleEditModeIconColor = Brushes.Black;
                     break;
                 // currently unused
                 case "TriggerEdit":
@@ -86,6 +113,7 @@ public partial class MainWindowViewModel : ViewModelBase
         LoadedSheet = new CharacterSheet();
         SheetMenusEnabled = true;
         _currentFilePath = "";
+        ChangeUiMode("Gameplay");
     }
 
     [RelayCommand]
@@ -240,6 +268,7 @@ public partial class MainWindowViewModel : ViewModelBase
             {
                 LoadedSheet = characterSheet;
                 _currentFilePath = files[0].Path.AbsolutePath;
+                ChangeUiMode("Gameplay");
             }
             else
             {

@@ -4,6 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:dialogs="using:AvaloniaDialogs.Views"
+        xmlns:materialIcons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
         mc:Ignorable="d" d:DesignWidth="1200" d:DesignHeight="750"
         x:Class="AnySheet.Views.MainWindow"
         x:DataType="vm:MainWindowViewModel"
@@ -18,6 +19,46 @@
     
     <Window.Styles>
         <StyleInclude Source="/Assets/DialogStyles.axaml" />
+        
+        <Style Selector="#TopButtonBar Button">
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="BorderBrush" Value="Transparent" />
+            <Setter Property="Margin" Value="4" />
+            <Setter Property="VerticalAlignment" Value="Stretch" />
+            <Setter Property="Width" Value="{Binding $self.Bounds.Height}" />
+        </Style>
+        <Style Selector="#TopButtonBar Button:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="{DynamicResource Tertiary}" />
+        </Style>
+        
+        <Style Selector="#TopButtonBar Button ToolTip">
+            <Setter Property="Foreground" Value="Black" />
+            <Setter Property="Background" Value="White" />
+            <Setter Property="BorderBrush" Value="LightGray" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="FontFamily" Value="{DynamicResource Lato}" />
+            <Setter Property="ShowDelay" Value="200" />
+        </Style>
+        
+        <Style Selector="#TopButtonBar Button materialIcons|MaterialIcon">
+            <Setter Property="Foreground" Value="Black" />
+            <Setter Property="VerticalAlignment" Value="Stretch" />
+            <Setter Property="HorizontalAlignment" Value="Stretch" />
+            <Setter Property="Margin" Value="0" />
+            <Setter Property="Padding" Value="0" />
+            <Setter Property="IconSize" Value="20" />
+        </Style>
+        
+        <Style Selector="#TopButtonBar Button:disabled materialIcons|MaterialIcon">
+            <Setter Property="Opacity" Value="0.5" />
+        </Style>
+        
+        <Style Selector="#TopButtonBar Panel.Spacer">
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="Margin" Value="4" />
+            <Setter Property="VerticalAlignment" Value="Stretch" />
+            <Setter Property="Width" Value="{Binding $self.Bounds.Height}" />
+        </Style>
     </Window.Styles>
     
     <Window.KeyBindings>
@@ -26,25 +67,41 @@
     
     <dialogs:ReactiveDialogHost Background="White" Padding="0" CloseOnClickAway="False"
                                 Identifier="RootDialog">
-        <DockPanel Background="LightGray">
-            <Menu DockPanel.Dock="Top" Height="25" Background="Black">
-                <MenuItem Header="_File">
-                    <MenuItem Header="_New" Command="{Binding CreateNewSheet}" />
-                    <MenuItem Header="_Open" Command="{Binding OpenSheetFromFileCommand}" />
-                    <MenuItem Header="_Save" IsEnabled="{Binding SheetMenusEnabled}"
-                              Command="{Binding SaveSheetToCurrentPathCommand}" />
-                    <MenuItem Header="_Save As" IsEnabled="{Binding SheetMenusEnabled}"
-                              Command="{Binding SaveSheetToNewPathCommand}" />
-                </MenuItem>
-                <MenuItem Header="_Modules" IsEnabled="{Binding SheetMenusEnabled}">
-                    <MenuItem Header="_Add From File" Command="{Binding AddModuleFileCommand}" />
-                </MenuItem>
-                <MenuItem Header="_Mode" IsEnabled="{Binding SheetMenusEnabled}">
-                    <MenuItem Header="_Module Editor" Command="{Binding ChangeUiMode}" CommandParameter="ModuleEdit" />
-                    <MenuItem Header="_Gameplay" Command="{Binding ChangeUiMode}" CommandParameter="Gameplay" />
-                </MenuItem>
-            </Menu>
-            <ContentControl Content="{Binding LoadedSheet}" />
+        <DockPanel Background="White">
+            <StackPanel Name="TopButtonBar" DockPanel.Dock="Top" Orientation="Horizontal" Height="40"
+                        Background="White" Margin="6 0">
+                <Button Command="{Binding CreateNewSheet}" ToolTip.Tip="New Sheet">
+                    <materialIcons:MaterialIcon Kind="FilePlus" />
+                </Button>
+                <Button Command="{Binding OpenSheetFromFileCommand}" ToolTip.Tip="Open Sheet">
+                    <materialIcons:MaterialIcon Kind="FolderOpen" />
+                </Button>
+                <Button Command="{Binding SaveSheetToCurrentPathCommand}" IsEnabled="{Binding SheetMenusEnabled}"
+                        ToolTip.Tip="Save">
+                    <materialIcons:MaterialIcon Kind="ContentSave" />
+                </Button>
+                <Button Command="{Binding SaveSheetToNewPathCommand}" IsEnabled="{Binding SheetMenusEnabled}"
+                        ToolTip.Tip="Save As">
+                    <materialIcons:MaterialIcon Kind="ContentSavePlus" />
+                </Button>
+                
+                <Panel Classes="Spacer" />
+                
+                <Button Command="{Binding ChangeUiMode}" CommandParameter="Gameplay"
+                        IsEnabled="{Binding GameplayModeButtonEnabled}" ToolTip.Tip="Gameplay Mode">
+                    <materialIcons:MaterialIcon Kind="Controller" Foreground="{Binding GameplayModeIconColor}"
+                                                Opacity="{Binding ModeIconOpacity}" />
+                </Button>
+                
+                <Button Command="{Binding ChangeUiMode}" CommandParameter="ModuleEdit"
+                        IsEnabled="{Binding ModuleEditModeButtonEnabled}" ToolTip.Tip="Module Editor Mode">
+                    <materialIcons:MaterialIcon Kind="Wall" Foreground="{Binding ModuleEditModeIconColor}"
+                                                Opacity="{Binding ModeIconOpacity}" />
+                </Button>
+            </StackPanel>
+            <Panel Background="LightGray">
+                <ContentControl Content="{Binding LoadedSheet}" />
+            </Panel>
         </DockPanel>
     </dialogs:ReactiveDialogHost>
 </Window>
