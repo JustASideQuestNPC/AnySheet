@@ -13,13 +13,15 @@
     </UserControl.Styles>
     <Interaction.Behaviors>
         <behaviors:ModuleDragBehavior GridWidth="{Binding GridSnap}" GridHeight="{Binding GridSnap}"
-                                      IsEnabled="{Binding DragEnabled}"
+                                      IsEnabled="{Binding ModuleEditsEnabled}"
                                       DragCompletedCommand="{ReflectionBinding DragCompletedCommand}" />
     </Interaction.Behaviors>
     <Border Name="Container" Classes="Module" BorderThickness="4">
         <Border.ContextMenu>
-            <ContextMenu Name="ContextMenu">
-                <MenuItem Header="Remove" Command="{Binding RemoveModuleCommand}" />
+            <ContextMenu Name="ContextMenu" IsEnabled="{Binding ModuleEditsEnabled}"
+                         IsVisible="{Binding ModuleEditsEnabled}">
+                <MenuItem Header="Remove" Command="{Binding RemoveModuleCommand}"
+                          IsEnabled="{Binding ModuleEditsEnabled}" IsVisible="{Binding ModuleEditsEnabled}" />
             </ContextMenu>
         </Border.ContextMenu>
         <Grid Name="PrimitiveGrid" RowSpacing="4" ColumnSpacing="4" VerticalAlignment="Center"

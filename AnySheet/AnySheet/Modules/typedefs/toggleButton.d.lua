@@ -8,8 +8,11 @@
 --- @field toggled boolean
 ToggleButton = {}
 
---- Creates the element. `onToggle` is called whenever the button is clicked and is passed whether
---- the button is now toggled on.
+--- Creates the element.
+--- 
+--- Special parameters:
+--- - `onToggle` (optional, default=`nil`): Called whenever the button is toggled on or off. Takes
+---   a single argument, which is whether the button was toggled on or off.
 --- @param args { x: integer, y: integer, onToggle: (fun(toggled: boolean): nil)? }
 --- @return ToggleButton
 function ToggleButton.create(args) end

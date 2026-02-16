@@ -36,8 +36,8 @@ public partial class SheetModule : UserControl
 
     // for saving and the trigger system when i get to that
     private readonly List<ModulePrimitiveLuaBase> _items = [];
-    public static readonly StyledProperty<bool> DragEnabledProperty =
-        AvaloniaProperty.Register<SheetModule, bool>("DragEnabled");
+    public static readonly StyledProperty<bool> ModuleEditsEnabledProperty =
+        AvaloniaProperty.Register<SheetModule, bool>("ModuleEditsEnabled");
     public static readonly StyledProperty<int> GridSnapProperty =
         AvaloniaProperty.Register<SheetModule, int>("GridSnap");
 
@@ -92,10 +92,10 @@ public partial class SheetModule : UserControl
         }
     }
 
-    public bool DragEnabled
+    public bool ModuleEditsEnabled
     {
-        get => GetValue(DragEnabledProperty);
-        set => SetValue(DragEnabledProperty, value);
+        get => GetValue(ModuleEditsEnabledProperty);
+        set => SetValue(ModuleEditsEnabledProperty, value);
     }
 
     public int GridSnap
@@ -338,15 +338,15 @@ public partial class SheetModule : UserControl
                 {
                     item.EnableUiControl();
                 }
-                DragEnabled = false;
+                ModuleEditsEnabled = false;
                 ContextMenu.IsEnabled = false;
                 break;
             case CharacterSheet.SheetMode.ModuleEdit:
                 foreach (var item in _items)
                 {
-                    
+                    item.DisableUiControl();
                 }
-                DragEnabled = true;
+                ModuleEditsEnabled = true;
                 ContextMenu.IsEnabled = true;
                 break;
             case CharacterSheet.SheetMode.TriggerEdit:

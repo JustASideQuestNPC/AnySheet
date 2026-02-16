@@ -2,12 +2,12 @@
 -- has no functionality on its own.
 ---@meta
 
---- A single-line text input.
+--- A scrollable list that entries can be added to.
 --- @class (exact) List : ModuleElement
 --- @field create function
 List = {}
 
---- Creates the element. `defaultText` is displayed when the text box is initially created and
---- nothing has been entered into it.
+--- Creates the element. The list itself doesn't extend all the way to the bottom of the element
+--- because of the text box used to add entries.
 --- @param args { x: integer, y: integer, width: integer, height: integer }
 function List.create(args) end

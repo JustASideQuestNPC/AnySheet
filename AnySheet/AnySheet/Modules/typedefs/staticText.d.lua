@@ -7,8 +7,13 @@
 --- @field create function
 StaticText = {}
 
---- Creates the element. The width and height parameters specify the size of the container; the font
---- size is automatically determined to fit the text.
+--- Creates the element.
+--- 
+--- Special parameters:
+--- - `text`: The text to display. Text is automatically sized to fit the width and height.
+--- - `color`: The color of the text.
+--- - `alignment`: The horizontal alignment of the text. Text is always centered vertically.
+--- - `style` (optional, default=`"normal"`): The font style.
 --- @param args { x: integer, y: integer, width: integer, height: integer, text: string,
 ---               color: ModuleColor, alignment: TextAlignment?, style: TextStyle? }
 --- @return StaticText

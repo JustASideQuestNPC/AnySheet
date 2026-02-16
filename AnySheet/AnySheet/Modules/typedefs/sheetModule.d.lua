@@ -43,7 +43,6 @@ SheetModule = {}
 --- Parameters:
 --- - `elements`: An array with all elements in the module. The module is automatically sized to fit
 ---     all the elements inside it.
---- - `noBorder`: If true, the module will not have the red border. Optional, defaults to false.
---- @param args { noBorder: boolean?, elements: ModuleElement[] }
+--- @param args { elements: ModuleElement[] }
 --- @return SheetModule
 function SheetModule.create(args) end

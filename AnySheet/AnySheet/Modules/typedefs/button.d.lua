@@ -7,7 +7,12 @@
 --- @field create function
 Button = {}
 
---- Creates the element. `callback` is run once whenever the button is clicked.
+--- Creates the element.
+--- 
+--- Special parameters:
+--- - `icon`: The name of the icon to display on the button. You can use *any*
+---   [Material Design](https://pictogrammers.com/library/mdi/) icon.
+--- - `callback`: A callback function; this is run once whenever the button is clicked.
 --- @param args { x: integer, y: integer, width: integer, height: integer, icon: string,
 ---               callback: fun(): nil }
 --- @return Button
