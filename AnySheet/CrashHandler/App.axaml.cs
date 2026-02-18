@@ -64,6 +64,7 @@ public partial class App : Application
             }
             
             desktop.MainWindow = _window;
+            _window.Focus();
         }
 
         base.OnFrameworkInitializationCompleted();
