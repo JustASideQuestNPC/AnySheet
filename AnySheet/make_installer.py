@@ -157,11 +157,11 @@ def relative_path(path: str) -> Path:
 
 print('starting build...\npublishing .net builds...')
 
-# for project in PUBLISH_PROJECTS:
-#     subprocess.run((
-#         f'dotnet publish {project}/{project}.csproj -c Release -r win-x64 --self-contained true ' +
-#          '-o publish'
-#     ), shell=True)
+for project in PUBLISH_PROJECTS:
+    subprocess.run((
+        f'dotnet publish {project}/{project}.csproj -c Release -r win-x64 --self-contained true ' +
+         '-o publish'
+    ), shell=True)
 
 print('generating nsis script...\ngenerating file list...')
 nsis_lines = [BASE_NSIS]
@@ -195,5 +195,5 @@ print('writing nsis script...')
 with open(relative_path('WindowsInstaller.nsi'), 'w') as file:
     file.writelines(nsis_lines)
 
-# print('running nsis script...')   
-# subprocess.run(('makensis WindowsInstaller.nsi'), shell=True)
+print('running nsis script...')   
+subprocess.run(('makensis WindowsInstaller.nsi'), shell=True)
