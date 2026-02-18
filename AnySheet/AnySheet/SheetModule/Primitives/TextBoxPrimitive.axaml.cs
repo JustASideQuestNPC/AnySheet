@@ -189,7 +189,7 @@ public partial class TextBoxPrimitive : UserControl
         TextBox.FontSize = TextFitHelper.FindBestFontSize("X", TextBox.FontFamily,
                                     (width * SheetModule.GridSize) - TextBox.Padding.Left - TextBox.Padding.Right - 2,
                                     (height * SheetModule.GridSize) - TextBox.Padding.Top - TextBox.Padding.Bottom - 2);
-        TextBox.Text = initialText;
+        TextBox.Watermark = initialText;
         
         switch (borderType)
         {
