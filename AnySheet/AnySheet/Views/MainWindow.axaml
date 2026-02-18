@@ -143,37 +143,39 @@
                             CornerRadius="7">
                         
                         <!-- Folder List -->
-                        <StackPanel Classes="ModuleFolderList">
-                            <ItemsControl ItemsSource="{Binding ModuleFolders}"><ItemsControl.ItemTemplate>
-                                <DataTemplate>
-                                <Border Background="White" BorderBrush="Black" CornerRadius="3"
-                                        BorderThickness="2" Margin="3">
-                                    <Grid RowDefinitions="30, Auto" ColumnDefinitions="*, 30">
-                                        <TextBlock Text="{Binding FolderName}" />
-                                        <Button Grid.Row="0" Grid.Column="1" Classes="SquareIconButton"
-                                                Command="{Binding ToggleFiles}">
-                                            <materialIcons:MaterialIcon Kind="ChevronDown" />
-                                        </Button>
-                                        
-                                        <!-- File List -->
-                                        <Border Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2"
-                                                IsVisible="{Binding ShowFiles}" BorderBrush="Black"
-                                                BorderThickness="0 2 0 0">
-                                            <StackPanel Classes="ModuleFileList">
-                                                <ItemsControl ItemsSource="{Binding FileButtons}">
-                                                <ItemsControl.ItemTemplate><DataTemplate>
-                                                    <Button Command="{Binding AddModule}">
-                                                        <cc:AutoFitTextBlock Text="{Binding DisplayName}" />
-                                                    </Button>
-                                                </DataTemplate></ItemsControl.ItemTemplate>
-                                                </ItemsControl>
-                                            </StackPanel>
-                                        </Border>
-                                    </Grid>
-                                </Border>
-                            </DataTemplate>
-                            </ItemsControl.ItemTemplate></ItemsControl>
-                        </StackPanel>
+                        <ScrollViewer>
+                            <StackPanel Classes="ModuleFolderList">
+                                <ItemsControl ItemsSource="{Binding ModuleFolders}"><ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                    <Border Background="White" BorderBrush="Black" CornerRadius="3"
+                                            BorderThickness="2" Margin="3">
+                                        <Grid RowDefinitions="30, Auto" ColumnDefinitions="*, 30">
+                                            <TextBlock Text="{Binding FolderName}" />
+                                            <Button Grid.Row="0" Grid.Column="1" Classes="SquareIconButton"
+                                                    Command="{Binding ToggleFiles}">
+                                                <materialIcons:MaterialIcon Kind="ChevronDown" />
+                                            </Button>
+                                            
+                                            <!-- File List -->
+                                            <Border Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2"
+                                                    IsVisible="{Binding ShowFiles}" BorderBrush="Black"
+                                                    BorderThickness="0 2 0 0">
+                                                <StackPanel Classes="ModuleFileList">
+                                                    <ItemsControl ItemsSource="{Binding FileButtons}">
+                                                    <ItemsControl.ItemTemplate><DataTemplate>
+                                                        <Button Command="{Binding AddModule}">
+                                                            <cc:AutoFitTextBlock Text="{Binding DisplayName}" />
+                                                        </Button>
+                                                    </DataTemplate></ItemsControl.ItemTemplate>
+                                                    </ItemsControl>
+                                                </StackPanel>
+                                            </Border>
+                                        </Grid>
+                                    </Border>
+                                </DataTemplate>
+                                </ItemsControl.ItemTemplate></ItemsControl>
+                            </StackPanel>
+                        </ScrollViewer>
                     </Border>
                 </Grid>
             </Border>
