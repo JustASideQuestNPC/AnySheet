@@ -38,6 +38,7 @@ public partial class TextBoxLua : ModulePrimitiveLuaBase
         }
     }
     
+    private string _defaultText = "";
     private string _alignment = "";
     private string _fontStyle = "";
     private string _color = "";
@@ -95,7 +96,8 @@ public partial class TextBoxLua : ModulePrimitiveLuaBase
             GridY = args["y"].Read<int>(),
             GridWidth = args["width"].Read<int>(),
             GridHeight = args["height"].Read<int>(),
-            Text = LuaSandbox.GetTableValueOrDefault(args, "defaultText", ""),
+            Text = "",
+            _defaultText = LuaSandbox.GetTableValueOrDefault(args, "defaultText", ""),
             _alignment = alignment,
             _fontStyle = fontStyle,
             _color = string.Concat(color[0].ToString().ToUpper(), color.AsSpan(1)),
@@ -113,7 +115,7 @@ public partial class TextBoxLua : ModulePrimitiveLuaBase
     public override UserControl CreateUiControl(int xOffset, int yOffset)
     {
         _uiControl = new TextBoxPrimitive(this, GridX + xOffset, GridY + yOffset, GridWidth, GridHeight, _alignment,
-                                          _fontStyle, _color, Text, _borderType, _borderColor);
+                                          _fontStyle, _color, Text, _defaultText, _borderType, _borderColor);
         return _uiControl;
     }
 
@@ -152,7 +154,7 @@ public partial class TextBoxPrimitive : UserControl
     private int _height;
     
     public TextBoxPrimitive(TextBoxLua parent, int x, int y, int width, int height, string alignment, string fontStyle,
-                            string color, string initialText, string borderType, string borderColor)
+                            string color, string text, string defaultText, string borderType, string borderColor)
     {
         InitializeComponent();
         
@@ -189,7 +191,8 @@ public partial class TextBoxPrimitive : UserControl
         TextBox.FontSize = TextFitHelper.FindBestFontSize("X", TextBox.FontFamily,
                                     (width * SheetModule.GridSize) - TextBox.Padding.Left - TextBox.Padding.Right - 2,
                                     (height * SheetModule.GridSize) - TextBox.Padding.Top - TextBox.Padding.Bottom - 2);
-        TextBox.Watermark = initialText;
+        TextBox.Text = text;
+        TextBox.Watermark = defaultText;
         
         switch (borderType)
         {

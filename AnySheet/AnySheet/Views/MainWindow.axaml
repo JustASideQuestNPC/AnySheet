@@ -85,6 +85,7 @@
     
     <Window.KeyBindings>
         <KeyBinding Command="{Binding CrashProgramCommand}" Gesture="Ctrl+Alt+OemOpenBrackets" />
+        <KeyBinding Command="{Binding SaveSheetToCurrentPathCommand}" Gesture="Ctrl+S" />
     </Window.KeyBindings>
     
     <dialogs:ReactiveDialogHost Background="White" Padding="0" CloseOnClickAway="False"
@@ -121,6 +122,17 @@
                         IsEnabled="{Binding ModuleEditModeButtonEnabled}" ToolTip.Tip="Module Editor Mode">
                     <materialIcons:MaterialIcon Kind="Wall" Foreground="{Binding ModuleEditModeIconColor}"
                                                 Opacity="{Binding ModeIconOpacity}" />
+                </Button>
+                
+                <Panel Classes="Spacer" />
+                
+                <Button Command="{Binding ZoomInCommand}" Classes="SquareIconButton"
+                        IsEnabled="{Binding SheetMenusEnabled}" ToolTip.Tip="ZoomIn">
+                    <materialIcons:MaterialIcon Kind="MagnifyAdd" />
+                </Button>
+                <Button Command="{Binding ZoomOutCommand}" Classes="SquareIconButton"
+                        IsEnabled="{Binding SheetMenusEnabled}" ToolTip.Tip="ZoomIn">
+                    <materialIcons:MaterialIcon Kind="MagnifyMinus" />
                 </Button>
             </StackPanel>
             

@@ -47,6 +47,9 @@ public partial class MainWindowViewModel : ViewModelBase
     [ObservableProperty]
     private IBrush _moduleEditModeIconColor = Brushes.Black;
     
+    [ObservableProperty]
+    private bool _zoomButtonsEnabled;
+    
     private string _currentFilePath = "";
 
     public void UpdateModuleFileTree(Dictionary<string, List<(string, string)>> moduleFileTree)
@@ -80,6 +83,7 @@ public partial class MainWindowViewModel : ViewModelBase
                     GameplayModeButtonEnabled = true;
                     GameplayModeIconColor = Brushes.Black;
                     ModuleSidebarEnabled = true;
+                    ZoomButtonsEnabled = true;
                     break;
                 case "Gameplay":
                     LoadedSheet.ChangeSheetMode(CharacterSheet.SheetMode.Gameplay);
@@ -88,6 +92,7 @@ public partial class MainWindowViewModel : ViewModelBase
                     ModuleEditModeButtonEnabled = true;
                     ModuleEditModeIconColor = Brushes.Black;
                     ModuleSidebarEnabled = false;
+                    ZoomButtonsEnabled = false;
                     break;
                 // currently unused
                 case "TriggerEdit":
@@ -164,10 +169,10 @@ public partial class MainWindowViewModel : ViewModelBase
     [RelayCommand]
     private async Task SaveSheetToCurrentPath(CancellationToken token)
     {
-        // menus are disabled until a sheet is loaded, so this *should* be unreachable
+        // this one could actually because keybinds don't have an IsEnabled property
         if (LoadedSheet == null)
         {
-            throw new InvalidOperationException("How did you even get here?");
+            return;
         }
         
         if (App.TopLevel == null)
@@ -318,6 +323,18 @@ public partial class MainWindowViewModel : ViewModelBase
         }
         var startFolder = Directory.CreateDirectory(Environment.CurrentDirectory + "/Modules/");
         Process.Start("explorer.exe", startFolder.FullName);
+    }
+
+    [RelayCommand]
+    private void ZoomIn()
+    {
+        LoadedSheet.ZoomBorder.ZoomInCommand.Execute(null);
+    }
+    
+    [RelayCommand]
+    private void ZoomOut()
+    {
+        LoadedSheet.ZoomBorder.ZoomOutCommand.Execute(null);
     }
 
     private bool _forceClose = false;

@@ -3,7 +3,8 @@
              xmlns:vm="using:AnySheet.Views"
              x:Class="AnySheet.Views.CharacterSheet"
              x:DataType="vm:CharacterSheet">
-    <ZoomBorder WheelBehavior="None" WheelWithShift="Zoom" ZoomChanged="OnZoomChanged">
+    <ZoomBorder Name="ZoomBorder" WheelBehavior="None" WheelWithShift="Zoom" ZoomChanged="OnZoomChanged"
+                EnableKeyboardNavigation="False">
         <Canvas Name="ModuleGrid" Background="LightGray" HorizontalAlignment="Stretch"
                 VerticalAlignment="Stretch" />
     </ZoomBorder>
