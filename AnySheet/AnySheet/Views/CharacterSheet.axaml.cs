@@ -148,6 +148,23 @@ public partial class CharacterSheet : UserControl
         return (true, []);
     }
 
+    public void PositionOnGrid(SheetModule.SheetModule module)
+    {
+        var zoomedGridSize = module.GridSnap * _dragBehavior.ZoomScale;
+        
+        // absolute position means the module was loaded from a file and its current position actually matters
+        if (module.AbsolutePosition)
+        {
+            Canvas.SetLeft(module, (module.GridX * zoomedGridSize) + _dragBehavior.CurrentX % zoomedGridSize);
+            Canvas.SetTop(module, (module.GridY * zoomedGridSize) + _dragBehavior.CurrentY % zoomedGridSize);
+        }
+        else
+        {
+            Canvas.SetLeft(module, _dragBehavior.CurrentX % zoomedGridSize);
+            Canvas.SetTop(module, _dragBehavior.CurrentY % zoomedGridSize);
+        }
+    }
+    
     public async Task TryAddModuleFromFile(string path)
     {
         var (success, errorMessages) = await AddModuleFromScript(path, 0, 0);
@@ -190,7 +207,12 @@ public partial class CharacterSheet : UserControl
         {
             module.SetModuleMode(mode);
         }
-        _dragBehavior.IsEnabled = (mode == SheetMode.Gameplay);
+        _dragBehavior.DragOverModules = (mode == SheetMode.Gameplay);
+        ZoomBorder.EnableZoom = (mode == SheetMode.Gameplay);
+        if (Mode == SheetMode.ModuleEdit)
+        {
+            ZoomBorder.ResetMatrix();
+        }
     }
 
     public JsonArray GetSaveData()

@@ -19,6 +19,9 @@ public class SheetDragBehavior : StyledElementBehavior<Control>
     public Action DragCompleted { get; set; } = () => {};
     public double ZoomScale = 1;
     
+    public double CurrentX { get; set; } = 0;
+    public double CurrentY { get; set; } = 0;
+    
     public static readonly StyledProperty<IEnumerable<SheetModule.SheetModule>> ModulesProperty =
         AvaloniaProperty.Register<SheetDragBehavior, IEnumerable<SheetModule.SheetModule>>("Modules");
 
@@ -27,6 +30,8 @@ public class SheetDragBehavior : StyledElementBehavior<Control>
         get => GetValue(ModulesProperty);
         set => SetValue(ModulesProperty, value);
     }
+    
+    public bool DragOverModules { get; set; } = true;
 
     protected override void OnAttachedToVisualTree()
     {
@@ -57,6 +62,17 @@ public class SheetDragBehavior : StyledElementBehavior<Control>
         if (!properties.IsLeftButtonPressed || AssociatedObject?.Parent is not Control parent || !IsEnabled)
         {
             return;
+        }
+
+        if (!DragOverModules)
+        {
+            foreach (var module in Modules)
+            {
+                if (module.IsPointerOver)
+                {
+                    return;
+                }
+            }
         }
         
         _parent = parent;
@@ -108,6 +124,8 @@ public class SheetDragBehavior : StyledElementBehavior<Control>
         var dx = (position.X - _lastPosition.X) / ZoomScale;
         var dy = (position.Y - _lastPosition.Y) / ZoomScale;
         _lastPosition = position;
+        CurrentX += dx;
+        CurrentY += dy;
         foreach (var transform in _transforms)
         {
             transform.X += dx;

@@ -123,6 +123,8 @@ public partial class SheetModule : UserControl
     public bool SaveDataLoadError => SaveDataLoadErrorMessages.Count > 0;
     public List<string> SaveDataLoadErrorMessages { get; } = [];
 
+    public bool AbsolutePosition { get; private init; }
+
     private void LogErrorMessage(string message)
     {
         SaveDataLoadErrorMessages.Add(message);
@@ -157,6 +159,7 @@ public partial class SheetModule : UserControl
             GridX = x;
             GridY = y;
             _saveData = itemData;
+            AbsolutePosition = true;
             _setup(path);
         }
     }
@@ -166,6 +169,7 @@ public partial class SheetModule : UserControl
         _parent = parent;
         GridX = gridX;
         GridY = gridY;
+        AbsolutePosition = false;
         _scriptPath = (relativeToWorkingDirectory ? "~" : "") + scriptPath;
         _saveData = [];
         
@@ -223,6 +227,8 @@ public partial class SheetModule : UserControl
 
         Console.WriteLine($"Loaded module '{_scriptPath}' with {PrimitiveGrid.Children.Count} elements. Module " +
                           $"size: {Width}x{Height} ({GridWidth}x{GridHeight} on grid), position: {GridX},{GridY}.");
+        
+        _parent.PositionOnGrid(this);
         Container.IsVisible = true;
     }
 
