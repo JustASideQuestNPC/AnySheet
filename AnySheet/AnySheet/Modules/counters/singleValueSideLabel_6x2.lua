@@ -1,3 +1,6 @@
+---@sheetModule
+---@name Single Value with Side Label (6x2)
+
 return SheetModule.create({
     elements = {
         NumberBox.create({

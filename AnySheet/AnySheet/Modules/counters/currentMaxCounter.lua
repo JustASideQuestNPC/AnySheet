@@ -1,3 +1,5 @@
+---@sheetModule
+---@name Current/Max Counter
 -- Basic counter that tracks current and maximum uses of a feature.
 
 local remainingUses = NumberBox.create({

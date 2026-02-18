@@ -1,3 +1,6 @@
+---@sheetModule
+---@name Single Line (24x3)
+
 return SheetModule.create({
     elements = {
         TextBox.create({

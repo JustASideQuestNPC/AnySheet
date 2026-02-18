@@ -1,3 +1,6 @@
+---@sheetModule
+---@name Labeled Checkbox (6x1)
+
 return SheetModule.create({
     elements = {
         ToggleButton.create({

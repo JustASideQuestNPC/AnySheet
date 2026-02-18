@@ -1,3 +1,6 @@
+---@sheetModule
+---@name Attack Quick Reference
+
 local elements = {
     StaticText.create({
         x = 0,

@@ -126,7 +126,7 @@
             
             <!-- Module Sidebar -->
             <Border Margin="0" Padding="10" BorderBrush="Black" BorderThickness="0 2 2 0"
-                    IsVisible="{Binding ModuleSidebarEnabled}" DockPanel.Dock="Left" Width="210">
+                    IsVisible="{Binding ModuleSidebarEnabled}" DockPanel.Dock="Left" Width="235">
                 <Grid ColumnDefinitions="40, 40, *" RowDefinitions="40, *" RowSpacing="5">
                     <Button Command="{Binding ReloadModuleTreeCommand}"
                             Classes="SquareIconButton" ToolTip.Tip="Reload Module List">

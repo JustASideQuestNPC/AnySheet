@@ -1,3 +1,6 @@
+---@sheetModule
+---@name Labeled Multiline (6x12)
+
 return SheetModule.create({
     elements = {
         TextBox.create({

@@ -1,3 +1,6 @@
+---@sheetModule
+---@name HP Tracker
+
 -- A shameless clone of the cool D&DBeyond HP tracker. Overly commented to act as some kind of cheat
 -- sheet until I write proper documentation for the scripting API.
 

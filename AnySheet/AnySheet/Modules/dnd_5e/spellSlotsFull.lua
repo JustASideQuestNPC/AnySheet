@@ -1,4 +1,7 @@
-﻿-- Spell slot tracker for full caster classes.
+﻿---@sheetModule
+---@name Spell Slot Tracker (Full Caster)
+
+-- Spell slot tracker for full caster classes.
 
 local SPELL_SLOT_AMOUNTS = {4, 3, 3, 3, 3, 2, 2, 1, 1}
 

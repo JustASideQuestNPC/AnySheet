@@ -1,3 +1,6 @@
+---@sheetModule
+---@name Labeled List (9x24)
+
 return SheetModule.create({
     elements = {
         TextBox.create({

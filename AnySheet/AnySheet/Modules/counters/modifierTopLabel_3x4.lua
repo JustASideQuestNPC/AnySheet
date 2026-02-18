@@ -1,3 +1,6 @@
+---@sheetModule
+---@name Modifier with Top Label (3x4)
+
 return SheetModule.create({
     elements = {
         TextBox.create({

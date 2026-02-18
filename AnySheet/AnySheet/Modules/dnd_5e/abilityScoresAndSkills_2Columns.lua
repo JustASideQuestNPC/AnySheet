@@ -1,3 +1,6 @@
+---@sheetModule
+---@name Ability Scores and Skills (2 Columns)
+
 -- Tracks all 6 ability scores and your skill/saving throw proficiencies.
 
 local SKILL_NAMES = {

@@ -173,7 +173,24 @@ public static class Utils
                 // .d.lua files are type definitions for code editors
                 if (file.Extension == ".lua" && !file.Name.EndsWith(".d.lua"))
                 {
-                    files.Add((file.Name, file.Name.Replace(".lua", "")));
+                    // check for a name attribute
+                    using var reader = new StreamReader(file.OpenRead());
+                    var line1 = reader.ReadLine();
+                    var line2 = reader.ReadLine();
+                    // if the file is less than 2 lines long then it can't even return a module
+                    if (line2 == null)
+                    {
+                        continue;
+                    }
+                    // use a name attribute if it exists, otherwise just use the filename
+                    if (line1! == "---@sheetModule" && line2.StartsWith("---@name"))
+                    {
+                        files.Add((file.Name, line2[9..]));
+                    }
+                    else
+                    {
+                        files.Add((file.Name, Path.GetFileNameWithoutExtension(file.Name)));
+                    }
                 }
             }
             if (files.Count > 0)

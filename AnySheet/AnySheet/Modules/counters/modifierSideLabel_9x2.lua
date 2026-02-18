@@ -1,3 +1,6 @@
+---@sheetModule
+---@name Modifier with Side Label (9x2)
+
 return SheetModule.create({
     elements = {
         NumberBox.create({

@@ -1,3 +1,6 @@
+---@sheetModule
+---@name Weapon and Armor Proficiencies
+
 return SheetModule.create({
     elements = {
         StaticText.create({

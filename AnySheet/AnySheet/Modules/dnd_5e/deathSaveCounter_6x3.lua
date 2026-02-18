@@ -1,3 +1,6 @@
+---@sheetModule
+---@name Death Save Tracker (6x3)
+
 local elements = {
     StaticText.create({
         x = 0,
