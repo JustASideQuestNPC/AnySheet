@@ -127,14 +127,19 @@
             <!-- Module Sidebar -->
             <Border Margin="0" Padding="10" BorderBrush="Black" BorderThickness="0 2 2 0"
                     IsVisible="{Binding ModuleSidebarEnabled}" DockPanel.Dock="Left" Width="210">
-                <Grid ColumnDefinitions="40, *" RowDefinitions="40, *" RowSpacing="5">
+                <Grid ColumnDefinitions="40, 40, *" RowDefinitions="40, *" RowSpacing="5">
                     <Button Command="{Binding ReloadModuleTreeCommand}"
                             Classes="SquareIconButton" ToolTip.Tip="Reload Module List">
                         <materialIcons:MaterialIcon Kind="Reload" />
                     </Button>
-                    <TextBlock Grid.Column="1" Grid.Row="1" Foreground="Black"
-                               FontFamily="{DynamicResource LatoBold}" FontSize="20">Modules</TextBlock>
-                    <Border Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="2" Background="LightGray"
+                    <Button Grid.Column="1" Grid.Row="0" Command="{Binding OpenModuleFolderCommand}"
+                            Classes="SquareIconButton" ToolTip.Tip="Open Module Folder">
+                        <materialIcons:MaterialIcon Kind="FolderOpen" />
+                    </Button>
+                    <TextBlock Grid.Column="2" Grid.Row="0" Foreground="Black"
+                               FontFamily="{DynamicResource LatoBold}" FontSize="20"
+                               VerticalAlignment="Center">Modules</TextBlock>
+                    <Border Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="3" Background="LightGray"
                             CornerRadius="7">
                         
                         <!-- Folder List -->

@@ -125,7 +125,7 @@ public partial class MainWindowViewModel : ViewModelBase
         LoadedSheet = new CharacterSheet(this);
         SheetMenusEnabled = true;
         _currentFilePath = "";
-        ChangeUiMode("Gameplay");
+        ChangeUiMode("ModuleEdit");
     }
 
     [RelayCommand]
@@ -306,6 +306,18 @@ public partial class MainWindowViewModel : ViewModelBase
     {
         Utils.RebuildModuleTree();
         UpdateModuleFileTree(Utils.ModuleFileTree);
+    }
+    
+    [RelayCommand]
+    private void OpenModuleFolder()
+    {
+        if (App.TopLevel == null)
+        {
+            Console.WriteLine("No top level window!");
+            return;
+        }
+        var startFolder = Directory.CreateDirectory(Environment.CurrentDirectory + "/Modules/");
+        Process.Start("explorer.exe", startFolder.FullName);
     }
 
     private bool _forceClose = false;
