@@ -75,9 +75,10 @@ public partial class StaticTextLua : ModulePrimitiveLuaBase
         return value.TryRead(out module);
     }
 
-    public override UserControl CreateUiControl()
+    public override UserControl CreateUiControl(int xOffset, int yOffset)
     {
-        return new StaticTextPrimitive(GridX, GridY, GridWidth, GridHeight, _text, _alignment, _fontStyle, _color);
+        return new StaticTextPrimitive(GridX + xOffset, GridY + yOffset, GridWidth, GridHeight, _text, _alignment,
+                                       _fontStyle, _color);
     }
     
     // static text isn't interactive and saves no data

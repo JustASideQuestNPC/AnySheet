@@ -43,9 +43,9 @@ public partial class MultilineTextBoxLua : ModulePrimitiveLuaBase
         return value.TryRead(out module);
     }
     
-    public override UserControl CreateUiControl()
+    public override UserControl CreateUiControl(int xOffset, int yOffset)
     {
-        _uiControl = new MultiLineTextBoxPrimitive(GridX, GridY, GridWidth, GridHeight, Text);
+        _uiControl = new MultiLineTextBoxPrimitive(GridX + xOffset, GridY + yOffset, GridWidth, GridHeight, Text);
         return _uiControl;
     }
     

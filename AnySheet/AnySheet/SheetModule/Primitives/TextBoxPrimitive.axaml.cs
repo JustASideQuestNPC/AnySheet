@@ -110,10 +110,10 @@ public partial class TextBoxLua : ModulePrimitiveLuaBase
         return value.TryRead(out module);
     }
 
-    public override UserControl CreateUiControl()
+    public override UserControl CreateUiControl(int xOffset, int yOffset)
     {
-        _uiControl = new TextBoxPrimitive(this, GridX, GridY, GridWidth, GridHeight, _alignment, _fontStyle, _color,
-                                          Text, _borderType, _borderColor);
+        _uiControl = new TextBoxPrimitive(this, GridX + xOffset, GridY + yOffset, GridWidth, GridHeight, _alignment,
+                                          _fontStyle, _color, Text, _borderType, _borderColor);
         return _uiControl;
     }
 

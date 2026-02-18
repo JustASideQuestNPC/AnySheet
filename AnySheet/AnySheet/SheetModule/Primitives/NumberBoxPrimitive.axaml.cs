@@ -147,10 +147,11 @@ public partial class NumberBoxLua : ModulePrimitiveLuaBase
         return value.TryRead(out module);
     }
     
-    public override UserControl CreateUiControl()
+    public override UserControl CreateUiControl(int xOffset, int yOffset)
     {
-        _uiControl = new NumberBoxPrimitive(this, GridX, GridY, GridWidth, GridHeight, CurrentValue, MinValue, MaxValue,
-                                            IntegerOnly, _borderType, _borderColor, _usePlusCharacter);
+        _uiControl = new NumberBoxPrimitive(this, GridX + xOffset, GridY + yOffset, GridWidth, GridHeight, CurrentValue,
+                                            MinValue, MaxValue, IntegerOnly, _borderType, _borderColor,
+                                            _usePlusCharacter);
         return _uiControl;
     }
 

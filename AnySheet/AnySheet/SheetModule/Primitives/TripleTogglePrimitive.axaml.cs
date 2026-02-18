@@ -67,9 +67,9 @@ public partial class TripleToggleLua : ModulePrimitiveLuaBase
         return value.TryRead(out module);
     }
 
-    public override UserControl CreateUiControl()
+    public override UserControl CreateUiControl(int xOffset, int yOffset)
     {
-        _uiControl = new TripleTogglePrimitive(this, GridX, GridY, _onToggle, _onStateChange);
+        _uiControl = new TripleTogglePrimitive(this, GridX + xOffset, GridY + yOffset, _onToggle, _onStateChange);
         _uiControl.CurrentState = _buttonState;
         return _uiControl;
     }

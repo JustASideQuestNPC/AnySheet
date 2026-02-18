@@ -49,9 +49,10 @@ public partial class ButtonLua : ModulePrimitiveLuaBase
         return value.TryRead(out module);
     }
     
-    public override UserControl CreateUiControl()
+    public override UserControl CreateUiControl(int xOffset, int yOffset)
     {
-        _uiControl = new ButtonPrimitive(this, GridX, GridY, GridWidth, GridHeight, _icon, _callback);
+        _uiControl = new ButtonPrimitive(this, GridX + xOffset, GridY + yOffset, GridWidth, GridHeight, _icon,
+                                         _callback);
         return _uiControl;
     }
     

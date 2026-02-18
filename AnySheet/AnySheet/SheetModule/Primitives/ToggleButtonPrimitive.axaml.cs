@@ -66,9 +66,9 @@ public partial class ToggleButtonLua : ModulePrimitiveLuaBase
         return value.TryRead(out module);
     }
 
-    public override UserControl CreateUiControl()
+    public override UserControl CreateUiControl(int xOffset, int yOffset)
     {
-        _uiControl = new ToggleButtonPrimitive(this, GridX, GridY, _onToggle)
+        _uiControl = new ToggleButtonPrimitive(this, GridX + xOffset, GridY + yOffset, _onToggle)
         {
             Button =
             {

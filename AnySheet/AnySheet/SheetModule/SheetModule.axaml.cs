@@ -259,12 +259,14 @@ public partial class SheetModule : UserControl
             LogErrorMessage("Module script must return a SheetModule instance.");
             return false;
         }
+        
+        // for calculating grid size
+        var left = int.MaxValue;
+        var top = int.MaxValue;
+        var right = -int.MaxValue;
+        var bottom = -int.MaxValue;
 
-        if (module.NoBorder)
-        {
-            // Container.BorderBrush = Avalonia.Media.Brushes.Transparent;
-        }
-
+        // load all lua primitives
         var i = 0;
         var primitiveLoadFailure = false;
         foreach (var (_, e) in module.Elements)
@@ -288,20 +290,11 @@ public partial class SheetModule : UserControl
                 primitiveLoadFailure = true;
                 continue;
             }
-
-            while (PrimitiveGrid.ColumnDefinitions.Count < primitive.GridX + primitive.GridWidth)
-            {
-                PrimitiveGrid.ColumnDefinitions.Add(new ColumnDefinition(new GridLength(GridSize)));
-                ++GridWidth;
-            }
-            while (PrimitiveGrid.RowDefinitions.Count < primitive.GridY + primitive.GridHeight)
-            {
-                PrimitiveGrid.RowDefinitions.Add(new RowDefinition(new GridLength(GridSize)));
-                ++GridHeight;
-            }
-
-            Width = GridWidth * (GridSize + PrimitiveGrid.ColumnSpacing) + BorderWidth;
-            Height = GridHeight * (GridSize + PrimitiveGrid.RowSpacing) + BorderWidth;
+            
+            left = Math.Min(left, primitive.GridX);
+            top = Math.Min(top, primitive.GridY);
+            right = Math.Max(right, primitive.GridX + primitive.GridWidth);
+            bottom = Math.Max(bottom, primitive.GridY + primitive.GridHeight);
             
             if (itemData.Count > i)
             {
@@ -311,11 +304,31 @@ public partial class SheetModule : UserControl
             
             primitive.Lua = _lua;
             _items.Add(primitive);
+        }
+        GridWidth = right - left;
+        GridHeight = bottom - top;
+        
+        for (var x = 0; x < GridWidth; ++x)
+        {
+            PrimitiveGrid.ColumnDefinitions.Add(new ColumnDefinition(new GridLength(GridSize)));
+        }
+        for (var y = 0; y < GridHeight; ++y)
+        {
+            PrimitiveGrid.RowDefinitions.Add(new RowDefinition(new GridLength(GridSize)));
+        }
+        Width = GridWidth * (GridSize + PrimitiveGrid.ColumnSpacing) + BorderWidth;
+        Height = GridHeight * (GridSize + PrimitiveGrid.RowSpacing) + BorderWidth;
+
+        Console.WriteLine($"{_items.Count} elements loaded. Grid size: {GridWidth}x{GridHeight}");
+        foreach (var item in _items)
+        {
+            // i can't just modify the GridX and GridY fields because i want the shift to be invisible from inside the
+            // lua script and i think that would mess with it
+            var uiControl = item.CreateUiControl(-left, -top);
             
-            var uiControl = primitive.CreateUiControl();
             PrimitiveGrid.Children.Add(uiControl);
         }
-
+        
         return !primitiveLoadFailure;
     }
 

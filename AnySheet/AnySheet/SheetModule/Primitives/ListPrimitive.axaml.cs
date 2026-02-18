@@ -35,9 +35,9 @@ public partial class ListPrimitiveLua : ModulePrimitiveLuaBase
         return value.TryRead(out result);
     }
 
-    public override UserControl CreateUiControl()
+    public override UserControl CreateUiControl(int xOffset, int yOffset)
     {
-        _uiControl = new ListPrimitive(GridX, GridY, GridWidth, GridHeight, _entries);
+        _uiControl = new ListPrimitive(GridX + xOffset, GridY + yOffset, GridWidth, GridHeight, _entries);
         return _uiControl;
     }
     

@@ -7,10 +7,8 @@ public partial class LuaSheetModule
 {
     private static readonly Dictionary<string, LuaValueType> ConstructorArgs = new()
     {
-        ["elements"] = LuaValueType.Table,
-        ["[noBorder]"] = LuaValueType.Boolean
+        ["elements"] = LuaValueType.Table
     };
-    public bool NoBorder { get; private set; } = false;
     public LuaTable Elements { get; private set; } = new();
 
     [LuaMember("create")]
@@ -26,7 +24,6 @@ public partial class LuaSheetModule
 
         var module = new LuaSheetModule
         {
-            NoBorder = LuaSandbox.GetTableValueOrDefault(args, "border", false),
             Elements = elements
         };
         return module;

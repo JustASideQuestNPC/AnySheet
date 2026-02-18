@@ -109,10 +109,10 @@ public partial class DividerLua : ModulePrimitiveLuaBase
         return value.TryRead(out module);
     }
 
-    public override UserControl CreateUiControl()
+    public override UserControl CreateUiControl(int xOffset, int yOffset)
     {
-        return new DividerPrimitive(GridX, GridY, _horizontal, _length, _thickness, _color, _capStart, _capEnd,
-                                    _betweenSquares);
+        return new DividerPrimitive(GridX + xOffset, GridY + yOffset, _horizontal, _length, _thickness, _color,
+                                    _capStart, _capEnd, _betweenSquares);
     }
 
     // dividers aren't interactive and save no data
