@@ -20,10 +20,10 @@ public abstract class ModulePrimitiveLuaBase
     public LuaSandbox Lua;
     
     [LuaMember("x")]
-    public int GridX { get; set; }
+    public int GridX { get; protected init; }
     
     [LuaMember("y")]
-    public int GridY { get; set; }
+    public int GridY { get; protected init; }
     
     [LuaMember("width")]
     public int GridWidth { get; protected init; }

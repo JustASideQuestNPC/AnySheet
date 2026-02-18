@@ -23,4 +23,5 @@ TextBox = {}
 --- @param args { x: integer, y: integer, width: integer, height: integer, color: ModuleColor,
 ---               defaultText: string?, alignment: TextAlignment?, style: TextStyle?,
 ---               borderType: BorderType?, borderColor: ModuleColor? }
+--- @return TextBox
 function TextBox.create(args) end

@@ -10,4 +10,5 @@ List = {}
 --- Creates the element. The list itself doesn't extend all the way to the bottom of the element
 --- because of the text box used to add entries.
 --- @param args { x: integer, y: integer, width: integer, height: integer }
+--- @return List
 function List.create(args) end

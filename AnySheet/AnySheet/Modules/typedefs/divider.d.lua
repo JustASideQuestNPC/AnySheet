@@ -26,4 +26,5 @@ Divider = {}
 --- @param args { x: integer, y: integer, direction: "vertical" | "horizontal", length: integer,
 ---               color: ModuleColor, thickness: integer?, capStart: boolean?, capEnd: boolean?,
 ---               betweenSquares: boolean? }
+--- @return Divider
 function Divider.create(args) end
