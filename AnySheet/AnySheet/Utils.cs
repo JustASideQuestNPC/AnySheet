@@ -106,9 +106,13 @@ public static class Utils
 
     public static void VerifyModuleTree()
     {
-        Console.WriteLine(ModuleFileTree.Count == 0 ? "Module tree is empty; rebuilding..." : "Module tree is valid.");
+        if (ModuleFileTree.Count == 0)
+        {
+            RebuildModuleTree();
+            return;
+        }
         
-        // check for deleted files/folders
+        // check for deleted files
         foreach (var (folderName, fileData) in ModuleFileTree)
         {
             Console.WriteLine($"Checking folder {folderName} for deleted files");
@@ -136,6 +140,11 @@ public static class Utils
         {
             var dirName = Path.GetRelativePath(Environment.CurrentDirectory + @"\Modules\", dir.FullName);
             Console.WriteLine($"Checking folder {dirName} for added files");
+            if (!ModuleFileTree.ContainsKey(dirName))
+            {
+                RebuildModuleTree();
+                return;
+            }
             foreach (var file in dir.EnumerateFiles())
             {
                 if (file.Extension != ".lua" || file.Name.EndsWith(".d.lua"))
