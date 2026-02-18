@@ -1,14 +1,12 @@
-using System;
 using Avalonia;
-using Avalonia.Controls.ApplicationLifetimes;
-using Avalonia.Data.Core;
-using Avalonia.Data.Core.Plugins;
-using System.Linq;
 using Avalonia.Controls;
-using Avalonia.Input;
+using Avalonia.Controls.ApplicationLifetimes;
+using Avalonia.Data.Core.Plugins;
 using Avalonia.Markup.Xaml;
 using CrashHandler.ViewModels;
 using CrashHandler.Views;
+using System;
+using System.Linq;
 
 namespace CrashHandler;
 

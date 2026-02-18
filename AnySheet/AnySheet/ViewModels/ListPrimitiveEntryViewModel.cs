@@ -1,5 +1,4 @@
 ﻿using AnySheet.SheetModule.Primitives;
-using Avalonia.Interactivity;
 
 namespace AnySheet.ViewModels;
 

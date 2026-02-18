@@ -1,26 +1,20 @@
-﻿using System;
+﻿using AnySheet.Views;
+using Avalonia.Controls;
+using Avalonia.Media;
+using Avalonia.Platform.Storage;
+using AvaloniaDialogs.Views;
+using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
+using DialogHostAvalonia;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Text.Json;
-using System.Text.Json.Nodes;
 using System.Threading;
 using System.Threading.Tasks;
-using AnySheet.Views;
-using Avalonia.Controls;
-using Avalonia.Markup.Xaml.Styling;
-using Avalonia.Media;
-using Avalonia.Platform.Storage;
-using Avalonia.Styling;
-using AvaloniaDialogs.Views;
-using CommunityToolkit.Mvvm.ComponentModel;
-using CommunityToolkit.Mvvm.Input;
-using DialogHostAvalonia;
-using Material.Icons;
-using Material.Icons.Avalonia;
-using Microsoft.VisualBasic.CompilerServices;
 
 namespace AnySheet.ViewModels;
 

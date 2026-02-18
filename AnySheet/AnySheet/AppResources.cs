@@ -1,7 +1,6 @@
-﻿using System;
+﻿using Avalonia;
+using System;
 using System.Collections.Generic;
-using Avalonia;
-using Avalonia.Media;
 
 namespace AnySheet;
 

@@ -1,4 +1,10 @@
-﻿using System;
+﻿using AnySheet.Behaviors;
+using AnySheet.ViewModels;
+using Avalonia.Controls;
+using Avalonia.Controls.PanAndZoom;
+using Avalonia.Platform.Storage;
+using Avalonia.Xaml.Interactivity;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
@@ -7,13 +13,6 @@ using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Threading;
 using System.Threading.Tasks;
-using AnySheet.Behaviors;
-using AnySheet.ViewModels;
-using Avalonia.Controls;
-using Avalonia.Controls.PanAndZoom;
-using Avalonia.Platform.Storage;
-using Avalonia.Xaml.Interactivity;
-using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace AnySheet.Views;
 

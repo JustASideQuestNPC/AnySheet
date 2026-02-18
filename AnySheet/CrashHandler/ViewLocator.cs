@@ -1,7 +1,7 @@
-using System;
 using Avalonia.Controls;
 using Avalonia.Controls.Templates;
 using CrashHandler.ViewModels;
+using System;
 
 namespace CrashHandler;
 
