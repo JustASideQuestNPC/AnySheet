@@ -15,41 +15,32 @@ using System.IO;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
+using Avalonia;
 
 namespace AnySheet.ViewModels;
 
 public partial class MainWindowViewModel : ViewModelBase
 {
-    [ObservableProperty]
-    private CharacterSheet? _loadedSheet;
-    
-    [ObservableProperty]
-    private ObservableCollection<ModuleFolderViewModel> _moduleFolders = [];
+    [ObservableProperty] private CharacterSheet? _loadedSheet;
 
-    [ObservableProperty]
-    private bool _sheetMenusEnabled;
-    
-    [ObservableProperty]
-    private bool _moduleSidebarEnabled;
-    
-    [ObservableProperty]
-    private double _modeIconOpacity = 0.5;
+    [ObservableProperty] private ObservableCollection<ModuleFolderViewModel> _moduleFolders = [];
 
-    [ObservableProperty]
-    private bool _gameplayModeButtonEnabled;
-    
-    [ObservableProperty]
-    private IBrush _gameplayModeIconColor = Brushes.Black;
-    
-    [ObservableProperty]
-    private bool _moduleEditModeButtonEnabled;
-    
-    [ObservableProperty]
-    private IBrush _moduleEditModeIconColor = Brushes.Black;
-    
-    [ObservableProperty]
-    private bool _zoomButtonsEnabled;
-    
+    [ObservableProperty] private bool _sheetMenusEnabled;
+
+    [ObservableProperty] private bool _moduleSidebarEnabled;
+
+    [ObservableProperty] private double _modeIconOpacity = 0.5;
+
+    [ObservableProperty] private bool _gameplayModeButtonEnabled;
+
+    [ObservableProperty] private IBrush _gameplayModeIconColor = Brushes.Black;
+
+    [ObservableProperty] private bool _moduleEditModeButtonEnabled;
+
+    [ObservableProperty] private IBrush _moduleEditModeIconColor = Brushes.Black;
+
+    [ObservableProperty] private bool _zoomButtonsEnabled;
+
     private string _currentFilePath = "";
 
     public void UpdateModuleFileTree(Dictionary<string, List<(string, string)>> moduleFileTree)
@@ -60,7 +51,7 @@ public partial class MainWindowViewModel : ViewModelBase
             ModuleFolders.Add(new ModuleFolderViewModel(folderName, files));
         }
     }
-    
+
     [RelayCommand]
     public void ChangeUiMode(object? parameter)
     {
@@ -69,7 +60,7 @@ public partial class MainWindowViewModel : ViewModelBase
         {
             throw new InvalidOperationException("How did you even get here?");
         }
-        
+
         if (parameter != null)
         {
             Console.WriteLine($"Changing UI mode to {parameter}");
@@ -100,7 +91,7 @@ public partial class MainWindowViewModel : ViewModelBase
             }
         }
     }
-    
+
     [RelayCommand]
     public async Task CreateNewSheet()
     {
@@ -141,11 +132,13 @@ public partial class MainWindowViewModel : ViewModelBase
         {
             throw new InvalidOperationException("How did you even get here?");
         }
+
         if (App.TopLevel == null)
         {
             Console.WriteLine("No top level window!");
             return;
         }
+
         var startFolder = await App.TopLevel.StorageProvider.TryGetFolderFromPathAsync(
             Environment.CurrentDirectory + "/Modules");
         var files = await App.TopLevel.StorageProvider.OpenFilePickerAsync(new FilePickerOpenOptions
@@ -174,20 +167,20 @@ public partial class MainWindowViewModel : ViewModelBase
         {
             return;
         }
-        
+
         if (App.TopLevel == null)
         {
             Console.WriteLine("No top level window!");
             return;
         }
-        
+
         Console.WriteLine($"Saving sheet to {_currentFilePath}");
         if (_currentFilePath == "")
         {
             await SaveSheetToNewPath(token);
             return;
         }
-        
+
         var file = await App.TopLevel.StorageProvider.TryGetFileFromPathAsync(_currentFilePath);
         if (file != null)
         {
@@ -209,6 +202,7 @@ public partial class MainWindowViewModel : ViewModelBase
             Console.WriteLine("No top level window!");
             return;
         }
+
         var startFolder = await App.TopLevel.StorageProvider.TryGetFolderFromPathAsync(
             Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments));
         if (startFolder == null)
@@ -216,6 +210,7 @@ public partial class MainWindowViewModel : ViewModelBase
             Console.WriteLine("No documents folder!");
             return;
         }
+
         var file = await App.TopLevel.StorageProvider.SaveFilePickerAsync(new FilePickerSaveOptions
         {
             Title = "Save sheet as...",
@@ -224,7 +219,7 @@ public partial class MainWindowViewModel : ViewModelBase
             SuggestedFileName = "CharacterSheet",
             SuggestedStartLocation = startFolder
         });
-        
+
         if (file != null)
         {
             await SaveSheet(file);
@@ -256,12 +251,13 @@ public partial class MainWindowViewModel : ViewModelBase
                 await SaveSheetToCurrentPath(CancellationToken.None);
             }
         }
-        
+
         if (App.TopLevel == null)
         {
             Console.WriteLine("No top level window!");
             return;
         }
+
         var startFolder = await App.TopLevel.StorageProvider.TryGetFolderFromPathAsync(
             Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments));
         if (startFolder == null)
@@ -269,6 +265,7 @@ public partial class MainWindowViewModel : ViewModelBase
             Console.WriteLine("No documents folder!");
             return;
         }
+
         var files = await App.TopLevel.StorageProvider.OpenFilePickerAsync(new FilePickerOpenOptions
         {
             Title = "Choose a saved sheet file",
@@ -312,7 +309,7 @@ public partial class MainWindowViewModel : ViewModelBase
         Utils.RebuildModuleTree();
         UpdateModuleFileTree(Utils.ModuleFileTree);
     }
-    
+
     [RelayCommand]
     private void OpenModuleFolder()
     {
@@ -321,6 +318,7 @@ public partial class MainWindowViewModel : ViewModelBase
             Console.WriteLine("No top level window!");
             return;
         }
+
         var startFolder = Directory.CreateDirectory(Environment.CurrentDirectory + "/Modules/");
         Process.Start("explorer.exe", startFolder.FullName);
     }
@@ -330,15 +328,47 @@ public partial class MainWindowViewModel : ViewModelBase
     {
         LoadedSheet.ZoomBorder.ZoomInCommand.Execute(null);
     }
-    
+
     [RelayCommand]
     private void ZoomOut()
     {
         LoadedSheet.ZoomBorder.ZoomOutCommand.Execute(null);
     }
 
+    [RelayCommand]
+    private void ResetCamera()
+    {
+        if (LoadedSheet != null)
+        {
+            LoadedSheet.ZoomBorder.ResetMatrix();
+        }
+    }
+
+    [RelayCommand]
+    private async Task ResetSheetPositions()
+    {
+        if (LoadedSheet == null)
+        {
+            return;
+        }
+        
+        var dialog = new TwofoldDialog
+        {
+            Message = "This will reset the position of ALL modules on the sheet. This should only be use if you " +
+                      "loaded a sheet and all the modules are in the wrong position. Are you sure you want to do this?",
+            PositiveText = "Yes",
+            NegativeText = "No"
+        };
+        var result = await dialog.ShowAsync();
+        if (result == true)
+        {
+            ResetCamera();
+            LoadedSheet.ResetModulePositions();
+        }
+    }
+
     private bool _forceClose = false;
-    public async void OnWindowClosed(object? sender, WindowClosingEventArgs e)
+    public async Task OnWindowClosed(object? sender, WindowClosingEventArgs e)
     {
         if (LoadedSheet != null && LoadedSheet.HasBeenModified && !_forceClose)
         {

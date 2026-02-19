@@ -13,6 +13,7 @@ using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Threading;
 using System.Threading.Tasks;
+using Avalonia;
 
 namespace AnySheet.Views;
 
@@ -30,7 +31,7 @@ public partial class CharacterSheet : UserControl
     private bool _moduleAddedOrRemoved = false;
 
     public bool CanvasDragEnabled => Mode == SheetMode.Gameplay;
-    public List<string> SaveDataLoadErrorMessages { get; private set; } = [];
+    public List<string> SaveDataLoadErrorMessages { get; } = [];
 
     public bool HasBeenModified
     {
@@ -53,19 +54,12 @@ public partial class CharacterSheet : UserControl
         }
     }
     
-    private readonly SheetDragBehavior _dragBehavior;
     private readonly MainWindowViewModel _parent;
 
     public CharacterSheet(MainWindowViewModel parent)
     {
         InitializeComponent();
         _parent = parent;
-        _dragBehavior = new SheetDragBehavior
-        {
-            Modules = Modules,
-            DragCompleted = OnDragCompleted
-        };
-        Interaction.GetBehaviors(this).Add(_dragBehavior);
     }
 
     public async Task<bool> LoadSaveFile(IStorageFile file, CancellationToken token)
@@ -150,20 +144,20 @@ public partial class CharacterSheet : UserControl
 
     public void PositionOnGrid(SheetModule.SheetModule module)
     {
-        var zoomedGridSize = module.GridSnap * _dragBehavior.ZoomScale;
+        var zoomedGridSize = module.GridSnap * ZoomBorder.ZoomX;
         
         // absolute position means the module was loaded from a file and doesn't need to be repositioned because the
         // "camera" will always be at (0, 0) when loading from a file
-        if (module.AbsolutePosition)
+        if (!module.AbsolutePosition)
         {
-            Canvas.SetLeft(module, module.GridX * module.GridSnap);
-            Canvas.SetTop(module, module.GridY * module.GridSnap);
+            module.GridX = (int)(Math.Floor(-ZoomBorder.OffsetX / zoomedGridSize) + 1);
+            module.GridY = (int)(Math.Floor(-ZoomBorder.OffsetY / zoomedGridSize) + 1);
+            module.StartX = module.GridX;
+            module.StartY = module.GridY;
         }
-        else
-        {
-            Canvas.SetLeft(module, _dragBehavior.CurrentX % zoomedGridSize);
-            Canvas.SetTop(module, _dragBehavior.CurrentY % zoomedGridSize);
-        }
+            
+        Canvas.SetLeft(module, module.GridX * zoomedGridSize);
+        Canvas.SetTop(module, module.GridY * zoomedGridSize);
     }
     
     public async Task TryAddModuleFromFile(string path)
@@ -175,30 +169,22 @@ public partial class CharacterSheet : UserControl
         }
     }
 
-    private void OnDragCompleted()
-    {
-        foreach (var module in Modules)
-        {
-            module.OnCameraMoveCompleted();
-        }
-    }
-    
-    private void OnZoomChanged(object sender, ZoomChangedEventArgs e)
-    {
-        // ZoomX and ZoomY are always the same
-        _dragBehavior.ZoomScale = e.ZoomX;
-        
-        foreach (var module in Modules)
-        {
-            module.OnCameraMoveCompleted();
-        }
-    }
-
     public void RemoveModule(SheetModule.SheetModule module)
     {
         Modules.Remove(module);
         ModuleGrid.Children.Remove(module);
         _moduleAddedOrRemoved = true;
+    }
+
+    public void ResetModulePositions()
+    {
+        foreach (var module in Modules)
+        {
+            Canvas.SetLeft(module, 0);
+            Canvas.SetTop(module, 0);
+            module.GridX = 0;
+            module.GridY = 0;
+        }
     }
 
     public void ChangeSheetMode(SheetMode mode)
@@ -208,12 +194,8 @@ public partial class CharacterSheet : UserControl
         {
             module.SetModuleMode(mode);
         }
-        _dragBehavior.DragOverModules = (mode == SheetMode.Gameplay);
         ZoomBorder.EnableZoom = (mode == SheetMode.Gameplay);
-        if (Mode == SheetMode.ModuleEdit)
-        {
-            ZoomBorder.ResetMatrix();
-        }
+        ZoomBorder.PanButton = (Mode == SheetMode.Gameplay ? ButtonName.Left : ButtonName.Right);
     }
 
     public JsonArray GetSaveData()

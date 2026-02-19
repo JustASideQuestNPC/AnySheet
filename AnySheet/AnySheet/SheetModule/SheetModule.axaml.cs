@@ -23,8 +23,6 @@ public partial class SheetModule : UserControl
     private CharacterSheet _parent = null!;
     private string _scriptPath = ""; // for saving
     private bool _relativeToWorkingDirectory = false;
-    private int _gridX;
-    private int _gridY;
     private int _gridWidth;
     private int _gridHeight;
     private bool _moduleWasDragged = false;
@@ -40,33 +38,24 @@ public partial class SheetModule : UserControl
     [RelayCommand]
     private void DragCompleted(ModuleDragBehavior.DragCompletedCommandParameters args)
     {
-        if (_gridX != (int)args.GridPosition.X || _gridY != (int)args.GridPosition.Y)
+        if (GridX - StartX != (int)args.GridPosition.X || GridY - StartY != (int)args.GridPosition.Y)
         {
             _moduleWasDragged = true;
         }
         
-        _gridX = (int)args.GridPosition.X;
-        _gridY = (int)args.GridPosition.Y;
+        GridX = (int)args.GridPosition.X + StartX;
+        GridY = (int)args.GridPosition.Y + StartY;
+        
+        Console.WriteLine($"Module dragged to ({GridX},{GridY}).");
     }
 
-    public int GridX
-    {
-        get => _gridX;
-        private set
-        {
-            _gridX = value;
-            Canvas.SetLeft(this, value * (GridSize + GridSpacing));
-        }
-    }
-    public int GridY
-    {
-        get => _gridY;
-        private set
-        {
-            _gridY = value;
-            Canvas.SetTop(this, value * (GridSize + GridSpacing));
-        }
-    }
+    public int GridX { get; set; }
+
+    public int GridY { get; set; }
+    
+    public int StartX { get; set; }
+    
+    public int StartY { get; set; }
 
     private int GridWidth
     {
@@ -224,11 +213,10 @@ public partial class SheetModule : UserControl
             _parent.RemoveModule(this);
             return;
         }
-
-        Console.WriteLine($"Loaded module '{_scriptPath}' with {PrimitiveGrid.Children.Count} elements. Module " +
-                          $"size: {Width}x{Height} ({GridWidth}x{GridHeight} on grid), position: {GridX},{GridY}.");
         
         _parent.PositionOnGrid(this);
+        Console.WriteLine($"Loaded module '{_scriptPath}' with {PrimitiveGrid.Children.Count} elements. Module " +
+                          $"size: {Width}x{Height} ({GridWidth}x{GridHeight} on grid), position: {GridX},{GridY}.");
         Container.IsVisible = true;
     }
 
@@ -378,14 +366,8 @@ public partial class SheetModule : UserControl
             itemData.Add(item.GetSaveObject());
         }
         
+        Console.WriteLine($"Saved module at {GridX}, {GridY}");
+        
         return [(_relativeToWorkingDirectory ? "~" : "") + _scriptPath, GridX, GridY, itemData];
-    }
-
-    public void OnCameraMoveCompleted()
-    {
-        foreach (var item in _items)
-        {
-            item.OnCameraMoveCompleted();
-        }
     }
 }

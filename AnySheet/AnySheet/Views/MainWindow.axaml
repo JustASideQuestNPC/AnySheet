@@ -86,6 +86,8 @@
     <Window.KeyBindings>
         <KeyBinding Command="{Binding CrashProgramCommand}" Gesture="Ctrl+Alt+OemOpenBrackets" />
         <KeyBinding Command="{Binding SaveSheetToCurrentPathCommand}" Gesture="Ctrl+S" />
+        <KeyBinding Command="{Binding ResetCameraCommand}" Gesture="Ctrl+R" />
+        <KeyBinding Command="{Binding ResetSheetPositionsCommand}" Gesture="Ctrl+Shift+R" />
     </Window.KeyBindings>
     
     <dialogs:ReactiveDialogHost Background="White" Padding="0" CloseOnClickAway="False"
