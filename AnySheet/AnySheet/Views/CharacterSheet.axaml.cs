@@ -14,6 +14,7 @@ using System.Text.Json.Nodes;
 using System.Threading;
 using System.Threading.Tasks;
 using Avalonia;
+using Avalonia.Animation;
 
 namespace AnySheet.Views;
 
@@ -76,24 +77,29 @@ public partial class CharacterSheet : UserControl
                 return false;
             }
 
-            var currentModule = 0;
+            var moduleBuffer = new List<SheetModule.SheetModule>();
             foreach (var moduleData in saveData)
             {
                 if (moduleData is not JsonArray)
                 {
                     // "catch" the error but keep going so i can log every error
                     var dataType = moduleData != null ? moduleData.GetType().Name : "null";
-                    SaveDataLoadErrorMessages.Add($"Invalid save data for module {currentModule}: Expected array, " +
-                                                  $"got {dataType}.");
+                    SaveDataLoadErrorMessages.Add($"Invalid save data for module: Expected array, got {dataType}.");
                     continue;
                 }
                 
                 
                 var module = new SheetModule.SheetModule(this, moduleData.AsArray());
-                await module.RunBuildScript();
+                moduleBuffer.Add(module);
+            }
+
+            var scriptTasks = moduleBuffer.Select(module => module.RunBuildScript());
+            await Task.WhenAll(scriptTasks);
+            foreach (var module in moduleBuffer)
+            {
                 if (module.SaveDataLoadError)
                 {
-                    SaveDataLoadErrorMessages.Add($"Error(s) while loading module {currentModule}:");
+                    SaveDataLoadErrorMessages.Add($"Error(s) while loading module:");
                     SaveDataLoadErrorMessages.AddRange(module.SaveDataLoadErrorMessages.Select(msg => $"- {msg}"));
                 }
                 else
@@ -102,8 +108,6 @@ public partial class CharacterSheet : UserControl
                     ModuleGrid.Children.Add(module);
                     module.SetModuleMode(Mode);
                 }
-                
-                ++currentModule;
             }
         }
         catch (JsonException e)
