@@ -81,6 +81,27 @@
             <Setter Property="FontFamily" Value="{DynamicResource Lato}" />
             <Setter Property="FontSize" Value="13" />
         </Style>
+        
+        <Style Selector="TextBlock.SaveIndicator">
+            <Setter Property="VerticalAlignment" Value="Center" />
+            <Setter Property="FontSize" Value="20" />
+            <Setter Property="Foreground" Value="{DynamicResource Primary}" />
+            <Setter Property="FontFamily" Value="{DynamicResource Lato}" />
+            <Setter Property="Opacity" Value="0" />
+            <Style.Animations>
+                <Animation Duration="0:0:1.0" FillMode="Forward">
+                    <KeyFrame KeyTime="0.0">
+                        <Setter Property="Opacity" Value="0" />
+                    </KeyFrame>
+                    <KeyFrame KeyTime="0.25">
+                        <Setter Property="Opacity" Value="1" />
+                    </KeyFrame>
+                    <KeyFrame KeyTime="1.0">
+                        <Setter Property="Opacity" Value="0" />
+                    </KeyFrame>
+                </Animation>
+            </Style.Animations>
+        </Style>
     </Window.Styles>
     
     <Window.KeyBindings>
@@ -128,14 +149,22 @@
                 
                 <Panel Classes="Spacer" />
                 
+                <Button Command="{Binding ResetCameraCommand}" Classes="SquareIconButton"
+                        IsEnabled="{Binding SheetMenusEnabled}" ToolTip.Tip="Reset Camera">
+                    <materialIcons:MaterialIcon Kind="Overscan" />
+                </Button>
                 <Button Command="{Binding ZoomInCommand}" Classes="SquareIconButton"
-                        IsEnabled="{Binding ZoomButtonsEnabled}" ToolTip.Tip="ZoomIn">
+                        IsEnabled="{Binding ZoomButtonsEnabled}" ToolTip.Tip="Zoom In">
                     <materialIcons:MaterialIcon Kind="MagnifyAdd" />
                 </Button>
                 <Button Command="{Binding ZoomOutCommand}" Classes="SquareIconButton"
-                        IsEnabled="{Binding ZoomButtonsEnabled}" ToolTip.Tip="ZoomIn">
+                        IsEnabled="{Binding ZoomButtonsEnabled}" ToolTip.Tip="Zoom Out">
                     <materialIcons:MaterialIcon Kind="MagnifyMinus" />
                 </Button>
+                
+                <Panel Classes="Spacer" Width="20" />
+                
+                <ContentControl Content="{Binding SaveIndicator}" />
             </StackPanel>
             
             <!-- Module Sidebar -->

@@ -16,6 +16,9 @@ using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using Avalonia;
+using Avalonia.Animation;
+using Avalonia.Styling;
+using Material.Icons.Avalonia;
 
 namespace AnySheet.ViewModels;
 
@@ -40,6 +43,8 @@ public partial class MainWindowViewModel : ViewModelBase
     [ObservableProperty] private IBrush _moduleEditModeIconColor = Brushes.Black;
 
     [ObservableProperty] private bool _zoomButtonsEnabled;
+
+    [ObservableProperty] private TextBlock _saveIndicator;
 
     private string _currentFilePath = "";
 
@@ -445,5 +450,11 @@ public partial class MainWindowViewModel : ViewModelBase
         await using var writer = new StreamWriter(await file.OpenWriteAsync());
         var saveData = LoadedSheet!.GetSaveData();
         await writer.WriteAsync(JsonSerializer.Serialize(saveData));
+        // the animation plays once whenever a new text block is created
+        SaveIndicator = new TextBlock
+        {
+            Classes = { "SaveIndicator" },
+            Text = "Saved"
+        };
     }
 }
