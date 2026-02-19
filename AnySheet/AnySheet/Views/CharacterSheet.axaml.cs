@@ -152,11 +152,12 @@ public partial class CharacterSheet : UserControl
     {
         var zoomedGridSize = module.GridSnap * _dragBehavior.ZoomScale;
         
-        // absolute position means the module was loaded from a file and its current position actually matters
+        // absolute position means the module was loaded from a file and doesn't need to be repositioned because the
+        // "camera" will always be at (0, 0) when loading from a file
         if (module.AbsolutePosition)
         {
-            Canvas.SetLeft(module, (module.GridX * zoomedGridSize) + _dragBehavior.CurrentX % zoomedGridSize);
-            Canvas.SetTop(module, (module.GridY * zoomedGridSize) + _dragBehavior.CurrentY % zoomedGridSize);
+            Canvas.SetLeft(module, module.GridX * module.GridSnap);
+            Canvas.SetTop(module, module.GridY * module.GridSnap);
         }
         else
         {

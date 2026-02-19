@@ -127,11 +127,11 @@
                 <Panel Classes="Spacer" />
                 
                 <Button Command="{Binding ZoomInCommand}" Classes="SquareIconButton"
-                        IsEnabled="{Binding SheetMenusEnabled}" ToolTip.Tip="ZoomIn">
+                        IsEnabled="{Binding ZoomButtonsEnabled}" ToolTip.Tip="ZoomIn">
                     <materialIcons:MaterialIcon Kind="MagnifyAdd" />
                 </Button>
                 <Button Command="{Binding ZoomOutCommand}" Classes="SquareIconButton"
-                        IsEnabled="{Binding SheetMenusEnabled}" ToolTip.Tip="ZoomIn">
+                        IsEnabled="{Binding ZoomButtonsEnabled}" ToolTip.Tip="ZoomIn">
                     <materialIcons:MaterialIcon Kind="MagnifyMinus" />
                 </Button>
             </StackPanel>

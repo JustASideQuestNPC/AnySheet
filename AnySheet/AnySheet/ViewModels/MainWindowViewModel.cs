@@ -83,7 +83,7 @@ public partial class MainWindowViewModel : ViewModelBase
                     GameplayModeButtonEnabled = true;
                     GameplayModeIconColor = Brushes.Black;
                     ModuleSidebarEnabled = true;
-                    ZoomButtonsEnabled = true;
+                    ZoomButtonsEnabled = false;
                     break;
                 case "Gameplay":
                     LoadedSheet.ChangeSheetMode(CharacterSheet.SheetMode.Gameplay);
@@ -92,7 +92,7 @@ public partial class MainWindowViewModel : ViewModelBase
                     ModuleEditModeButtonEnabled = true;
                     ModuleEditModeIconColor = Brushes.Black;
                     ModuleSidebarEnabled = false;
-                    ZoomButtonsEnabled = false;
+                    ZoomButtonsEnabled = true;
                     break;
                 // currently unused
                 case "TriggerEdit":
