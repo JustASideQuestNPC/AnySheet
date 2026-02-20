@@ -4,7 +4,7 @@ Generates and then runs the nsis script to turn my spaghetti into an installer.
 
 import subprocess
 from pathlib import Path
-from os import listdir
+from os import listdir, path
 
 PUBLISH_PROJECTS = ('AnySheet', 'CrashHandler')
 APP_PATH = Path.cwd() / 'publish'
@@ -90,7 +90,6 @@ Section
     ${WriteRegStr} HKCU "Software\\Modern UI Test" "" $INSTDIR
     ${CreateDirectory} "$SMPROGRAMS\\$StartMenuFolder"
     ${CreateShortcut} "$SMPROGRAMS\\$StartMenuFolder\\AnySheet.lnk" "$INSTDIR\\AnySheet.exe" "" "" ""
-    ${CreateShortcut} "$SMPROGRAMS\\$StartMenuFolder\\AnySheet_Uninstaller.lnk" "$INSTDIR\\AnySheet_Uninstaller.exe" "" "" ""
 
     !insertmacro MUI_STARTMENU_WRITE_END
 
@@ -178,7 +177,7 @@ nsis_lines.append('    ; modules\n')
 nsis_lines.append('    CreateDirectory "$INSTDIR\\Modules"\n')
 
 for dirname in listdir(MODULE_PATH):
-    if dirname != 'testModules':
+    if dirname != 'testModules' and path.isdir(dirname):
         nsis_lines.append(f'    ; {dirname}\n')
         nsis_lines.append(f'    CreateDirectory "$INSTDIR\\Modules\\{dirname}"\n')
         for filename in listdir(MODULE_PATH / dirname):

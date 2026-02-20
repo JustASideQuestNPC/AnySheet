@@ -14,7 +14,7 @@ To install AnySheet:
 - Download `AnySheet_Setup.exe` from the
   [latest release](https://github.com/JustASideQuestNPC/AnySheet/releases/latest).
 - Run it and enjoy my *beautiful* installer.
-- AnySheet
+- AnySheet won't create a desktop shortcut, but it will show up in the start menu.
 
 ## Using AnySheet
 The AnySheet UI is relatively simple. At the top left are buttons for creating/opening/saving
