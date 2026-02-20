@@ -23,8 +23,7 @@
 -- TripleToggle
 -- If you're using VSCode and have the Lua extension installed, typing <ElementName>.create() will
 -- show you all description and all the special parameters. Every element has an x and y coordinate,
--- and most have a width and height. The x and y coordinates must be greater than 0 and are at the
--- top left corner of the element. (0, 0) is the top left corner of the module.
+-- and most have a width and height.
 
 -- heal/damage amount
 local inputBox = NumberBox.create({ -- Don't forget the curly braces!

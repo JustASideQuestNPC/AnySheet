@@ -90,6 +90,7 @@ Section
     ${WriteRegStr} HKCU "Software\\Modern UI Test" "" $INSTDIR
     ${CreateDirectory} "$SMPROGRAMS\\$StartMenuFolder"
     ${CreateShortcut} "$SMPROGRAMS\\$StartMenuFolder\\AnySheet.lnk" "$INSTDIR\\AnySheet.exe" "" "" ""
+    ${CreateShortcut} "$SMPROGRAMS\\$StartMenuFolder\\AnySheet_Uninstaller.lnk" "$INSTDIR\\AnySheet_Uninstaller.exe" "" "" ""
 
     !insertmacro MUI_STARTMENU_WRITE_END
 

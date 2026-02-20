@@ -48,6 +48,14 @@ public partial class MainWindowViewModel : ViewModelBase
 
     private string _currentFilePath = "";
 
+    public MainWindowViewModel()
+    {
+        // create a new sheet on startup - this technically means i can remove all the checks for whether a sheet is
+        // loaded yet, but i really don't feel like doing that so i'm not going to. there's a nonzero chance that this
+        // causes a race condition somewhere but i'll burn that bridge when i get there.
+        CreateNewSheet();
+    }
+
     public void UpdateModuleFileTree(Dictionary<string, List<(string, string)>> moduleFileTree)
     {
         ModuleFolders.Clear();
@@ -60,10 +68,10 @@ public partial class MainWindowViewModel : ViewModelBase
     [RelayCommand]
     public void ChangeUiMode(object? parameter)
     {
-        // menus are disabled until a sheet is loaded, so this *should* be unreachable
+        // this actually is reachable because of how keybinds work.
         if (LoadedSheet == null)
         {
-            throw new InvalidOperationException("How did you even get here?");
+            return;
         }
 
         if (parameter != null)

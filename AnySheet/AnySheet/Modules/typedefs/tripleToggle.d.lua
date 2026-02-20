@@ -17,7 +17,7 @@ TripleToggle = {}
 --- Special parameters:
 --- - `onToggle` (optional, default=`nil`): Called whenever the button gets toggled on or off. Takes
 ---   a single argument, which is whether the button was toggled on or off.
---- - `onStateChange`: Called whenever the button is toggled on or off, or when it is disabled or
+--- - `onStateChange` (optional, default=`nil`): Called whenever the button is toggled on or off, or when it is disabled or
 ---   enabled. Takes a single argument, which is the new state of the button: 0 if it is disabled,
 ---   1 if it is enabled and toggled off, and 2 if it is enabled and toggled on. 
 --- 
