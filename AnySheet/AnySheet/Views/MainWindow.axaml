@@ -109,8 +109,8 @@
         <KeyBinding Command="{Binding SaveSheetToCurrentPathCommand}" Gesture="Ctrl+S" />
         <KeyBinding Command="{Binding ResetCameraCommand}" Gesture="Ctrl+R" />
         <KeyBinding Command="{Binding ResetSheetPositionsCommand}" Gesture="Ctrl+Shift+R" />
-        <KeyBinding Command="{Binding ChangeUiModeCommand}" CommandParameter="Gameplay" Gesture="G" />
-        <KeyBinding Command="{Binding ChangeUiModeCommand}" CommandParameter="ModuleEdit" Gesture="B" />
+        <KeyBinding Command="{Binding ChangeUiModeCommand}" CommandParameter="Gameplay" Gesture="Ctrl+G" />
+        <KeyBinding Command="{Binding ChangeUiModeCommand}" CommandParameter="ModuleEdit" Gesture="Ctrl+B" />
     </Window.KeyBindings>
     
     <dialogs:ReactiveDialogHost Background="White" Padding="0" CloseOnClickAway="False"
