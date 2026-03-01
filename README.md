@@ -15,6 +15,7 @@ To install AnySheet:
   [latest release](https://github.com/JustASideQuestNPC/AnySheet/releases/latest).
 - Run it and enjoy my *beautiful* installer.
 - AnySheet won't create a desktop shortcut, but it will show up in the start menu.
+If you're a developer and want to build from source, go [here](#building-from-source).
 
 ## Using AnySheet
 The AnySheet UI is relatively simple. At the top left are buttons for creating/opening/saving
@@ -39,3 +40,13 @@ haven't fixed yet:
 - Some parts of modules (mainly buttons) are invisible when in Sheet Builder mode.
 - Zooming is disabled in Sheet Builder mode. This isn't a bug, it's just been disabled because I'm
   bad at math and can't get modules to align correctly.
+
+## Building From Source
+To build from source (if you used the installer, you can ignore this):
+- Pull the repo.
+- Open the project file (`AnySheet/AnySheet.sln`) in your IDE of choice.
+- Make these changes to the run configuration for `AnySheet`:
+  - Set the working directory to the same directory as the modules folder.
+  - Pass the path to the crash handler as a command-line argument. From the working directory, the
+    default relative path is `../CrashHandler/bin/Release/net9.0/CrashHandler.exe`. Alternatively,
+    use `--nocrashhandler` to disable the crash handler entirely.
