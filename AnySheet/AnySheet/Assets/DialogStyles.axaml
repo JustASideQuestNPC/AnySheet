@@ -1,10 +1,9 @@
-﻿<Styles xmlns="https://github.com/avaloniaui"
+﻿<!-- Styles for popup dialogs -->
+<Styles xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:dialogs="using:AvaloniaDialogs.Views">
     <Design.PreviewWith>
-        <Border Padding="20">
-            <!-- Add Controls for Previewer Here -->
-        </Border>
+        <Border Padding="20" />
     </Design.PreviewWith>
 
     <Style Selector="dialogs|BaseDialog">

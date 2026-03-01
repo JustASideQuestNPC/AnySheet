@@ -14,6 +14,7 @@ public class AppResources
         ["bold italic"] = "PtSerifBoldItalic"
     };
 
+    // locates an avalonia resource if it exists
     public static T GetResource<T>(string resourceName) where T : class
     {
         return Application.Current?.Resources[resourceName] as T ?? throw new InvalidOperationException();

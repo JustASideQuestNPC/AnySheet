@@ -2,6 +2,9 @@
 
 namespace AnySheet.ViewModels;
 
+/// <summary>
+/// A single entry in a list module primitive.
+/// </summary>
 public partial class ListPrimitiveEntryViewModel : ViewModelBase
 {
     private ListPrimitive _parent;

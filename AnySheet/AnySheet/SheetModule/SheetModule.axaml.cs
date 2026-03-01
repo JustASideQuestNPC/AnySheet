@@ -23,8 +23,6 @@ public partial class SheetModule : UserControl
     private CharacterSheet _parent = null!;
     private string _scriptPath = ""; // for saving
     private bool _relativeToWorkingDirectory = false;
-    private int _gridWidth;
-    private int _gridHeight;
     private bool _moduleWasDragged = false;
     private JsonArray _saveData;
 
@@ -57,25 +55,9 @@ public partial class SheetModule : UserControl
     
     public int StartY { get; set; }
 
-    private int GridWidth
-    {
-        get => _gridWidth;
-        set
-        {
-            _gridWidth = value;
-            //Grid.SetColumnSpan(this, value); 
-        }
-    }
+    private int GridWidth { get; set; }
 
-    private int GridHeight
-    {
-        get => _gridHeight;
-        set
-        {
-            _gridHeight = value;
-            //Grid.SetRowSpan(this, value);
-        }
-    }
+    private int GridHeight { get; set; }
 
     public bool ModuleEditsEnabled
     {
@@ -114,12 +96,7 @@ public partial class SheetModule : UserControl
 
     public bool AbsolutePosition { get; private init; }
 
-    private void LogErrorMessage(string message)
-    {
-        SaveDataLoadErrorMessages.Add(message);
-        Console.WriteLine(message);
-    }
-
+    // called when loading sheets from a file
     public SheetModule(CharacterSheet parent, JsonArray saveData)
     {
         if (saveData.Count != 4)
@@ -152,7 +129,8 @@ public partial class SheetModule : UserControl
             _setup(path);
         }
     }
-
+    
+    // called when adding a new module
     public SheetModule(CharacterSheet parent, int gridX, int gridY, string scriptPath, bool relativeToWorkingDirectory)
     {
         _parent = parent;
@@ -236,7 +214,6 @@ public partial class SheetModule : UserControl
             return false;
         }
         
-        // do way too much error checking
         if (returnValue.Length != 1)
         {
             LogErrorMessage("Module script must return a SheetModule instance.");
@@ -317,7 +294,7 @@ public partial class SheetModule : UserControl
         foreach (var item in _items)
         {
             // i can't just modify the GridX and GridY fields because i want the shift to be invisible from inside the
-            // lua script and i think that would mess with it
+            // lua script
             var uiControl = item.CreateUiControl(-left, -top);
             
             PrimitiveGrid.Children.Add(uiControl);
@@ -369,5 +346,11 @@ public partial class SheetModule : UserControl
         Console.WriteLine($"Saved module at {GridX}, {GridY}");
         
         return [(_relativeToWorkingDirectory ? "~" : "") + _scriptPath, GridX, GridY, itemData];
+    }
+
+    private void LogErrorMessage(string message)
+    {
+        SaveDataLoadErrorMessages.Add(message);
+        Console.WriteLine(message);
     }
 }

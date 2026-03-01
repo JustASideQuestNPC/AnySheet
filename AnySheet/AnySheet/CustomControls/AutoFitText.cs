@@ -7,6 +7,8 @@ using Avalonia.Controls;
 
 public static class TextFitHelper
 {
+    // this is public because i can't get an AutoFitTextBox custom control to work, so i'm hacking around it by just
+    // calling this manually in the few places where i need to
     public static double FindBestFontSize(string text, FontFamily font, double maxWidth, double maxHeight,
         double minSize = 4, double maxSize = 200)
     {
@@ -15,8 +17,7 @@ public static class TextFitHelper
         var best = minSize;
         var typeface = new Typeface(font);
         var ts = TextShaper.Current;
-        // i will be more than happy to switch to the new API
-
+        
         var loopTimeout = 1000;
         while (low <= high && loopTimeout-- > 0)
         {

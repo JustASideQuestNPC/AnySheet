@@ -25,37 +25,28 @@ namespace AnySheet.ViewModels;
 public partial class MainWindowViewModel : ViewModelBase
 {
     [ObservableProperty] private CharacterSheet? _loadedSheet;
-
     [ObservableProperty] private ObservableCollection<ModuleFolderViewModel> _moduleFolders = [];
-
     [ObservableProperty] private bool _sheetMenusEnabled;
-
     [ObservableProperty] private bool _moduleSidebarEnabled;
-
     [ObservableProperty] private double _modeIconOpacity = 0.5;
-
     [ObservableProperty] private bool _gameplayModeButtonEnabled;
-
     [ObservableProperty] private IBrush _gameplayModeIconColor = Brushes.Black;
-
     [ObservableProperty] private bool _moduleEditModeButtonEnabled;
-
     [ObservableProperty] private IBrush _moduleEditModeIconColor = Brushes.Black;
-
     [ObservableProperty] private bool _zoomButtonsEnabled;
-
     [ObservableProperty] private TextBlock _saveIndicator;
 
+    // path to the currently loaded sheet
     private string _currentFilePath = "";
 
     public MainWindowViewModel()
     {
         // create a new sheet on startup - this technically means i can remove all the checks for whether a sheet is
-        // loaded yet, but i really don't feel like doing that so i'm not going to. there's a nonzero chance that this
-        // causes a race condition somewhere but i'll burn that bridge when i get there.
+        // loaded yet, but i really don't feel like doing that so i'm not going to.
         CreateNewSheet();
     }
 
+    // updates UI controls when the module tree gets rebuilt
     public void UpdateModuleFileTree(Dictionary<string, List<(string, string)>> moduleFileTree)
     {
         ModuleFolders.Clear();
@@ -66,9 +57,9 @@ public partial class MainWindowViewModel : ViewModelBase
     }
 
     [RelayCommand]
-    public void ChangeUiMode(object? parameter)
+    private void ChangeUiMode(object? parameter)
     {
-        // this actually is reachable because of how keybinds work.
+        // this actually is reachable because keybinds can't be disabled
         if (LoadedSheet == null)
         {
             return;
@@ -106,7 +97,7 @@ public partial class MainWindowViewModel : ViewModelBase
     }
 
     [RelayCommand]
-    public async Task CreateNewSheet()
+    private async Task CreateNewSheet()
     {
         if (LoadedSheet != null && LoadedSheet.HasBeenModified)
         {
@@ -175,7 +166,7 @@ public partial class MainWindowViewModel : ViewModelBase
     [RelayCommand]
     private async Task SaveSheetToCurrentPath(CancellationToken token)
     {
-        // this one could actually because keybinds don't have an IsEnabled property
+        // this actually is reachable because keybinds can't be disabled
         if (LoadedSheet == null)
         {
             return;
@@ -351,10 +342,7 @@ public partial class MainWindowViewModel : ViewModelBase
     [RelayCommand]
     private void ResetCamera()
     {
-        if (LoadedSheet != null)
-        {
-            LoadedSheet.ZoomBorder.ResetMatrix();
-        }
+        LoadedSheet?.ZoomBorder.ResetMatrix();
     }
 
     [RelayCommand]
@@ -405,7 +393,7 @@ public partial class MainWindowViewModel : ViewModelBase
                 {
                     _forceClose = true;
                     e.Cancel = false;
-                    App.Window.Close();
+                    App.Window?.Close();
                 }
             }
         }
@@ -458,7 +446,7 @@ public partial class MainWindowViewModel : ViewModelBase
         await using var writer = new StreamWriter(await file.OpenWriteAsync());
         var saveData = LoadedSheet!.GetSaveData();
         await writer.WriteAsync(JsonSerializer.Serialize(saveData));
-        // the animation plays once whenever a new text block is created
+        // the animation only plays when the new text block is created
         SaveIndicator = new TextBlock
         {
             Classes = { "SaveIndicator" },

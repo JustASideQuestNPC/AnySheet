@@ -67,7 +67,7 @@ public partial class CharacterSheet : UserControl
     {
         using var reader = new StreamReader(await file.OpenReadAsync());
         var saveString = await reader.ReadToEndAsync(cancellationToken: token);
-        // why is there no JsonArray.TryParse?
+        // why is there no JsonArray.TryParse??
         try
         {
             var saveData = JsonSerializer.Deserialize<JsonArray>(saveString);
@@ -87,7 +87,6 @@ public partial class CharacterSheet : UserControl
                     SaveDataLoadErrorMessages.Add($"Invalid save data for module: Expected array, got {dataType}.");
                     continue;
                 }
-                
                 
                 var module = new SheetModule.SheetModule(this, moduleData.AsArray());
                 moduleBuffer.Add(module);
@@ -119,10 +118,12 @@ public partial class CharacterSheet : UserControl
         return SaveDataLoadErrorMessages.Count == 0;
     }
 
+    // adds a module from a script path at a position. returns whether it succeeded followed by any error messages
     public async Task<(bool, List<string>)> AddModuleFromScript(string path, int gridX, int gridY)
     {
         var loadErrors = new List<string>();
         
+        // handle relative paths
         var relativeToWorkingDirectory = Utils.PathContainsWorkingDirectory(path);
         if (relativeToWorkingDirectory)
         {
@@ -134,7 +135,7 @@ public partial class CharacterSheet : UserControl
 
         if (module.SaveDataLoadError)
         {
-            loadErrors.Add($"Error(s) while loading module:");
+            loadErrors.Add("Error(s) while loading module:");
             loadErrors.AddRange(module.SaveDataLoadErrorMessages.Select(msg => $"- {msg}"));
             return (false, loadErrors);
         }
@@ -146,6 +147,7 @@ public partial class CharacterSheet : UserControl
         return (true, []);
     }
 
+    // called by modules to position themselves on the grid
     public void PositionOnGrid(SheetModule.SheetModule module)
     {
         var zoomedGridSize = module.GridSnap * ZoomBorder.ZoomX;
@@ -180,6 +182,7 @@ public partial class CharacterSheet : UserControl
         _moduleAddedOrRemoved = true;
     }
 
+    // resets everything to (0, 0). useful when i mess up something and modules are getting saved in the wrong positions
     public void ResetModulePositions()
     {
         foreach (var module in Modules)
