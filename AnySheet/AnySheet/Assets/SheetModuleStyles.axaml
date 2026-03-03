@@ -9,7 +9,7 @@
     </Design.PreviewWith>
 
     <Style Selector="Border.Module">
-        <Setter Property="Background" Value="White" />
+        <Setter Property="Background" Value="{DynamicResource BackgroundPrimary}" />
         <Setter Property="Padding" Value="0" />
         <Setter Property="BorderBrush" Value="{DynamicResource Accent}"/>
         <Setter Property="Margin" Value="0" />
@@ -94,7 +94,7 @@
     </Style>
     <Style Selector="ListBoxItem">
         <Setter Property="Padding" Value="3" />
-        <Setter Property="Background" Value="White" />
+        <Setter Property="Background" Value="{DynamicResource BackgroundPrimary}" />
     </Style>
     <Style Selector="ListBoxItem:selected /template/ ContentPresenter">
         <Setter Property="Background" Value="Transparent"/>	

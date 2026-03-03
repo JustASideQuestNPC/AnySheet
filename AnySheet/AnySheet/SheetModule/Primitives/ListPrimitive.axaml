@@ -36,7 +36,7 @@
                         <ListBox.ItemTemplate>
                             <DataTemplate>
                                 <Border Padding="0" BorderBrush="{DynamicResource Primary}"
-                                        BorderThickness="2" CornerRadius="4" Background="White">
+                                        BorderThickness="2" CornerRadius="4" Background="{DynamicResource BackgroundPrimary}">
                                     <Grid Margin="0" ColumnDefinitions="*, 25, 25" RowDefinitions="Auto">
                                         <TextBox Text="{Binding Text}"
                                                  Foreground="{DynamicResource Primary}" Padding="3 0"

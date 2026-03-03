@@ -5,7 +5,7 @@
              x:DataType="vm:CharacterSheet">
     <ZoomBorder Name="ZoomBorder" WheelBehavior="None" WheelWithShift="Zoom" EnableKeyboardNavigation="False"
                 EnablePan="True" EnableDoubleClickZoom="False">
-        <Canvas Name="ModuleGrid" Background="LightGray" HorizontalAlignment="Stretch"
+        <Canvas Name="ModuleGrid" Background="{DynamicResource BackgroundSecondary}" HorizontalAlignment="Stretch"
                 VerticalAlignment="Stretch" />
     </ZoomBorder>
 </UserControl>

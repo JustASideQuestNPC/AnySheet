@@ -19,4 +19,14 @@ public class AppResources
     {
         return Application.Current?.Resources[resourceName] as T ?? throw new InvalidOperationException();
     }
+    
+    // sets a resource if it exists
+    public static void SetResource<T>(string resourceName, T value) where T : class
+    {
+        if (Application.Current?.Resources[resourceName] != null)
+        {
+            Application.Current.Resources[resourceName] = value;
+        }
+        throw new InvalidOperationException();
+    }
 }

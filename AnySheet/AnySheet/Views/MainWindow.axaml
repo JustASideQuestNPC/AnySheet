@@ -32,15 +32,15 @@
             <Setter Property="Background" Value="{DynamicResource Tertiary}" />
         </Style>
         <Style Selector="Button.SquareIconButton ToolTip">
-            <Setter Property="Foreground" Value="Black" />
-            <Setter Property="Background" Value="White" />
-            <Setter Property="BorderBrush" Value="LightGray" />
+            <Setter Property="Foreground" Value="{DynamicResource Primary}" />
+            <Setter Property="Background" Value="{DynamicResource BackgroundPrimary}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource BackgroundSecondary}" />
             <Setter Property="BorderThickness" Value="1" />
             <Setter Property="FontFamily" Value="{DynamicResource Lato}" />
             <Setter Property="ShowDelay" Value="200" />
         </Style>
         <Style Selector="Button.SquareIconButton materialIcons|MaterialIcon">
-            <Setter Property="Foreground" Value="Black" />
+            <Setter Property="Foreground" Value="{DynamicResource Primary}" />
             <Setter Property="VerticalAlignment" Value="Stretch" />
             <Setter Property="HorizontalAlignment" Value="Stretch" />
             <Setter Property="Margin" Value="0" />
@@ -60,13 +60,13 @@
         
         <Style Selector="StackPanel.ModuleFolderList TextBlock">
             <Setter Property="FontFamily" Value="{StaticResource LatoBold}" />
-            <Setter Property="Foreground" Value="Black" /> 
+            <Setter Property="Foreground" Value="{DynamicResource Primary}" /> 
             <Setter Property="FontSize" Value="16" />
             <Setter Property="Margin" Value="4" />
         </Style>
         
         <Style Selector="StackPanel.ModuleFileList Button">
-            <Setter Property="Foreground" Value="Black" />
+            <Setter Property="Foreground" Value="{DynamicResource Primary}" />
             <Setter Property="Background" Value="Transparent" />
             <Setter Property="BorderBrush" Value="Transparent" />
             <Setter Property="Margin" Value="2" />
@@ -113,12 +113,12 @@
         <KeyBinding Command="{Binding ChangeUiModeCommand}" CommandParameter="ModuleEdit" Gesture="Ctrl+B" />
     </Window.KeyBindings>
     
-    <dialogs:ReactiveDialogHost Background="White" Padding="0" CloseOnClickAway="False"
+    <dialogs:ReactiveDialogHost Background="{DynamicResource BackgroundPrimary}" Padding="0" CloseOnClickAway="False"
                                 Identifier="RootDialog">
-        <DockPanel Background="White">
+        <DockPanel Background="{DynamicResource BackgroundPrimary}">
             <!-- Top menu -->
             <StackPanel Name="TopButtonBar" DockPanel.Dock="Top" Orientation="Horizontal" Height="40"
-                        Background="White" Margin="6 0">
+                        Background="{DynamicResource BackgroundPrimary}" Margin="6 0">
                 <Button Command="{Binding CreateNewSheetCommand}" Classes="SquareIconButton" ToolTip.Tip="New Sheet">
                     <materialIcons:MaterialIcon Kind="FilePlus" />
                 </Button>
@@ -170,7 +170,7 @@
             </StackPanel>
             
             <!-- Module Sidebar -->
-            <Border Margin="0" Padding="10" BorderBrush="Black" BorderThickness="0 2 2 0"
+            <Border Margin="0" Padding="10" BorderBrush="{DynamicResource Primary}" BorderThickness="0 2 2 0"
                     IsVisible="{Binding ModuleSidebarEnabled}" DockPanel.Dock="Left" Width="235">
                 <Grid ColumnDefinitions="40, 40, *" RowDefinitions="40, *" RowSpacing="5">
                     <Button Command="{Binding ReloadModuleTreeCommand}"
@@ -181,10 +181,10 @@
                             Classes="SquareIconButton" ToolTip.Tip="Open Module Folder">
                         <materialIcons:MaterialIcon Kind="FolderOpen" />
                     </Button>
-                    <TextBlock Grid.Column="2" Grid.Row="0" Foreground="Black"
+                    <TextBlock Grid.Column="2" Grid.Row="0" Foreground="{DynamicResource Primary}"
                                FontFamily="{DynamicResource LatoBold}" FontSize="20"
                                VerticalAlignment="Center">Modules</TextBlock>
-                    <Border Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="3" Background="LightGray"
+                    <Border Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="3" Background="{DynamicResource BackgroundSecondary}"
                             CornerRadius="7">
                         
                         <!-- Folder List -->
@@ -192,7 +192,7 @@
                             <StackPanel Classes="ModuleFolderList">
                                 <ItemsControl ItemsSource="{Binding ModuleFolders}"><ItemsControl.ItemTemplate>
                                     <DataTemplate>
-                                    <Border Background="White" BorderBrush="Black" CornerRadius="3"
+                                    <Border Background="{DynamicResource BackgroundPrimary}" BorderBrush="{DynamicResource Primary}" CornerRadius="3"
                                             BorderThickness="2" Margin="3">
                                         <Grid RowDefinitions="30, Auto" ColumnDefinitions="*, 30">
                                             <TextBlock Text="{Binding FolderName}" />
@@ -203,7 +203,7 @@
                                             
                                             <!-- File List -->
                                             <Border Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2"
-                                                    IsVisible="{Binding ShowFiles}" BorderBrush="Black"
+                                                    IsVisible="{Binding ShowFiles}" BorderBrush="{DynamicResource Primary}"
                                                     BorderThickness="0 2 0 0">
                                                 <StackPanel Classes="ModuleFileList">
                                                     <ItemsControl ItemsSource="{Binding FileButtons}">
@@ -226,7 +226,7 @@
             </Border>
             
             <!-- Character Sheet -->
-            <Panel Background="LightGray">
+            <Panel Background="{DynamicResource BackgroundSecondary}">
                 <ContentControl Content="{Binding LoadedSheet}" />
             </Panel>
         </DockPanel>
