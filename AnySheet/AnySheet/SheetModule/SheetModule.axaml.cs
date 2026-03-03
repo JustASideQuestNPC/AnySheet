@@ -21,7 +21,6 @@ public partial class SheetModule : UserControl
     
     private LuaSandbox _lua = null!;
     private CharacterSheet _parent = null!;
-    private string _scriptPath = ""; // for saving
     private bool _relativeToWorkingDirectory = false;
     private bool _moduleWasDragged = false;
     private JsonArray _saveData;
@@ -95,6 +94,7 @@ public partial class SheetModule : UserControl
     public List<string> SaveDataLoadErrorMessages { get; } = [];
 
     public bool AbsolutePosition { get; private init; }
+    public string ScriptPath { get; private set; } = "";
 
     // called when loading sheets from a file
     public SheetModule(CharacterSheet parent, JsonArray saveData)
@@ -137,7 +137,7 @@ public partial class SheetModule : UserControl
         GridX = gridX;
         GridY = gridY;
         AbsolutePosition = false;
-        _scriptPath = (relativeToWorkingDirectory ? "~" : "") + scriptPath;
+        ScriptPath = (relativeToWorkingDirectory ? "~" : "") + scriptPath;
         _saveData = [];
         
         _setup(scriptPath);
@@ -149,12 +149,12 @@ public partial class SheetModule : UserControl
 
         if (scriptPath.StartsWith('~'))
         {
-            _scriptPath = scriptPath[1..];
+            ScriptPath = scriptPath[1..];
             _relativeToWorkingDirectory = true;
         }
         else
         {
-            _scriptPath = scriptPath;
+            ScriptPath = scriptPath;
         }
 
         InitializeComponent();
@@ -184,7 +184,7 @@ public partial class SheetModule : UserControl
         };
         
         var buildScriptSuccessful = await _runBuildScript(
-            (_relativeToWorkingDirectory ? Environment.CurrentDirectory + @"\Modules\" : "") + _scriptPath, _saveData);
+            (_relativeToWorkingDirectory ? Environment.CurrentDirectory + @"\Modules\" : "") + ScriptPath, _saveData);
         // immediately remove the module if the build script fails
         if (!buildScriptSuccessful)
         {
@@ -193,7 +193,7 @@ public partial class SheetModule : UserControl
         }
         
         _parent.PositionOnGrid(this);
-        Console.WriteLine($"Loaded module '{_scriptPath}' with {PrimitiveGrid.Children.Count} elements. Module " +
+        Console.WriteLine($"Loaded module '{ScriptPath}' with {PrimitiveGrid.Children.Count} elements. Module " +
                           $"size: {Width}x{Height} ({GridWidth}x{GridHeight} on grid), position: {GridX},{GridY}.");
         Container.IsVisible = true;
     }
@@ -214,23 +214,12 @@ public partial class SheetModule : UserControl
             return false;
         }
         
-        if (returnValue.Length != 1)
+        if (returnValue.Length != 1 || !returnValue[0].TryRead<LuaSheetModule>(out var module))
         {
             LogErrorMessage("Module script must return a SheetModule instance.");
             return false;
         }
 
-        LuaSheetModule module;
-        try
-        {
-            module = returnValue[0].Read<LuaSheetModule>();
-        }
-        catch (InvalidOperationException)
-        {
-            LogErrorMessage("Module script must return a SheetModule instance.");
-            return false;
-        }
-        
         // for calculating grid size
         var left = int.MaxValue;
         var top = int.MaxValue;
@@ -345,7 +334,7 @@ public partial class SheetModule : UserControl
         
         Console.WriteLine($"Saved module at {GridX}, {GridY}");
         
-        return [(_relativeToWorkingDirectory ? "~" : "") + _scriptPath, GridX, GridY, itemData];
+        return [(_relativeToWorkingDirectory ? "~" : "") + ScriptPath, GridX, GridY, itemData];
     }
 
     private void LogErrorMessage(string message)

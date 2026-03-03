@@ -33,6 +33,7 @@ public partial class CharacterSheet : UserControl
 
     public bool CanvasDragEnabled => Mode == SheetMode.Gameplay;
     public List<string> SaveDataLoadErrorMessages { get; } = [];
+    public string SaveDataLoadErrorPopupMessage { get; private set; }
 
     public bool HasBeenModified
     {
@@ -67,6 +68,11 @@ public partial class CharacterSheet : UserControl
     {
         using var reader = new StreamReader(await file.OpenReadAsync());
         var saveString = await reader.ReadToEndAsync(cancellationToken: token);
+        
+        // for the error popup
+        var saveDataErrors = 0;
+        var moduleErrors = new List<string>();
+        
         // why is there no JsonArray.TryParse??
         try
         {
@@ -85,6 +91,7 @@ public partial class CharacterSheet : UserControl
                     // "catch" the error but keep going so i can log every error
                     var dataType = moduleData != null ? moduleData.GetType().Name : "null";
                     SaveDataLoadErrorMessages.Add($"Invalid save data for module: Expected array, got {dataType}.");
+                    ++saveDataErrors;
                     continue;
                 }
                 
@@ -98,8 +105,11 @@ public partial class CharacterSheet : UserControl
             {
                 if (module.SaveDataLoadError)
                 {
+                    var loadErrorMessages = module.SaveDataLoadErrorMessages;
                     SaveDataLoadErrorMessages.Add($"Error(s) while loading module:");
-                    SaveDataLoadErrorMessages.AddRange(module.SaveDataLoadErrorMessages.Select(msg => $"- {msg}"));
+                    SaveDataLoadErrorMessages.AddRange(loadErrorMessages.Select(msg => $"- {msg}"));
+                    moduleErrors.Add(loadErrorMessages[0].StartsWith("Module script '") ? loadErrorMessages[0] :
+                                     $"{loadErrorMessages.Count} error(s) in module script '{module.ScriptPath}'");
                 }
                 else
                 {
@@ -114,12 +124,25 @@ public partial class CharacterSheet : UserControl
             SaveDataLoadErrorMessages.Add($"Error while parsing JSON: {e.Message}");
             return false;
         }
-        
+
+        if (SaveDataLoadErrorMessages.Count > 0)
+        {
+            if (saveDataErrors > 0)
+            {
+                SaveDataLoadErrorPopupMessage = $"{saveDataErrors} error(s) while loading save data.";
+            }
+
+            foreach (var error in moduleErrors)
+            {
+                SaveDataLoadErrorPopupMessage += $"\n{error}";
+            }
+        }
         return SaveDataLoadErrorMessages.Count == 0;
     }
 
-    // adds a module from a script path at a position. returns whether it succeeded followed by any error messages
-    public async Task<(bool, List<string>)> AddModuleFromScript(string path, int gridX, int gridY)
+    // adds a module from a script path at a position. returns whether it succeeded followed by any error messages,
+    // followed by what message to display in the popup
+    public async Task<(bool, List<string>, string)> AddModuleFromScript(string path, int gridX, int gridY)
     {
         var loadErrors = new List<string>();
         
@@ -137,14 +160,15 @@ public partial class CharacterSheet : UserControl
         {
             loadErrors.Add("Error(s) while loading module:");
             loadErrors.AddRange(module.SaveDataLoadErrorMessages.Select(msg => $"- {msg}"));
-            return (false, loadErrors);
+            return (false, loadErrors, loadErrors[0].StartsWith("Module script '") ? loadErrors[0] :
+                        $"{loadErrors.Count} error(s) in module script '{path}'");
         }
         
         Modules.Add(module);
         ModuleGrid.Children.Add(module);
         module.SetModuleMode(Mode);
         _moduleAddedOrRemoved = true;
-        return (true, []);
+        return (true, [], "");
     }
 
     // called by modules to position themselves on the grid
@@ -168,10 +192,10 @@ public partial class CharacterSheet : UserControl
     
     public async Task TryAddModuleFromFile(string path)
     {
-        var (success, errorMessages) = await AddModuleFromScript(path, 0, 0);
+        var (success, errorMessages, popupMessage) = await AddModuleFromScript(path, 0, 0);
         if (!success)
         {
-            await _parent.LogModuleLoadError(errorMessages);
+            await _parent.LogModuleLoadError(errorMessages, popupMessage);
         }
     }
 

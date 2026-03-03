@@ -155,10 +155,11 @@ public partial class MainWindowViewModel : ViewModelBase
 
         if (files.Count > 0)
         {
-            var (success, errorMessages) = await LoadedSheet.AddModuleFromScript(files[0].Path.AbsolutePath, 0, 0);
+            var (success, errorMessages, popupMessage) = await LoadedSheet.AddModuleFromScript(
+                files[0].Path.AbsolutePath, 0, 0);
             if (!success)
             {
-                await LogModuleLoadError(errorMessages);
+                await LogModuleLoadError(errorMessages, popupMessage);
             }
         }
     }
@@ -291,7 +292,8 @@ public partial class MainWindowViewModel : ViewModelBase
             }
             else
             {
-                await LogSheetLoadError(characterSheet.SaveDataLoadErrorMessages);
+                await LogSheetLoadError(characterSheet.SaveDataLoadErrorMessages,
+                                        characterSheet.SaveDataLoadErrorPopupMessage);
             }
         }
     }
@@ -399,13 +401,15 @@ public partial class MainWindowViewModel : ViewModelBase
         }
     }
 
-    private async Task LogSheetLoadError(List<string> errors)
+    private async Task LogSheetLoadError(List<string> errors, string displayMessage)
     {
         var dialog = new TwofoldDialog
         {
-            Message = "An error occurred while loading this character sheet. The full error will be logged to a file.",
+            Message = $"1 or more error(s) occurred while loading this character sheet:\n{displayMessage}",
             PositiveText = "Open log folder",
-            NegativeText = "OK"
+            NegativeText = "OK",
+            Width = 500,
+            Height = 350
         };
         var task = dialog.ShowAsync();
         
@@ -420,13 +424,15 @@ public partial class MainWindowViewModel : ViewModelBase
         }
     }
     
-    public async Task LogModuleLoadError(List<string> errors)
+    public async Task LogModuleLoadError(List<string> errors, string displayMessage)
     {
         var dialog = new TwofoldDialog
         {
-            Message = "An error occurred while loading this module. The full error will be logged to a file.",
+            Message = $"An error occurred while loading this module:\n{displayMessage}",
             PositiveText = "Open log folder",
-            NegativeText = "OK"
+            NegativeText = "OK",
+            Width = 500,
+            Height = 350
         };
         var task = dialog.ShowAsync();
         
