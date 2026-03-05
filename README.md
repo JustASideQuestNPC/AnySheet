@@ -19,9 +19,9 @@ To install AnySheet:
 ## Using AnySheet
 The AnySheet UI is relatively simple. At the top left are buttons for creating/opening/saving
 sheets. Next to those are the buttons to switch between Gameplay and Sheet Builder modes
-(alternatively, press G or B). In Gameplay mode, you can edit what's in the modules in your
-character sheet. In Sheet Builder mode, you can add new modules, remove existing modules, and drag
-modules to reposition them.
+(alternatively, press Ctrl+G or Ctrl+B). In Gameplay mode, you can edit what's in the modules in
+your character sheet. In Sheet Builder mode, you can add new modules, remove existing modules, and
+drag modules to reposition them.
 
 On the left is the module sidebar, which is only visible in Sheet Builder mode. It shows every the
 name of every module you can add, organized by folder. To add a module, just click its name. To

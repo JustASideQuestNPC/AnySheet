@@ -1,5 +1,5 @@
 ---@sheetModule
----@name Modifier with Side Label (12x3)
+---@name Single Value with Side Label (12x3)
 
 return SheetModule.create({
     elements = {
@@ -8,8 +8,7 @@ return SheetModule.create({
             y = 0,
             width = 3,
             height = 3,
-            borderType = "full",
-            isModifier = true
+            borderType = "full"
         }),
 
         TextBox.create({
@@ -20,7 +19,7 @@ return SheetModule.create({
             alignment = "center",
             color = "accent",
             borderType = "none",
-            defaultText = "Modifier",
+            defaultText = "Single Value",
             style = "bold"
         }),
     }
