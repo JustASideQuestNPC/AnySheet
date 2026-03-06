@@ -10,6 +10,10 @@ using System.Text.Json.Nodes;
 
 namespace AnySheet.SheetModule.Primitives;
 
+/// <inheritdoc cref="ModulePrimitiveLuaBase"/>
+/// <summary>
+/// A scrollable list that entries can be added to.
+/// </summary>
 [LuaObject]
 public partial class ListPrimitiveLua : ModulePrimitiveLuaBase
 {
@@ -84,6 +88,9 @@ public partial class ListPrimitiveLua : ModulePrimitiveLuaBase
 
 public partial class ListPrimitive : UserControl
 {
+    /// <summary>
+    /// All entries in the list.
+    /// </summary>
     public ObservableCollection<ListPrimitiveEntryViewModel> Entries { get; } = [];
     private bool _listItemAddedOrRemoved;
     

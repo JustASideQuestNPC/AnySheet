@@ -9,6 +9,10 @@ using System.Text.Json.Nodes;
 
 namespace AnySheet.SheetModule.Primitives;
 
+/// <inheritdoc cref="ModulePrimitiveLuaBase"/>
+/// <summary>
+/// A button that can be toggled on and off. This element's width and height are always 1.
+/// </summary>
 [LuaObject]
 public partial class ToggleButtonLua : ModulePrimitiveLuaBase
 {
@@ -24,6 +28,9 @@ public partial class ToggleButtonLua : ModulePrimitiveLuaBase
     private bool _state = false;
     private LuaFunction? _onToggle = null;
 
+    /// <summary>
+    /// Whether the button is currently toggled on or off.
+    /// </summary>
     [LuaMember("toggled")]
     private bool State
     {

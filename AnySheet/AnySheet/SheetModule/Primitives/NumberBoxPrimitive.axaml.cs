@@ -13,6 +13,10 @@ using System.Text.Json.Nodes;
 
 namespace AnySheet.SheetModule.Primitives;
 
+/// <inheritdoc cref="ModulePrimitiveLuaBase"/>
+/// <summary>
+/// A text box that only accepts numbers.
+/// </summary>
 [LuaObject]
 public partial class NumberBoxLua : ModulePrimitiveLuaBase
 {
@@ -30,6 +34,9 @@ public partial class NumberBoxLua : ModulePrimitiveLuaBase
     private double _initialValue = 0;
     
     public double CurrentValue = 0;
+    /// <summary>
+    /// Value currently in the box.
+    /// </summary>
     [LuaMember("value")]
     private double CurrentValueLua
     {
@@ -45,6 +52,9 @@ public partial class NumberBoxLua : ModulePrimitiveLuaBase
     }
     
     private double _minValue = 0;
+    /// <summary>
+    /// Minimum allowed input.
+    /// </summary>
     [LuaMember("minValue")]
     private double MinValue
     {
@@ -60,6 +70,9 @@ public partial class NumberBoxLua : ModulePrimitiveLuaBase
     }
     
     private double _maxValue = double.PositiveInfinity;
+    /// <summary>
+    /// Maximum allowed input.
+    /// </summary>
     [LuaMember("maxValue")]
     private double MaxValue
     {
@@ -195,6 +208,9 @@ public partial class NumberBoxPrimitive : UserControl
     private int _height;
 
     private double _currentValue;
+    /// <summary>
+    /// Current value in the box. Use this to set the value -- do not edit `TextBox.Text` directly!
+    /// </summary>
     public double CurrentValue
     {
         get => _currentValue;
@@ -207,6 +223,9 @@ public partial class NumberBoxPrimitive : UserControl
     }
     
     private double _minValue;
+    /// <summary>
+    /// Minimum allowed input.
+    /// </summary>
     public double MinValue
     {
         get => _minValue;
@@ -218,6 +237,9 @@ public partial class NumberBoxPrimitive : UserControl
     }
     
     private double _maxValue;
+    /// <summary>
+    /// Maximum allowed input.
+    /// </summary>
     public double MaxValue
     {
         get => _maxValue;

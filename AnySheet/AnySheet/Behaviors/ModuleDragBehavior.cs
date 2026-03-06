@@ -15,8 +15,17 @@ public class ModuleDragBehavior : Behavior<Control>
 {
     public class DragCompletedCommandParameters
     {
+        /// <summary>
+        /// The dragged control.
+        /// </summary>
         public Control Control { get; set; }
+        /// <summary>
+        /// The "true" new position of the control, measured in pixels.
+        /// </summary>
         public Point RawPosition { get; set; }
+        /// <summary>
+        /// The new position of the control on the grid.
+        /// </summary>
         public Point GridPosition { get; set; }
     }
     
@@ -27,12 +36,20 @@ public class ModuleDragBehavior : Behavior<Control>
     public static readonly StyledProperty<int> GridHeightProperty =
         AvaloniaProperty.Register<ModuleDragBehavior, int>(nameof(GridHeight), defaultValue: 1);
 
+    /// <summary>
+    /// Optional command to run whenever the control is dragged to a new position.
+    /// </summary>
     public ICommand? DragCompletedCommand
     {
         get => GetValue(DragCompletedCommandProperty);
         set => SetValue(DragCompletedCommandProperty, value);
     }
 
+    /// <summary>
+    /// Width of each grid column, in pixels. Set to 1 to disable horizontal snapping. This must be greater than 0!
+    /// <br/><br/>
+    /// <b>Default value:</b> 1
+    /// </summary>
     public int GridWidth
     {
         get => GetValue(GridWidthProperty);
@@ -43,6 +60,11 @@ public class ModuleDragBehavior : Behavior<Control>
         }
     }
 
+    /// <summary>
+    /// Height of each grid column, in pixels. Set to 1 to disable vertical snapping. This must be greater than 0!
+    /// <br/><br/>
+    /// <b>Default value:</b> 1
+    /// </summary>
     public int GridHeight
     {
         get => GetValue(GridHeightProperty);

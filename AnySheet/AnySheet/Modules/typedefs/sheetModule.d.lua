@@ -43,6 +43,6 @@ SheetModule = {}
 --- Parameters:
 --- - `elements`: An array with all elements in the module. The module is automatically sized to fit
 ---     all the elements inside it.
---- @param args { elements: ModuleElement[] }
+--- @param args { elements: ModuleElement[], triggers: { [string]: fun(): nil } }
 --- @return SheetModule
 function SheetModule.create(args) end

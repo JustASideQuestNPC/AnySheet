@@ -10,6 +10,11 @@ using System.Text.Json.Nodes;
 
 namespace AnySheet.SheetModule.Primitives;
 
+/// <inheritdoc cref="ModulePrimitiveLuaBase"/>
+/// <summary>
+/// Like a toggle button, but has a third state (activated by right-clicking) that grays out the button and disables
+/// normal input. This element's width and height are always 1.
+/// </summary>
 [LuaObject]
 public partial class TripleToggleLua : ModulePrimitiveLuaBase
 {
@@ -27,6 +32,10 @@ public partial class TripleToggleLua : ModulePrimitiveLuaBase
 
     private int _buttonState = 1;
 
+    /// <summary>
+    /// The current state of the button: 0 if it is disabled, 1 if it is enabled and toggled off, and 2 if it is enabled
+    /// and toggled on.
+    /// </summary>
     [LuaMember("state")]
     private int State
     {
@@ -69,8 +78,10 @@ public partial class TripleToggleLua : ModulePrimitiveLuaBase
 
     public override UserControl CreateUiControl(int xOffset, int yOffset)
     {
-        _uiControl = new TripleTogglePrimitive(this, GridX + xOffset, GridY + yOffset, _onToggle, _onStateChange);
-        _uiControl.CurrentState = _buttonState;
+        _uiControl = new TripleTogglePrimitive(this, GridX + xOffset, GridY + yOffset, _onToggle, _onStateChange)
+            {
+                CurrentState = _buttonState
+            };
         return _uiControl;
     }
     
@@ -109,6 +120,10 @@ public partial class TripleTogglePrimitive : UserControl
     public bool ButtonDisabled = false;
 
     private int _currentState = 0;
+    /// <summary>
+    /// The current state of the button: 0 if it is disabled, 1 if it is enabled and toggled off, and 2 if it is enabled
+    /// and toggled on.
+    /// </summary>
     public int CurrentState
     {
         get => _currentState;

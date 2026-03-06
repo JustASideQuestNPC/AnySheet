@@ -10,6 +10,10 @@ using System.Text.Json.Nodes;
 
 namespace AnySheet.SheetModule.Primitives;
 
+/// <inheritdoc cref="ModulePrimitiveLuaBase"/>
+/// <summary>
+/// A line dividing two parts of a module.
+/// </summary>
 [LuaObject]
 public partial class DividerLua : ModulePrimitiveLuaBase
 {

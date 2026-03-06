@@ -5,11 +5,18 @@ using System.Text.Json.Nodes;
 
 namespace AnySheet.SheetModule.Primitives;
 
+/// <inheritdoc cref="ModulePrimitiveLuaBase"/>
+/// <summary>
+/// A multiline text input.
+/// </summary>
 [LuaObject]
 public partial class MultilineTextBoxLua : ModulePrimitiveLuaBase
 {
     private string _text = "";
     
+    /// <summary>
+    /// Text currently in the text box.
+    /// </summary>
     [LuaMember("text")]
     public string Text
     {

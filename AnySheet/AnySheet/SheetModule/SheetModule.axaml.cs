@@ -13,10 +13,13 @@ using System.Threading.Tasks;
 
 namespace AnySheet.SheetModule;
 
+/// <summary>
+/// A single module on a character sheet, made from a collection of primitives and created using a Lua script.
+/// </summary>
 public partial class SheetModule : UserControl
 {
     public const int GridSize = 20;
-    public const int GridSpacing = 4;
+    private const int GridSpacing = 4;
     private const int BorderWidth = 4;
     
     private LuaSandbox _lua = null!;
@@ -46,30 +49,51 @@ public partial class SheetModule : UserControl
         Console.WriteLine($"Module dragged to ({GridX},{GridY}).");
     }
 
+    /// <summary>
+    /// Current X position of the module in the character sheet, in grid squares.
+    /// </summary>
     public int GridX { get; set; }
 
+    /// <summary>
+    /// Current Y position of the module in the character sheet, in grid squares.
+    /// </summary>
     public int GridY { get; set; }
     
+    /// <summary>
+    /// X position that the module was first added to the character sheet at, in grid squares.
+    /// </summary>
     public int StartX { get; set; }
     
+    /// <summary>
+    /// Y position that the module was first added to the character sheet at, in grid squares.
+    /// </summary>
     public int StartY { get; set; }
 
     private int GridWidth { get; set; }
 
     private int GridHeight { get; set; }
 
+    /// <summary>
+    /// Whether data in the module's primitives can be edited.
+    /// </summary>
     public bool ModuleEditsEnabled
     {
         get => GetValue(ModuleEditsEnabledProperty);
         set => SetValue(ModuleEditsEnabledProperty, value);
     }
 
+    /// <summary>
+    /// Size of the visual grid, in pixels.
+    /// </summary>
     public int GridSnap
     {
         get => GetValue(GridSnapProperty);
         set => SetValue(GridSnapProperty, value);
     }
-    
+
+    /// <summary>
+    /// Whether the module has been edited or moved after being created.
+    /// </summary>
     public bool HasBeenModified
     {
         get
@@ -90,10 +114,21 @@ public partial class SheetModule : UserControl
         }
     }
 
+    /// <summary>
+    /// Whether any errors occurred when creating the module.
+    /// </summary>
     public bool SaveDataLoadError => SaveDataLoadErrorMessages.Count > 0;
+    /// <summary>
+    /// Messages for all errors (if any) that occurred when creating the module.
+    /// </summary>
     public List<string> SaveDataLoadErrorMessages { get; } = [];
-
+    /// <summary>
+    /// If true, the module does not need to be moved to (0, 0) when positioning it on the character sheet.
+    /// </summary>
     public bool AbsolutePosition { get; private init; }
+    /// <summary>
+    /// Path to the module's Lua script. Paths that start with '~' are relative to the current working directory.
+    /// </summary>
     public string ScriptPath { get; private set; } = "";
 
     // called when loading sheets from a file
@@ -164,6 +199,9 @@ public partial class SheetModule : UserControl
         Container.IsVisible = false;
     }
 
+    /// <summary>
+    /// Runs the module's Lua script.
+    /// </summary>
     public async Task RunBuildScript()
     {
         _lua = new LuaSandbox
@@ -298,6 +336,9 @@ public partial class SheetModule : UserControl
         _parent.RemoveModule(this);
     }
 
+    /// <summary>
+    /// Updates the module's primitive when the app changes modes.
+    /// </summary>
     public void SetModuleMode(CharacterSheet.SheetMode mode)
     {
         switch (mode)
@@ -324,6 +365,9 @@ public partial class SheetModule : UserControl
         }
     }
 
+    /// <summary>
+    /// Gets the save data for all primitives in the module.
+    /// </summary>
     public JsonArray GetSaveData()
     {
         var itemData = new JsonArray();

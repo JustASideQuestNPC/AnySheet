@@ -41,8 +41,7 @@ public partial class MainWindowViewModel : ViewModelBase
 
     public MainWindowViewModel()
     {
-        // create a new sheet on startup - this technically means i can remove all the checks for whether a sheet is
-        // loaded yet, but i really don't feel like doing that so i'm not going to.
+        // create a new sheet on startup
         CreateNewSheet();
     }
 

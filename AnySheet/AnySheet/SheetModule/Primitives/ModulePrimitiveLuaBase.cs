@@ -10,7 +10,7 @@ namespace AnySheet.SheetModule.Primitives;
 /// <summary>
 /// Base class for the Lua half of a module primitive. Each primitive should be paired with a corresponding Avalonia
 /// control. The <code>TryReadLua()</code> and <code>CreateLua()</code> methods must be overriden (they can't be marked
-/// as abstract for ptechnical reasons).
+/// as abstract for technical reasons).
 /// </summary>
 public abstract class ModulePrimitiveLuaBase
 {
@@ -26,7 +26,6 @@ public abstract class ModulePrimitiveLuaBase
     };
 
     public LuaSandbox Lua;
-    
     [LuaMember("x")]
     public int GridX { get; protected init; }
     
@@ -38,6 +37,10 @@ public abstract class ModulePrimitiveLuaBase
     
     [LuaMember("height")]
     public int GridHeight { get; protected init; }
+    
+    /// <summary>
+    /// Whether the Avalonia control for this primitive has been modified.
+    /// </summary>
     public abstract bool HasBeenModified { get; }
     
     /// <summary>
@@ -45,7 +48,6 @@ public abstract class ModulePrimitiveLuaBase
     /// </summary>
     /// <param name="xOffset">Where to place the primitive on the X axis, in grid squares.</param>
     /// <param name="yOffset">Where to place the primitive on the Y axis, in grid squares.</param>
-    /// <returns></returns>
     public abstract UserControl CreateUiControl(int xOffset, int yOffset);
     /// <summary>
     /// Enables input for all ui elements in the Avalonia control for this primitive.

@@ -9,8 +9,9 @@ using System.Text.Json.Nodes;
 
 namespace AnySheet.SheetModule.Primitives;
 
+/// <inheritdoc cref="ModulePrimitiveLuaBase"/>
 /// <summary>
-/// Basic, uneditable block of text.
+/// Static, non-modifiable text.
 /// </summary>
 [LuaObject]
 public partial class StaticTextLua : ModulePrimitiveLuaBase

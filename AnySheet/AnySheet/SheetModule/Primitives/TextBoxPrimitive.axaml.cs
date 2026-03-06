@@ -12,6 +12,10 @@ using System.Text.Json.Nodes;
 
 namespace AnySheet.SheetModule.Primitives;
 
+/// <inheritdoc cref="ModulePrimitiveLuaBase"/>
+/// <summary>
+/// A single-line text input.
+/// </summary>
 [LuaObject]
 public partial class TextBoxLua : ModulePrimitiveLuaBase
 {
@@ -27,6 +31,9 @@ public partial class TextBoxLua : ModulePrimitiveLuaBase
 
     private string _text = "";
 
+    /// <summary>
+    /// Text currently in the text box.
+    /// </summary>
     [LuaMember("text")]
     public string Text
     {

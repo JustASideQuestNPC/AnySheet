@@ -10,6 +10,10 @@ using System.Text.Json.Nodes;
 
 namespace AnySheet.SheetModule.Primitives;
 
+/// <inheritdoc cref="ModulePrimitiveLuaBase"/>
+/// <summary>
+/// A button that runs a callback when clicked.
+/// </summary>
 [LuaObject]
 public partial class ButtonLua : ModulePrimitiveLuaBase
 {
