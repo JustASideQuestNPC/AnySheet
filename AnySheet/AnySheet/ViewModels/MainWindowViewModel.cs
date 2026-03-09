@@ -18,6 +18,7 @@ using System.Threading.Tasks;
 using Avalonia;
 using Avalonia.Animation;
 using Avalonia.Styling;
+using Avalonia.Xaml.Interactivity;
 using Material.Icons.Avalonia;
 
 namespace AnySheet.ViewModels;
@@ -26,15 +27,20 @@ public partial class MainWindowViewModel : ViewModelBase
 {
     [ObservableProperty] private CharacterSheet? _loadedSheet;
     [ObservableProperty] private ObservableCollection<ModuleFolderViewModel> _moduleFolders = [];
+    [ObservableProperty] private ObservableCollection<TriggerListEntry> _triggerListEntries = [];
     [ObservableProperty] private bool _sheetMenusEnabled;
     [ObservableProperty] private bool _moduleSidebarEnabled;
+    [ObservableProperty] private bool _triggerSidebarEnabled;
     [ObservableProperty] private double _modeIconOpacity = 0.5;
     [ObservableProperty] private bool _gameplayModeButtonEnabled;
     [ObservableProperty] private IBrush _gameplayModeIconColor = Brushes.Black;
     [ObservableProperty] private bool _moduleEditModeButtonEnabled;
     [ObservableProperty] private IBrush _moduleEditModeIconColor = Brushes.Black;
+    [ObservableProperty] private bool _triggerEditModeButtonEnabled;
+    [ObservableProperty] private IBrush _triggerEditModeIconColor = Brushes.Black;
     [ObservableProperty] private bool _zoomButtonsEnabled;
     [ObservableProperty] private TextBlock _saveIndicator;
+    [ObservableProperty] private string _newTriggerEntryName = "";
 
     // path to the currently loaded sheet
     private string _currentFilePath = "";
@@ -73,12 +79,15 @@ public partial class MainWindowViewModel : ViewModelBase
             {
                 case "ModuleEdit":
                     LoadedSheet.ChangeSheetMode(CharacterSheet.SheetMode.ModuleEdit);
-                    ModuleEditModeButtonEnabled = false;
-                    ModuleEditModeIconColor = AppResources.GetResource<IBrush>("Accent");
                     GameplayModeButtonEnabled = true;
                     GameplayModeIconColor = Brushes.Black;
-                    ModuleSidebarEnabled = true;
+                    ModuleEditModeButtonEnabled = false;
+                    ModuleEditModeIconColor = AppResources.GetResource<IBrush>("Accent");
+                    TriggerEditModeButtonEnabled = true;
+                    TriggerEditModeIconColor = Brushes.Black;
                     ZoomButtonsEnabled = false;
+                    ModuleSidebarEnabled = true;
+                    TriggerSidebarEnabled = false;
                     break;
                 case "Gameplay":
                     LoadedSheet.ChangeSheetMode(CharacterSheet.SheetMode.Gameplay);
@@ -86,11 +95,23 @@ public partial class MainWindowViewModel : ViewModelBase
                     GameplayModeIconColor = AppResources.GetResource<IBrush>("Accent");
                     ModuleEditModeButtonEnabled = true;
                     ModuleEditModeIconColor = Brushes.Black;
-                    ModuleSidebarEnabled = false;
+                    TriggerEditModeButtonEnabled = true;
+                    TriggerEditModeIconColor = Brushes.Black;
                     ZoomButtonsEnabled = true;
+                    ModuleSidebarEnabled = false;
+                    TriggerSidebarEnabled = false;
                     break;
-                // currently unused
                 case "TriggerEdit":
+                    LoadedSheet.ChangeSheetMode(CharacterSheet.SheetMode.TriggerEdit);
+                    GameplayModeButtonEnabled = true;
+                    GameplayModeIconColor = Brushes.Black;
+                    ModuleEditModeButtonEnabled = true;
+                    ModuleEditModeIconColor = Brushes.Black;
+                    TriggerEditModeButtonEnabled = false;
+                    TriggerEditModeIconColor = AppResources.GetResource<IBrush>("Accent");
+                    ZoomButtonsEnabled = true;
+                    ModuleSidebarEnabled = false;
+                    TriggerSidebarEnabled = true;
                     break;
             }
         }
@@ -122,6 +143,7 @@ public partial class MainWindowViewModel : ViewModelBase
         }
 
         Console.WriteLine("Create new sheet");
+        TriggerListEntries.Clear();
         LoadedSheet = new CharacterSheet(this);
         SheetMenusEnabled = true;
         _currentFilePath = "";
@@ -286,6 +308,14 @@ public partial class MainWindowViewModel : ViewModelBase
             if (await characterSheet.LoadSaveFile(files[0], token))
             {
                 LoadedSheet = characterSheet;
+
+                TriggerListEntries.Clear();
+                foreach (var triggerName in LoadedSheet.TriggerNames)
+                {
+                    var entry = new TriggerListEntry(this, triggerName);
+                    TriggerListEntries.Add(entry);
+                    Console.WriteLine($"Added trigger '{triggerName}' to trigger menu.");
+                }
                 _currentFilePath = files[0].Path.AbsolutePath;
                 SheetMenusEnabled = true;
                 ChangeUiMode("Gameplay");
@@ -368,6 +398,44 @@ public partial class MainWindowViewModel : ViewModelBase
             ResetCamera();
             LoadedSheet.ResetModulePositions();
         }
+    }
+
+    [RelayCommand]
+    private void CreateNewTrigger()
+    {
+        if (!string.IsNullOrEmpty(NewTriggerEntryName) && LoadedSheet != null &&
+            !LoadedSheet.HasTrigger(NewTriggerEntryName))
+        {
+            LoadedSheet.AddTrigger(NewTriggerEntryName);
+            var entry = new TriggerListEntry(this, NewTriggerEntryName);
+            TriggerListEntries.Add(entry);
+            SetEditingTrigger(entry);
+        }
+        ClearTriggerEntryBox();
+    }
+
+    [RelayCommand]
+    private void ClearTriggerEntryBox()
+    {
+        NewTriggerEntryName = "";
+    }
+
+    public void RemoveTriggerEntry(TriggerListEntry entry)
+    {
+        TriggerListEntries.Remove(entry);
+        LoadedSheet?.RemoveTrigger(entry.Text);
+    }
+    
+    // sets the trigger currently being edited
+    public void SetEditingTrigger(TriggerListEntry entry)
+    {
+        LoadedSheet?.SetEditingTrigger(entry.Text);
+    }
+
+    public void ActivateTrigger(TriggerListEntry entry)
+    {
+        Console.WriteLine($"Activating trigger: {entry.Text}");
+        LoadedSheet?.ActivateTrigger(entry.Text);
     }
 
     private bool _forceClose = false;

@@ -36,7 +36,8 @@
                         <ListBox.ItemTemplate>
                             <DataTemplate>
                                 <Border Padding="0" BorderBrush="{DynamicResource Primary}"
-                                        BorderThickness="2" CornerRadius="4" Background="{DynamicResource BackgroundPrimary}">
+                                        BorderThickness="2" CornerRadius="4"
+                                        Background="{DynamicResource BackgroundPrimary}">
                                     <Grid Margin="0" ColumnDefinitions="*, 25, 25" RowDefinitions="Auto">
                                         <TextBox Text="{Binding Text}"
                                                  Foreground="{DynamicResource Primary}" Padding="3 0"
@@ -44,7 +45,7 @@
                                         <Button Grid.Column="1" Padding="0" Margin="0" Width="25" Height="20"
                                                 Command="{Binding RemoveEntry}"
                                                 VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
-                                            <materialIcons:MaterialIcon Kind="Minus"
+                                            <materialIcons:MaterialIcon Kind="TrashCanOutline"
                                                                         Foreground="{DynamicResource Primary}"
                                                                         VerticalAlignment="Stretch"
                                                                         HorizontalAlignment="Stretch" />

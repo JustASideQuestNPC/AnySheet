@@ -34,6 +34,8 @@ public partial class CharacterSheet : UserControl
     public bool CanvasDragEnabled => Mode == SheetMode.Gameplay;
     public List<string> SaveDataLoadErrorMessages { get; } = [];
     public string SaveDataLoadErrorPopupMessage { get; private set; }
+    
+    public readonly List<string> TriggerNames = [];
 
     public bool HasBeenModified
     {
@@ -116,6 +118,14 @@ public partial class CharacterSheet : UserControl
                     Modules.Add(module);
                     ModuleGrid.Children.Add(module);
                     module.SetModuleMode(Mode);
+                    
+                    foreach (var triggerGroupName in module.TriggerGroupNames)
+                    {
+                        if (!TriggerNames.Contains(triggerGroupName))
+                        {
+                            TriggerNames.Add(triggerGroupName);
+                        }
+                    }
                 }
             }
         }
@@ -140,7 +150,7 @@ public partial class CharacterSheet : UserControl
         return SaveDataLoadErrorMessages.Count == 0;
     }
 
-    // adds a module from a script path at a position. returns whether it succeeded followed by any error messages,
+    // Adds a module from a script path at a position. Returns whether it succeeded, followed by any error messages,
     // followed by what message to display in the popup
     public async Task<(bool, List<string>, string)> AddModuleFromScript(string path, int gridX, int gridY)
     {
@@ -167,6 +177,15 @@ public partial class CharacterSheet : UserControl
         Modules.Add(module);
         ModuleGrid.Children.Add(module);
         module.SetModuleMode(Mode);
+
+        foreach (var triggerGroupName in module.TriggerGroupNames)
+        {
+            if (!TriggerNames.Contains(triggerGroupName))
+            {
+                TriggerNames.Add(triggerGroupName);
+            }
+        }
+        
         _moduleAddedOrRemoved = true;
         return (true, [], "");
     }
@@ -206,7 +225,7 @@ public partial class CharacterSheet : UserControl
         _moduleAddedOrRemoved = true;
     }
 
-    // resets everything to (0, 0). useful when i mess up something and modules are getting saved in the wrong positions
+    // Resets everything to (0, 0). Useful when i mess up something and modules are getting saved in the wrong positions
     public void ResetModulePositions()
     {
         foreach (var module in Modules)
@@ -225,8 +244,34 @@ public partial class CharacterSheet : UserControl
         {
             module.SetModuleMode(mode);
         }
-        ZoomBorder.EnableZoom = (mode == SheetMode.Gameplay);
+        ZoomBorder.EnableZoom = (Mode != SheetMode.ModuleEdit);
         ZoomBorder.PanButton = (Mode == SheetMode.Gameplay ? ButtonName.Left : ButtonName.Right);
+    }
+
+    public bool HasTrigger(string name) => TriggerNames.Contains(name);
+    
+    public void AddTrigger(string name) => TriggerNames.Add(name);
+
+    public void RemoveTrigger(string name)
+    {
+        TriggerNames.Remove(name);
+    }
+
+    public void SetEditingTrigger(string name)
+    {
+        foreach (var module in Modules)
+        {
+            module.SetEditingTrigger(name);
+        }
+    }
+
+    public void ActivateTrigger(string name)
+    {
+        Console.WriteLine($"Activating trigger: {name}");
+        foreach (var module in Modules)
+        {
+            module.RunTriggerGroup(name);
+        }
     }
 
     public JsonArray GetSaveData()
