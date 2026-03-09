@@ -32,6 +32,7 @@
 ---     corner of the module, regardless of the module's position in the character sheet.
 --- @field width integer The element's width in grid columns.
 --- @field height integer The element's height in grid rows.
+--- @field type string The element's class name.
 ModuleElement = {}
 
 --- A character sheet module. Each module script should return exactly one module instance (created

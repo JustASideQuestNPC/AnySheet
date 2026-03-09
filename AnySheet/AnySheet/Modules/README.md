@@ -10,6 +10,7 @@ wanted them to look like).
     - [Your First Module](#your-first-module)
     - [Module Elements](#module-elements)
     - [Updating Elements](#updating-elements)
+    - [Triggers](#triggers)
 - [Full Documentation](#full-documentation)
     - [Enums](#enums)
     - [SheetModule](#sheet-module)
@@ -142,6 +143,56 @@ local customModule = SheetModule.create({
 })
 return customModule;
 ```
+
+### Triggers
+Modules can also have one or more triggers attached to them. These are named functions that can be
+added to a trigger group in the app. Trigger functions are placed in a dictionary when you create
+the module. Their name in that dictionary is the name that will appear in the app UI.
+```lua
+local customNumberBox = NumberBox.create({
+    x = 0,
+    y = 0,
+    width = 2,
+    height = 2
+})
+
+local customText = StaticText.create({
+    x = 0,
+    y = 2,
+    width = 4,
+    height = 1,
+    alignment = "center",
+    text = "Some Text"
+})
+
+local function onClick()
+    customNumberBox.value = customNumberBox.value + 1
+end
+
+local customButton = Button.create({
+    x = 2,
+    y = 0,
+    width = 2,
+    height = 2,
+    icon = "arrow-up-bold-outline"
+    callback = onClick
+})
+
+local customModule = SheetModule.create({
+    elements = {
+        customNumberBox,
+        customText,
+        customButton
+    },
+    triggers = {
+        ["Add 5"] = function()
+            customNumberBox.value = customNumberBox.value + 5;
+        end
+    }
+})
+return customModule;
+```
+
 ### Module Naming
 By default, your module's file name will appear in the sidebar. If you want a custom name, you can
 put this comment at the very top of the file:
@@ -283,14 +334,14 @@ A multiline text input.
 #### Fields
 - `text` (string): All text currently in the box.
 
-#### `TextBox.create()`
+#### `MultilineTextBox.create()`
 Generates a new element.
 
-**Returns:** `TextBox`
+**Returns:** `MultilineTextBox`
 
 **Signature:**
 ```lua
-TextBox.create({
+MultilineTextBox.create({
     x: integer,
     y: integer,
     width: integer,
