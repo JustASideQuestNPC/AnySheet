@@ -33,6 +33,9 @@ public partial class DividerLua : ModulePrimitiveLuaBase
     private bool _capEnd = true;
     private int _thickness = 1;
     private bool _betweenSquares = false;
+    
+    [LuaMember("type")]
+    public override string Type { get; } = "Divider";
 
     [LuaMember("create")]
     private new static DividerLua CreateLua(LuaTable args)

@@ -206,7 +206,7 @@ public partial class SheetModule : UserControl
                 ["SheetModule"]      = new LuaSheetModule(),
                 ["StaticText"]       = new StaticTextLua(),
                 ["TextBox"]          = new TextBoxLua(),
-                ["MultiLineTextBox"] = new MultilineTextBoxLua(),
+                ["MultilineTextBox"] = new MultilineTextBoxLua(),
                 ["TripleToggle"]     = new TripleToggleLua(),
                 ["ToggleButton"]     = new ToggleButtonLua(),
                 ["NumberBox"]        = new NumberBoxLua(),

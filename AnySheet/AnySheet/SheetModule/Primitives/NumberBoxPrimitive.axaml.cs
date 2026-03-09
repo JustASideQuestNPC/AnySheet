@@ -82,6 +82,9 @@ public partial class NumberBoxLua : ModulePrimitiveLuaBase
     private string _borderColor = "";
     private bool _usePlusCharacter = false;
     
+    [LuaMember("type")]
+    public override string Type { get; } = "NumberBox";
+    
     [LuaMember("create")]
     private new static NumberBoxLua CreateLua(LuaTable args)
     {

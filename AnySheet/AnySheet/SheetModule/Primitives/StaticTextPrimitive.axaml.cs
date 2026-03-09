@@ -28,6 +28,9 @@ public partial class StaticTextLua : ModulePrimitiveLuaBase
     private string _fontStyle = "";
     private string _color = "";
     
+    [LuaMember("type")]
+    public override string Type { get; } = "StaticText";
+    
     [LuaMember("create")]
     private new static StaticTextLua CreateLua(LuaTable args)
     {

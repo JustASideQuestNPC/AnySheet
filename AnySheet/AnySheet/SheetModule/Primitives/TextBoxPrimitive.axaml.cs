@@ -26,6 +26,9 @@ public partial class TextBoxLua : ModulePrimitiveLuaBase
     };
 
     private string _text = "";
+    
+    [LuaMember("type")]
+    public override string Type { get; } = "TextBox";
 
     [LuaMember("text")]
     public string Text

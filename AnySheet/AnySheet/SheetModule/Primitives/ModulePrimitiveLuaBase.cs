@@ -40,6 +40,9 @@ public abstract class ModulePrimitiveLuaBase
     public int GridHeight { get; protected init; }
     public abstract bool HasBeenModified { get; }
     
+    [LuaMember("type")]
+    public abstract string Type { get; }
+    
     /// <summary>
     /// Creates the Avalonia control for this primitive.
     /// </summary>

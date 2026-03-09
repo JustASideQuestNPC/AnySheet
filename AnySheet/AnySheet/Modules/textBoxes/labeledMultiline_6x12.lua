@@ -12,7 +12,7 @@ return SheetModule.create({
             defaultText = "Multiline Box",
             alignment = "center"
         }),
-        MultiLineTextBox.create({
+        MultilineTextBox.create({
             x = 0,
             y = 2,
             width = 6,

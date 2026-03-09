@@ -21,6 +21,9 @@ public partial class ButtonLua : ModulePrimitiveLuaBase
 
     private string _icon = "";
     private LuaFunction _callback = null!;
+    
+    [LuaMember("type")]
+    public override string Type { get; } = "Button";
 
     private ButtonPrimitive _uiControl = null!;
 
