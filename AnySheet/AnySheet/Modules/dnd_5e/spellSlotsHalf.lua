@@ -1,7 +1,6 @@
 ---@sheetModule
 ---@name Spell Slot Tracker (Half Caster)
-
--- Spell slot tracker for half caster classes
+-- Spell slot tracker for half caster classes (artificer, paladin, ranger)
 
 local SPELL_SLOT_AMOUNTS = {4, 3, 3, 3, 2}
 
@@ -15,6 +14,8 @@ local elements = {
 	}),
 }
 
+---@type TripleToggle[]
+local spellSlotToggles = {} -- secondary array for reset triggger
 for level, slots in ipairs(SPELL_SLOT_AMOUNTS) do
 	table.insert(elements, StaticText.create({
 		x = level - 1,
@@ -27,14 +28,23 @@ for level, slots in ipairs(SPELL_SLOT_AMOUNTS) do
 	}))
 
 	for i = 1, slots, 1 do
-		table.insert(elements, TripleToggle.create({
+		local toggle = TripleToggle.create({
 			x = level - 1,
 			y = i + 2
-		}))
+		})
+		table.insert(spellSlotToggles, toggle)
+		table.insert(elements, toggle)
 	end
 end
 
 local module = SheetModule.create({
-	elements = elements
+	elements = elements,
+	triggers = {
+		["Reset all"] = function ()
+			for _, toggle in ipairs(spellSlotToggles) do
+				toggle.state = 2
+			end
+		end
+	}
 });
 return module;

@@ -1,12 +1,14 @@
 ---@sheetModule
 ---@name Labeled Checkbox (6x1)
 
+local button = ToggleButton.create({
+    x = 0,
+    y = 0
+})
+
 return SheetModule.create({
     elements = {
-        ToggleButton.create({
-            x = 0,
-            y = 0
-        }),
+        button,
         TextBox.create({
             x = 1,
             y = 0,
@@ -18,5 +20,13 @@ return SheetModule.create({
             defaultText = "Single Value",
             style = "bold"
         }),
+    },
+    triggers = {
+        ["Check"] = function ()
+            button.toggled = true
+        end,
+        ["Uncheck"] = function ()
+            button.toggled = false
+        end
     }
 })
