@@ -335,8 +335,8 @@ public partial class SheetModule : UserControl
         Console.WriteLine($"{_items.Count} elements loaded. Grid size: {GridWidth}x{GridHeight}");
         foreach (var item in _items)
         {
-            // i can't just modify the GridX and GridY fields because i want the shift to be invisible from inside the
-            // lua script
+            // i can't just modify the GridX and GridY fields because i want the movement to be invisible from inside
+            // the lua script
             var uiControl = item.CreateUiControl(-left, -top);
             
             PrimitiveGrid.Children.Add(uiControl);

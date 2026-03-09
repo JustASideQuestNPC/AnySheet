@@ -271,16 +271,12 @@
             <Border Margin="0" Padding="10" BorderBrush="{DynamicResource Primary}"
                     BorderThickness="0 2 2 0" IsVisible="{Binding TriggerSidebarEnabled}"
                     DockPanel.Dock="Left" Width="250">
-                <Grid ColumnDefinitions="40, *" RowDefinitions="40, *, Auto" RowSpacing="5">
-                    <Button Grid.Column="0" Grid.Row="0" Command="{Binding OpenModuleFolderCommand}"
-                            Classes="SquareIconButton" ToolTip.Tip="New Trigger">
-                        <materialIcons:MaterialIcon Kind="Plus" />
-                    </Button>
-                    <TextBlock Grid.Column="1" Grid.Row="0" Foreground="{DynamicResource Primary}"
+                <Grid ColumnDefinitions="*" RowDefinitions="40, *, Auto" RowSpacing="5">
+                    <TextBlock Grid.Column="0" Grid.Row="0" Foreground="{DynamicResource Primary}"
                                FontFamily="{DynamicResource LatoBold}" FontSize="20"
                                VerticalAlignment="Center">Triggers</TextBlock>
                     
-                    <Border Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="2" BorderBrush="{DynamicResource Primary}"
+                    <Border Grid.Column="0" Grid.Row="1" BorderBrush="{DynamicResource Primary}"
                             BorderThickness="2" Padding="2" CornerRadius="7">
                         <ScrollViewer>
                             <ItemsControl ItemsSource="{Binding TriggerListEntries}" Margin="0">
@@ -326,7 +322,7 @@
                         </ScrollViewer>
                     </Border>
                     
-                    <Border Grid.Column="0" Grid.Row="2" Grid.ColumnSpan="2" Margin="0" Padding="3"
+                    <Border Grid.Column="0" Grid.Row="2" Margin="0" Padding="3"
                             BorderBrush="Transparent">
                         <Grid Margin="0" Name="NewEntryContainerGrid" ColumnDefinitions="*, Auto, Auto"
                               RowDefinitions="25" ColumnSpacing="5">
