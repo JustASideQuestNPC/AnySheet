@@ -34,7 +34,6 @@ public partial class DividerLua : ModulePrimitiveLuaBase
     private int _thickness = 1;
     private bool _betweenSquares = false;
     
-    [LuaMember("type")]
     public override string Type { get; } = "Divider";
 
     [LuaMember("create")]

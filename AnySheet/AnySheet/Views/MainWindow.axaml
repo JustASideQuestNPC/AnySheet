@@ -15,7 +15,7 @@
     <Design.DataContext>
         <!-- This only sets the DataContext for the previewer in an IDE,
              to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs) -->
-        <vm:MainWindowViewModel/>
+        <vm:MainWindowViewModel/>   
     </Design.DataContext>
     
     <Window.Styles>
@@ -181,8 +181,8 @@
                 </Button>
                 <Button Command="{Binding ChangeUiModeCommand}" CommandParameter="TriggerEdit"
                         Classes="SquareIconButton" IsEnabled="{Binding TriggerEditModeButtonEnabled}"
-                        ToolTip.Tip="Triggers">
-                    <materialIcons:MaterialIcon Kind="VectorPolyline"
+                        ToolTip.Tip="Trigger Editor">
+                    <materialIcons:MaterialIcon Kind="VectorPolylineEdit"
                                                 Foreground="{Binding TriggerEditModeIconColor}"
                                                 Opacity="{Binding ModeIconOpacity}" />
                 </Button>
@@ -287,9 +287,9 @@
                                                 Background="{DynamicResource BackgroundPrimary}">
                                             <Grid Margin="0" ColumnDefinitions="*, 25, 25, 25"
                                                   RowDefinitions="Auto">
-                                                <cc:AutoFitTextBlock Text="{Binding Text}"
-                                                         Foreground="{DynamicResource Primary}" Padding="3 0"
-                                                         FontSize="12" />
+                                                <TextBlock Text="{Binding Text}"
+                                                           Foreground="{DynamicResource Primary}"
+                                                           Padding="3 0" VerticalAlignment="Center" />
                                                 <Button Grid.Column="1" Command="{Binding Activate}"
                                                         VerticalAlignment="Stretch" HorizontalAlignment="Stretch"
                                                         Classes="SquareIconButton">

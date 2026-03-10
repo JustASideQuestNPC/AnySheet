@@ -23,7 +23,6 @@ public partial class MultilineTextBoxLua : ModulePrimitiveLuaBase
     
     private MultiLineTextBoxPrimitive? _uiControl;
     
-    [LuaMember("type")]
     public override string Type { get; } = "MultilineTextBox";
 
     [LuaMember("create")]

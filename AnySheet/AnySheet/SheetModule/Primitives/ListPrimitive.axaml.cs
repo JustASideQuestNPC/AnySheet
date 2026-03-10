@@ -30,7 +30,6 @@ public partial class ListPrimitiveLua : ModulePrimitiveLuaBase
         };
     }
     
-    [LuaMember("type")]
     public override string Type { get; } = "List";
     
     public static bool TryReadLua(LuaValue value, out ListPrimitiveLua result)

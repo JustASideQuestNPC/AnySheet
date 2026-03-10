@@ -27,7 +27,6 @@ public partial class TripleToggleLua : ModulePrimitiveLuaBase
 
     private int _buttonState = 1;
     
-    [LuaMember("type")]
     public override string Type { get; } = "TripleToggle";
 
     [LuaMember("state")]

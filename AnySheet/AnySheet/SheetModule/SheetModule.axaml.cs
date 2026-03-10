@@ -114,9 +114,9 @@ public partial class SheetModule : UserControl
     // called when loading sheets from a file
     public SheetModule(CharacterSheet parent, JsonArray saveData)
     {
-        if (saveData.Count != 5)
+        if (saveData.Count != 4 && saveData.Count != 5)
         {
-            LogErrorMessage($"Save data must contain 5 elements, but contains {saveData.Count}.");
+            LogErrorMessage($"Save data must contain 4 or 5 elements, but contains {saveData.Count}.");
             return;
         }
 
@@ -124,42 +124,44 @@ public partial class SheetModule : UserControl
             saveData[0] == null || !saveData[0]!.AsValue().TryGetValue<string>(out var path) ||
             saveData[1] == null || !saveData[1]!.AsValue().TryGetValue<int>(out var x) ||
             saveData[2] == null || !saveData[2]!.AsValue().TryGetValue<int>(out var y) ||
-            saveData[3] == null ||  saveData[3]!.AsArray() is not { Count: > 0 } itemData ||
-            saveData[4] == null ||  saveData[4]!.AsObject() is not { Count: >= 0 } triggerData
+            saveData[3] == null ||  saveData[3]!.AsArray() is not { Count: > 0 } itemData
         )
         {
             var dataType1 = saveData[0]?.GetType().Name ?? "null";
             var dataType2 = saveData[1]?.GetType().Name ?? "null";
             var dataType3 = saveData[2]?.GetType().Name ?? "null";
             var dataType4 = saveData[3]?.GetType().Name ?? "null";
-            var dataType5 = saveData[4]?.GetType().Name ?? "null";
-            LogErrorMessage("Save data must be an array of type [string, int, int, JsonArray, JsonObject], but " +
-                                          $"contains [{dataType1}, {dataType2}, {dataType3}, {dataType4}, " +
-                                          $"{dataType5}].");
+            LogErrorMessage("Save data must be an array of type [string, int, int, JsonArray], but " +
+                                          $"contains [{dataType1}, {dataType2}, {dataType3}, {dataType4}].");
+            return;
         }
-        else
-        {
-            _parent = parent;
-            GridX = x;
-            GridY = y;
-            _saveData = itemData;
-            AbsolutePosition = true;
 
-            _triggerGroups = new Dictionary<string, List<string>>();
-            foreach (var (groupName, triggers) in triggerData)
-            {
-                if (triggers?.AsArray() is { Count: >= 0 } triggerNames)
-                {
-                    _triggerGroups[groupName] = triggerNames.GetValues<string>().ToList();
-                }
-                else
-                {
-                    LogErrorMessage($"Trigger group '{groupName}' is not an array of strings.");
-                }
-            }
-            
-            _setup(path);
+        if (saveData.Count == 4 || saveData[4] == null || saveData[4]!.AsObject() is not { Count: >= 0 } triggerData)
+        {
+            triggerData = new JsonObject();
+            Console.WriteLine("[Warning]: Module has no trigger data; adding placeholder object.");
         }
+        
+        _parent = parent;
+        GridX = x;
+        GridY = y;
+        _saveData = itemData;
+        AbsolutePosition = true;
+
+        _triggerGroups = new Dictionary<string, List<string>>();
+        foreach (var (groupName, triggers) in triggerData)
+        {
+            if (triggers?.AsArray() is { Count: >= 0 } triggerNames)
+            {
+                _triggerGroups[groupName] = triggerNames.GetValues<string>().ToList();
+            }
+            else
+            {
+                LogErrorMessage($"Trigger group '{groupName}' is not an array of strings.");
+            }
+        }
+            
+        _setup(path);
     }
     
     // called when adding a new module
