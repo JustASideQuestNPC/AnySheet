@@ -145,6 +145,8 @@ public partial class SheetModule : UserControl
         _parent = parent;
         GridX = x;
         GridY = y;
+        StartX = x;
+        StartY = y;
         _saveData = itemData;
         AbsolutePosition = true;
 
