@@ -37,24 +37,30 @@ public partial class CharacterSheet : UserControl
     
     public readonly List<string> TriggerNames = [];
 
-    public bool HasBeenModified
+    public bool HasBeenModified()
     {
-        get
+        if (_moduleAddedOrRemoved)
         {
-            if (_moduleAddedOrRemoved)
+            return true;
+        }
+            
+        foreach (var module in Modules)
+        {
+            if (module.HasBeenModified())
             {
                 return true;
             }
-            
-            foreach (var module in Modules)
-            {
-                if (module.HasBeenModified)
-                {
-                    return true;
-                }
-            }
+        }
 
-            return false;
+        return false;
+    }
+    
+    public void ResetModified()
+    {
+        _moduleAddedOrRemoved = false;
+        foreach (var module in Modules)
+        {
+            module.ResetModified();
         }
     }
     

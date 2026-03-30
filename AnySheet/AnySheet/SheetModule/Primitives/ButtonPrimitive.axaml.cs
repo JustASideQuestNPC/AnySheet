@@ -68,7 +68,9 @@ public partial class ButtonLua : ModulePrimitiveLuaBase
         _uiControl.IsEnabled = false;
     }
 
-    public override bool HasBeenModified => false;
+    public override bool HasBeenModified() => false;
+    public override void ResetModified() {}
+
     public override JsonObject? GetSaveObject() => null;
     public override void LoadSaveObject(JsonObject? obj) {}
 }

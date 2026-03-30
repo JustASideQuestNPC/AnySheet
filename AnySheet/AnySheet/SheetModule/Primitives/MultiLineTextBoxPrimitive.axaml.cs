@@ -60,8 +60,10 @@ public partial class MultilineTextBoxLua : ModulePrimitiveLuaBase
     {
         _uiControl.IsEnabled = false;
     }
+
+    public override bool HasBeenModified() => _uiControl.TextBox.Text != Text;
+    public override void ResetModified() => Text = _uiControl.TextBox.Text;
     
-    public override bool HasBeenModified => _uiControl.TextBox.Text != Text;
     public override JsonObject GetSaveObject()
     {
         return new JsonObject { ["text"] = _uiControl.TextBox.Text };

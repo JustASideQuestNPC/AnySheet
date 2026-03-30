@@ -86,8 +86,10 @@ public partial class StaticTextLua : ModulePrimitiveLuaBase
     // static text isn't interactive and saves no data
     public override void EnableUiControl() {}
     public override void DisableUiControl() {}
+
+    public override bool HasBeenModified() => false;
+    public override void ResetModified() {}
     
-    public override bool HasBeenModified => false;
     public override JsonObject? GetSaveObject()
     {
         return null;

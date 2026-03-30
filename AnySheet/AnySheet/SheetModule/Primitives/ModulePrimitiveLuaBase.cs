@@ -10,7 +10,7 @@ namespace AnySheet.SheetModule.Primitives;
 /// <summary>
 /// Base class for the Lua half of a module primitive. Each primitive should be paired with a corresponding Avalonia
 /// control. The <code>TryReadLua()</code> and <code>CreateLua()</code> methods must be overriden (they can't be marked
-/// as abstract for ptechnical reasons).
+/// as abstract for technical reasons).
 /// </summary>
 public abstract class ModulePrimitiveLuaBase
 {
@@ -38,11 +38,13 @@ public abstract class ModulePrimitiveLuaBase
     
     [LuaMember("height")]
     public int GridHeight { get; protected init; }
-    public abstract bool HasBeenModified { get; }
     
     [LuaMember("type")]
     public abstract string Type { get; }
-    
+
+    public abstract bool HasBeenModified();
+    public abstract void ResetModified();
+
     /// <summary>
     /// Creates the Avalonia control for this primitive.
     /// </summary>

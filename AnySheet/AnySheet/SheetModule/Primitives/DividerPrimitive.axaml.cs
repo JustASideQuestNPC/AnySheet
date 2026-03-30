@@ -118,20 +118,14 @@ public partial class DividerLua : ModulePrimitiveLuaBase
     }
 
     // dividers aren't interactive and save no data
-    public override void EnableUiControl()
-    {
-    }
-
-    public override void DisableUiControl()
-    {
-    }
-
-    public override bool HasBeenModified => false;
+    public override void EnableUiControl() {}
+    public override void DisableUiControl() {}
+    
+    public override bool HasBeenModified() => false;
+    public override void ResetModified() {}
+    
     public override JsonObject? GetSaveObject() => null;
-
-    public override void LoadSaveObject(JsonObject? obj)
-    {
-    }
+    public override void LoadSaveObject(JsonObject? obj) {}
 }
 
 public partial class DividerPrimitive : UserControl

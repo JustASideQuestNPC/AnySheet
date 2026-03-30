@@ -90,7 +90,9 @@ public partial class ToggleButtonLua : ModulePrimitiveLuaBase
         _uiControl.IsEnabled = false;
     }
     
-    public override bool HasBeenModified => _uiControl.Button.IsChecked != _state;
+    public override bool HasBeenModified() => _uiControl.Button.IsChecked != _state;
+    public override void ResetModified() => _state = _uiControl.Button.IsChecked ?? false;
+    
     public override JsonObject? GetSaveObject()
     {
         return new JsonObject {["state"] = _uiControl.Button.IsChecked};

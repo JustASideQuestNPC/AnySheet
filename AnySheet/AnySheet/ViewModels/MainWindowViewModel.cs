@@ -120,7 +120,7 @@ public partial class MainWindowViewModel : ViewModelBase
     [RelayCommand]
     private async Task CreateNewSheet()
     {
-        if (LoadedSheet != null && LoadedSheet.HasBeenModified)
+        if (LoadedSheet != null && LoadedSheet.HasBeenModified())
         {
             var dialog = new ThreefoldDialog
             {
@@ -257,7 +257,7 @@ public partial class MainWindowViewModel : ViewModelBase
     [RelayCommand]
     private async Task OpenSheetFromFile(CancellationToken token)
     {
-        if (LoadedSheet != null && LoadedSheet.HasBeenModified)
+        if (LoadedSheet != null && LoadedSheet.HasBeenModified())
         {
             var dialog = new ThreefoldDialog
             {
@@ -441,7 +441,7 @@ public partial class MainWindowViewModel : ViewModelBase
     private bool _forceClose = false;
     public async Task OnWindowClosed(object? sender, WindowClosingEventArgs e)
     {
-        if (LoadedSheet != null && LoadedSheet.HasBeenModified && !_forceClose)
+        if (LoadedSheet != null && LoadedSheet.HasBeenModified() && !_forceClose)
         {
             e.Cancel = true;
             if (!DialogHost.IsDialogOpen("RootDialog"))
@@ -526,5 +526,6 @@ public partial class MainWindowViewModel : ViewModelBase
             Classes = { "SaveIndicator" },
             Text = "Saved"
         };
+        LoadedSheet.ResetModified();
     }
 }

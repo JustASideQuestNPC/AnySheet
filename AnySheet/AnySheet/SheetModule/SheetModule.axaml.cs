@@ -78,23 +78,31 @@ public partial class SheetModule : UserControl
         set => SetValue(GridSnapProperty, value);
     }
     
-    public bool HasBeenModified
+    public bool HasBeenModified()
     {
-        get
+        if (_moduleWasDragged)
         {
-            if (_moduleWasDragged)
+            return true;
+        }
+            
+        foreach (var item in _items)
+        {
+            if (item.HasBeenModified())
             {
                 return true;
             }
-            
-            foreach (var item in _items)
-            {
-                if (item.HasBeenModified)
-                {
-                    return true;
-                }
-            }
-            return false;
+        }
+        
+        return false;
+    }
+    
+    public void ResetModified()
+    {
+        _moduleWasDragged = false;
+        
+        foreach (var item in _items)
+        {
+            item.ResetModified();
         }
     }
 
