@@ -35,6 +35,8 @@ public partial class SheetModule : UserControl
     private readonly List<ModulePrimitiveLuaBase> _items = [];
     public static readonly StyledProperty<bool> ModuleEditsEnabledProperty =
         AvaloniaProperty.Register<SheetModule, bool>("ModuleEditsEnabled");
+    public static readonly StyledProperty<bool> TriggerEditsEnabledProperty =
+        AvaloniaProperty.Register<SheetModule, bool>("TriggerEditsEnabled");
     public static readonly StyledProperty<int> GridSnapProperty =
         AvaloniaProperty.Register<SheetModule, int>("GridSnap");
 
@@ -374,8 +376,7 @@ public partial class SheetModule : UserControl
                 {
                     item.EnableUiControl();
                 }
-                ModuleEditsEnabled = false;
-                ContextMenu.IsEnabled = false;
+                ModuleRemoveButton.IsVisible = false;
                 TriggerList.IsVisible = false;
                 break;
             case CharacterSheet.SheetMode.ModuleEdit:
@@ -383,8 +384,7 @@ public partial class SheetModule : UserControl
                 {
                     item.DisableUiControl();
                 }
-                ModuleEditsEnabled = true;
-                ContextMenu.IsEnabled = true;
+                ModuleRemoveButton.IsVisible = true;
                 TriggerList.IsVisible = false;
                 break;
             case CharacterSheet.SheetMode.TriggerEdit:
@@ -392,8 +392,7 @@ public partial class SheetModule : UserControl
                 {
                     item.DisableUiControl();
                 }
-                ModuleEditsEnabled = false;
-                ContextMenu.IsEnabled = false;
+                ModuleRemoveButton.IsVisible = false;
                 TriggerList.IsVisible = false;
                 break;
         }
@@ -466,5 +465,14 @@ public partial class SheetModule : UserControl
     {
         SaveDataLoadErrorMessages.Add(message);
         Console.WriteLine(message);
+    }
+
+    private void Container_PointerPressed(object? sender, PointerPressedEventArgs e)
+    {
+        if (sender is Control ctl && e.GetCurrentPoint(ctl).Properties.IsRightButtonPressed &&
+            (ModuleRemoveButton.IsVisible || TriggerList.IsVisible))
+        {
+            FlyoutBase.ShowAttachedFlyout(ctl);
+        }
     }
 }

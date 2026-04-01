@@ -17,23 +17,58 @@
             <Setter Property="Height" Value="20" />
             <Setter Property="BorderThickness" Value="2" />
             <Setter Property="Background" Value="Transparent" />
-            <Setter Property="BorderBrush" Value="{DynamicResource Primary}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource Accent}" />
         </Style>
         <Style Selector="#Container ToggleButton:pointerover /template/ ContentPresenter#PART_ContentPresenter">
-            <Setter Property="BorderBrush" Value="{DynamicResource Primary}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource Accent}" />
         </Style>
         <Style Selector="#Container ToggleButton:checked/template/ ContentPresenter#PART_ContentPresenter">
-            <Setter Property="BorderBrush" Value="{DynamicResource Primary}" />
-            <Setter Property="Background" Value="{DynamicResource Primary}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource Accent}" />
+            <Setter Property="Background" Value="{DynamicResource Accent}" />
         </Style>
         <Style Selector="#Container ToggleButton:checked:pointerover /template/ ContentPresenter#PART_ContentPresenter">
-            <Setter Property="BorderBrush" Value="{DynamicResource Primary}" />
-            <Setter Property="Background" Value="{DynamicResource Primary}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource Accent}" />
+            <Setter Property="Background" Value="{DynamicResource Accent}" />
         </Style>
+        <Style Selector="#Container ToggleButton:pressed /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="BorderBrush" Value="{DynamicResource Accent}" />
+            <Setter Property="Background" Value="{DynamicResource Accent}" />
+        </Style>
+        <Style Selector="#Container ToggleButton:checked:pressed /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="BorderBrush" Value="{DynamicResource Accent}" />
+            <Setter Property="Background" Value="{DynamicResource Accent}" />
+        </Style>
+        
         <Style Selector="TextBlock">
             <Setter Property="FontFamily" Value="{DynamicResource Lato}" />
             <Setter Property="FontSize" Value="15" />
-            <Setter Property="Foreground" Value="{DynamicResource Primary}" />
+            <Setter Property="Foreground" Value="{DynamicResource BackgroundPrimary}" />
+        </Style>
+        
+        <Style Selector="#Container Button">
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="FontFamily" Value="{DynamicResource Lato}" />
+            <Setter Property="FontSize" Value="15" />
+            <Setter Property="Foreground" Value="{DynamicResource BackgroundPrimary}" />
+            <Setter Property="Margin" Value="0" />
+        </Style>
+        <Style Selector="#Container Button:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="BorderBrush" Value="Transparent" />
+            <Setter Property="Background" Value="{DynamicResource Secondary}" />
+        </Style>
+        <Style Selector="#Container Button:checked/template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="BorderBrush" Value="Transparent" />
+            <Setter Property="Background" Value="{DynamicResource Secondary}" />
+        </Style>
+        <Style Selector="#Container Button:checked:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="BorderBrush" Value="Transparent" />
+            <Setter Property="Background" Value="{DynamicResource Secondary}" />
+        </Style>
+        
+        <Style Selector="FlyoutPresenter.ModuleFlyout">
+            <Setter Property="Padding" Value="0"/>
+            <Setter Property="HorizontalContentAlignment" Value="Center" />
+            <Setter Property="VerticalContentAlignment" Value="Center" />
         </Style>
     </UserControl.Styles>
     <Interaction.Behaviors>
@@ -41,34 +76,36 @@
                                       IsEnabled="{Binding ModuleEditsEnabled}"
                                       DragCompletedCommand="{ReflectionBinding DragCompletedCommand}" />
     </Interaction.Behaviors>
-    <Border Name="Container" Classes="Module" BorderThickness="4">
-        <Border.ContextMenu>
-            <ContextMenu Name="ContextMenu" IsEnabled="{Binding ModuleEditsEnabled}"
-                         IsVisible="{Binding ModuleEditsEnabled}">
-                <MenuItem Header="Remove" Command="{Binding RemoveModuleCommand}"
-                          IsEnabled="{Binding ModuleEditsEnabled}" IsVisible="{Binding ModuleEditsEnabled}" />
-            </ContextMenu>
-        </Border.ContextMenu>
+    <Border Name="Container" Classes="Module" BorderThickness="4" PointerPressed="Container_PointerPressed">
+        <FlyoutBase.AttachedFlyout>
+            <Flyout FlyoutPresenterClasses="ModuleFlyout">
+                <StackPanel>
+                    <Button Name="ModuleRemoveButton" Command="{Binding RemoveModuleCommand}"
+                            Margin="0" Padding="5">Remove</Button>
+                    <ScrollViewer Name="TriggerList" VerticalContentAlignment="Top" Padding="0"
+                                  Background="Transparent">
+                        <ItemsControl ItemsSource="{Binding TriggerToggleButtons}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Border Padding="2"
+                                            CornerRadius="5" Background="Transparent"
+                                            VerticalAlignment="Top" HorizontalAlignment="Left" Margin="1">
+                                        <Grid RowDefinitions="Auto" ColumnDefinitions="Auto, *" Margin="0">
+                                            <ToggleButton IsChecked="{Binding ButtonState}"
+                                                          Margin="0 0 5 0" Command="{Binding Toggle}" />
+                                            <TextBlock Grid.Column="1" Text="{Binding Name}" Margin="0" />
+                                        </Grid>
+                                    </Border>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </ScrollViewer>
+                </StackPanel>
+            </Flyout>
+        </FlyoutBase.AttachedFlyout>
         <Panel>
             <Grid Name="PrimitiveGrid" DockPanel.Dock="Top" RowSpacing="4" ColumnSpacing="4" VerticalAlignment="Center"
                   HorizontalAlignment="Center" />
-            <ScrollViewer Name="TriggerList" VerticalContentAlignment="Top" Padding="2" Background="Transparent">
-                <ItemsControl ItemsSource="{Binding TriggerToggleButtons}">
-                    <ItemsControl.ItemTemplate>
-                        <DataTemplate>
-                            <Border Padding="2" BorderBrush="{DynamicResource Primary}" BorderThickness="2"
-                                    CornerRadius="5" Background="{DynamicResource BackgroundPrimary}"
-                                    VerticalAlignment="Top" HorizontalAlignment="Left" Margin="1">
-                                <Grid RowDefinitions="Auto" ColumnDefinitions="Auto, *" Margin="0">
-                                    <ToggleButton IsChecked="{Binding ButtonState}"
-                                                  Margin="0" Command="{Binding Toggle}" />
-                                    <TextBlock Grid.Column="1" Text="{Binding Name}" Margin="0" />
-                                </Grid>
-                            </Border>
-                        </DataTemplate>
-                    </ItemsControl.ItemTemplate>
-                </ItemsControl>
-            </ScrollViewer>
         </Panel>
     </Border>
 </UserControl>
