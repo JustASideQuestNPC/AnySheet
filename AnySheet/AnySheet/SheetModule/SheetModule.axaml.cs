@@ -378,6 +378,7 @@ public partial class SheetModule : UserControl
                 }
                 ModuleRemoveButton.IsVisible = false;
                 TriggerList.IsVisible = false;
+                ModuleEditsEnabled = false;
                 break;
             case CharacterSheet.SheetMode.ModuleEdit:
                 foreach (var item in _items)
@@ -386,6 +387,7 @@ public partial class SheetModule : UserControl
                 }
                 ModuleRemoveButton.IsVisible = true;
                 TriggerList.IsVisible = false;
+                ModuleEditsEnabled = true;
                 break;
             case CharacterSheet.SheetMode.TriggerEdit:
                 foreach (var item in _items)
@@ -394,6 +396,7 @@ public partial class SheetModule : UserControl
                 }
                 ModuleRemoveButton.IsVisible = false;
                 TriggerList.IsVisible = false;
+                ModuleEditsEnabled = false;
                 break;
         }
     }
