@@ -21,6 +21,8 @@ public partial class ButtonLua : ModulePrimitiveLuaBase
 
     private string _icon = "";
     private LuaFunction _callback = null!;
+    
+    public override string Type { get; } = "Button";
 
     private ButtonPrimitive _uiControl = null!;
 
@@ -66,7 +68,9 @@ public partial class ButtonLua : ModulePrimitiveLuaBase
         _uiControl.IsEnabled = false;
     }
 
-    public override bool HasBeenModified => false;
+    public override bool HasBeenModified() => false;
+    public override void ResetModified() {}
+
     public override JsonObject? GetSaveObject() => null;
     public override void LoadSaveObject(JsonObject? obj) {}
 }

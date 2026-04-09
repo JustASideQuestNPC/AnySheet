@@ -1,4 +1,5 @@
-﻿<Styles xmlns="https://github.com/avaloniaui"
+﻿<!-- Styles for sheet modules and all module primitives. -->
+<Styles xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:cc="using:CustomControls">
     <Design.PreviewWith>
@@ -8,7 +9,7 @@
     </Design.PreviewWith>
 
     <Style Selector="Border.Module">
-        <Setter Property="Background" Value="White" />
+        <Setter Property="Background" Value="{DynamicResource BackgroundPrimary}" />
         <Setter Property="Padding" Value="0" />
         <Setter Property="BorderBrush" Value="{DynamicResource Accent}"/>
         <Setter Property="Margin" Value="0" />
@@ -93,7 +94,7 @@
     </Style>
     <Style Selector="ListBoxItem">
         <Setter Property="Padding" Value="3" />
-        <Setter Property="Background" Value="White" />
+        <Setter Property="Background" Value="{DynamicResource BackgroundPrimary}" />
     </Style>
     <Style Selector="ListBoxItem:selected /template/ ContentPresenter">
         <Setter Property="Background" Value="Transparent"/>	

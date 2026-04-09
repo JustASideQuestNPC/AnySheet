@@ -8,6 +8,9 @@ using System.Windows.Input;
 
 namespace AnySheet.Behaviors;
 
+/// <summary>
+/// Behavior for dragging sheet modules with grid snapping.
+/// </summary>
 public class ModuleDragBehavior : Behavior<Control>
 {
     public class DragCompletedCommandParameters

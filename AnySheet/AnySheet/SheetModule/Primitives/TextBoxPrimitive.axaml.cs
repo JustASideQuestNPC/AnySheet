@@ -26,6 +26,8 @@ public partial class TextBoxLua : ModulePrimitiveLuaBase
     };
 
     private string _text = "";
+    
+    public override string Type { get; } = "TextBox";
 
     [LuaMember("text")]
     public string Text
@@ -129,7 +131,9 @@ public partial class TextBoxLua : ModulePrimitiveLuaBase
         _uiControl.IsEnabled = false;
     }
 
-    public override bool HasBeenModified => Text != _uiControl.TextBox.Text;
+    public override bool HasBeenModified() => Text != _uiControl.TextBox.Text;
+    public override void ResetModified() => Text = _uiControl.TextBox.Text;
+    
     public override JsonObject GetSaveObject()
     {
         return new JsonObject { ["text"] = Text };

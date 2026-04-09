@@ -167,5 +167,13 @@ return SheetModule.create({
 			alignment = "center",
 			color = "secondary"
 		}),
+	},
+	triggers = {
+		["Remove Temp HP"] = function()
+			tempHp.value = 0
+		end,
+		["Full Heal"] = function()
+			currentHp.value = maxHp.value
+		end
 	}
 });

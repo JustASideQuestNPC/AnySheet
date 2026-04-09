@@ -28,6 +28,8 @@ public partial class StaticTextLua : ModulePrimitiveLuaBase
     private string _fontStyle = "";
     private string _color = "";
     
+    public override string Type { get; } = "StaticText";
+    
     [LuaMember("create")]
     private new static StaticTextLua CreateLua(LuaTable args)
     {
@@ -84,8 +86,10 @@ public partial class StaticTextLua : ModulePrimitiveLuaBase
     // static text isn't interactive and saves no data
     public override void EnableUiControl() {}
     public override void DisableUiControl() {}
+
+    public override bool HasBeenModified() => false;
+    public override void ResetModified() {}
     
-    public override bool HasBeenModified => false;
     public override JsonObject? GetSaveObject()
     {
         return null;

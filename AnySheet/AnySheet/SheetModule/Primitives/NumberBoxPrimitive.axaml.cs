@@ -82,6 +82,8 @@ public partial class NumberBoxLua : ModulePrimitiveLuaBase
     private string _borderColor = "";
     private bool _usePlusCharacter = false;
     
+    public override string Type { get; } = "NumberBox";
+    
     [LuaMember("create")]
     private new static NumberBoxLua CreateLua(LuaTable args)
     {
@@ -164,7 +166,9 @@ public partial class NumberBoxLua : ModulePrimitiveLuaBase
     {
         _uiControl.IsEnabled = false;
     }
-    public override bool HasBeenModified => _uiControl.HasBeenModified;
+
+    public override bool HasBeenModified() => _uiControl.HasBeenModified;
+    public override void ResetModified() => _uiControl.ResetModified();
 
     public override JsonObject GetSaveObject()
     {
@@ -228,7 +232,12 @@ public partial class NumberBoxPrimitive : UserControl
         }
     }
 
-    public bool HasBeenModified { get; private set; } = false;
+    private bool _valueChangedByUser = false;
+    public bool HasBeenModified => _valueChangedByUser;
+    public void ResetModified()
+    {
+        _valueChangedByUser = false;
+    }
     
     public NumberBoxPrimitive(NumberBoxLua parent, int x, int y, int width, int height, double defaultValue,
                               double minValue, double maxValue, bool integerOnly, string borderType,
@@ -294,7 +303,7 @@ public partial class NumberBoxPrimitive : UserControl
                                   TextBox.FontFamily,
                                   (_width * SheetModule.GridSize) - TextBox.Padding.Left - TextBox.Padding.Right - 2,
                                   (_height * SheetModule.GridSize) - TextBox.Padding.Top - TextBox.Padding.Bottom - 2);
-        HasBeenModified = true;
+        _valueChangedByUser = true;
     }
     
     private new void LostFocus(object? sender, RoutedEventArgs e)

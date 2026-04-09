@@ -18,6 +18,7 @@ using System.Threading.Tasks;
 using Avalonia;
 using Avalonia.Animation;
 using Avalonia.Styling;
+using Avalonia.Xaml.Interactivity;
 using Material.Icons.Avalonia;
 
 namespace AnySheet.ViewModels;
@@ -25,37 +26,33 @@ namespace AnySheet.ViewModels;
 public partial class MainWindowViewModel : ViewModelBase
 {
     [ObservableProperty] private CharacterSheet? _loadedSheet;
-
     [ObservableProperty] private ObservableCollection<ModuleFolderViewModel> _moduleFolders = [];
-
+    [ObservableProperty] private ObservableCollection<TriggerListEntry> _triggerListEntries = [];
     [ObservableProperty] private bool _sheetMenusEnabled;
-
     [ObservableProperty] private bool _moduleSidebarEnabled;
-
+    [ObservableProperty] private bool _triggerSidebarEnabled;
     [ObservableProperty] private double _modeIconOpacity = 0.5;
-
     [ObservableProperty] private bool _gameplayModeButtonEnabled;
-
     [ObservableProperty] private IBrush _gameplayModeIconColor = Brushes.Black;
-
     [ObservableProperty] private bool _moduleEditModeButtonEnabled;
-
     [ObservableProperty] private IBrush _moduleEditModeIconColor = Brushes.Black;
-
+    [ObservableProperty] private bool _triggerEditModeButtonEnabled;
+    [ObservableProperty] private IBrush _triggerEditModeIconColor = Brushes.Black;
     [ObservableProperty] private bool _zoomButtonsEnabled;
-
     [ObservableProperty] private TextBlock _saveIndicator;
+    [ObservableProperty] private string _newTriggerEntryName = "";
 
+    // path to the currently loaded sheet
     private string _currentFilePath = "";
 
     public MainWindowViewModel()
     {
         // create a new sheet on startup - this technically means i can remove all the checks for whether a sheet is
-        // loaded yet, but i really don't feel like doing that so i'm not going to. there's a nonzero chance that this
-        // causes a race condition somewhere but i'll burn that bridge when i get there.
+        // loaded yet, but i really don't feel like doing that so i'm not going to.
         CreateNewSheet();
     }
 
+    // updates UI controls when the module tree gets rebuilt
     public void UpdateModuleFileTree(Dictionary<string, List<(string, string)>> moduleFileTree)
     {
         ModuleFolders.Clear();
@@ -66,9 +63,9 @@ public partial class MainWindowViewModel : ViewModelBase
     }
 
     [RelayCommand]
-    public void ChangeUiMode(object? parameter)
+    private void ChangeUiMode(object? parameter)
     {
-        // this actually is reachable because of how keybinds work.
+        // this actually is reachable because keybinds can't be disabled
         if (LoadedSheet == null)
         {
             return;
@@ -82,12 +79,15 @@ public partial class MainWindowViewModel : ViewModelBase
             {
                 case "ModuleEdit":
                     LoadedSheet.ChangeSheetMode(CharacterSheet.SheetMode.ModuleEdit);
-                    ModuleEditModeButtonEnabled = false;
-                    ModuleEditModeIconColor = AppResources.GetResource<IBrush>("Accent");
                     GameplayModeButtonEnabled = true;
                     GameplayModeIconColor = Brushes.Black;
-                    ModuleSidebarEnabled = true;
+                    ModuleEditModeButtonEnabled = false;
+                    ModuleEditModeIconColor = AppResources.GetResource<IBrush>("Accent");
+                    TriggerEditModeButtonEnabled = true;
+                    TriggerEditModeIconColor = Brushes.Black;
                     ZoomButtonsEnabled = false;
+                    ModuleSidebarEnabled = true;
+                    TriggerSidebarEnabled = false;
                     break;
                 case "Gameplay":
                     LoadedSheet.ChangeSheetMode(CharacterSheet.SheetMode.Gameplay);
@@ -95,20 +95,32 @@ public partial class MainWindowViewModel : ViewModelBase
                     GameplayModeIconColor = AppResources.GetResource<IBrush>("Accent");
                     ModuleEditModeButtonEnabled = true;
                     ModuleEditModeIconColor = Brushes.Black;
-                    ModuleSidebarEnabled = false;
+                    TriggerEditModeButtonEnabled = true;
+                    TriggerEditModeIconColor = Brushes.Black;
                     ZoomButtonsEnabled = true;
+                    ModuleSidebarEnabled = false;
+                    TriggerSidebarEnabled = false;
                     break;
-                // currently unused
                 case "TriggerEdit":
+                    LoadedSheet.ChangeSheetMode(CharacterSheet.SheetMode.TriggerEdit);
+                    GameplayModeButtonEnabled = true;
+                    GameplayModeIconColor = Brushes.Black;
+                    ModuleEditModeButtonEnabled = true;
+                    ModuleEditModeIconColor = Brushes.Black;
+                    TriggerEditModeButtonEnabled = false;
+                    TriggerEditModeIconColor = AppResources.GetResource<IBrush>("Accent");
+                    ZoomButtonsEnabled = true;
+                    ModuleSidebarEnabled = false;
+                    TriggerSidebarEnabled = true;
                     break;
             }
         }
     }
 
     [RelayCommand]
-    public async Task CreateNewSheet()
+    private async Task CreateNewSheet()
     {
-        if (LoadedSheet != null && LoadedSheet.HasBeenModified)
+        if (LoadedSheet != null && LoadedSheet.HasBeenModified())
         {
             var dialog = new ThreefoldDialog
             {
@@ -131,6 +143,7 @@ public partial class MainWindowViewModel : ViewModelBase
         }
 
         Console.WriteLine("Create new sheet");
+        TriggerListEntries.Clear();
         LoadedSheet = new CharacterSheet(this);
         SheetMenusEnabled = true;
         _currentFilePath = "";
@@ -164,10 +177,11 @@ public partial class MainWindowViewModel : ViewModelBase
 
         if (files.Count > 0)
         {
-            var (success, errorMessages) = await LoadedSheet.AddModuleFromScript(files[0].Path.AbsolutePath, 0, 0);
+            var (success, errorMessages, popupMessage) = await LoadedSheet.AddModuleFromScript(
+                files[0].Path.AbsolutePath, 0, 0);
             if (!success)
             {
-                await LogModuleLoadError(errorMessages);
+                await LogModuleLoadError(errorMessages, popupMessage);
             }
         }
     }
@@ -175,7 +189,7 @@ public partial class MainWindowViewModel : ViewModelBase
     [RelayCommand]
     private async Task SaveSheetToCurrentPath(CancellationToken token)
     {
-        // this one could actually because keybinds don't have an IsEnabled property
+        // this actually is reachable because keybinds can't be disabled
         if (LoadedSheet == null)
         {
             return;
@@ -243,7 +257,7 @@ public partial class MainWindowViewModel : ViewModelBase
     [RelayCommand]
     private async Task OpenSheetFromFile(CancellationToken token)
     {
-        if (LoadedSheet != null && LoadedSheet.HasBeenModified)
+        if (LoadedSheet != null && LoadedSheet.HasBeenModified())
         {
             var dialog = new ThreefoldDialog
             {
@@ -294,13 +308,22 @@ public partial class MainWindowViewModel : ViewModelBase
             if (await characterSheet.LoadSaveFile(files[0], token))
             {
                 LoadedSheet = characterSheet;
+
+                TriggerListEntries.Clear();
+                foreach (var triggerName in LoadedSheet.TriggerNames)
+                {
+                    var entry = new TriggerListEntry(this, triggerName);
+                    TriggerListEntries.Add(entry);
+                    Console.WriteLine($"Added trigger '{triggerName}' to trigger menu.");
+                }
                 _currentFilePath = files[0].Path.AbsolutePath;
                 SheetMenusEnabled = true;
                 ChangeUiMode("Gameplay");
             }
             else
             {
-                await LogSheetLoadError(characterSheet.SaveDataLoadErrorMessages);
+                await LogSheetLoadError(characterSheet.SaveDataLoadErrorMessages,
+                                        characterSheet.SaveDataLoadErrorPopupMessage);
             }
         }
     }
@@ -351,10 +374,7 @@ public partial class MainWindowViewModel : ViewModelBase
     [RelayCommand]
     private void ResetCamera()
     {
-        if (LoadedSheet != null)
-        {
-            LoadedSheet.ZoomBorder.ResetMatrix();
-        }
+        LoadedSheet?.ZoomBorder.ResetMatrix();
     }
 
     [RelayCommand]
@@ -380,10 +400,48 @@ public partial class MainWindowViewModel : ViewModelBase
         }
     }
 
+    [RelayCommand]
+    private void CreateNewTrigger()
+    {
+        if (!string.IsNullOrEmpty(NewTriggerEntryName) && LoadedSheet != null &&
+            !LoadedSheet.HasTrigger(NewTriggerEntryName))
+        {
+            LoadedSheet.AddTrigger(NewTriggerEntryName);
+            var entry = new TriggerListEntry(this, NewTriggerEntryName);
+            TriggerListEntries.Add(entry);
+            SetEditingTrigger(entry);
+        }
+        ClearTriggerEntryBox();
+    }
+
+    [RelayCommand]
+    private void ClearTriggerEntryBox()
+    {
+        NewTriggerEntryName = "";
+    }
+
+    public void RemoveTriggerEntry(TriggerListEntry entry)
+    {
+        TriggerListEntries.Remove(entry);
+        LoadedSheet?.RemoveTrigger(entry.Text);
+    }
+    
+    // sets the trigger currently being edited
+    public void SetEditingTrigger(TriggerListEntry entry)
+    {
+        LoadedSheet?.SetEditingTrigger(entry.Text);
+    }
+
+    public void ActivateTrigger(TriggerListEntry entry)
+    {
+        Console.WriteLine($"Activating trigger: {entry.Text}");
+        LoadedSheet?.ActivateTrigger(entry.Text);
+    }
+
     private bool _forceClose = false;
     public async Task OnWindowClosed(object? sender, WindowClosingEventArgs e)
     {
-        if (LoadedSheet != null && LoadedSheet.HasBeenModified && !_forceClose)
+        if (LoadedSheet != null && LoadedSheet.HasBeenModified() && !_forceClose)
         {
             e.Cancel = true;
             if (!DialogHost.IsDialogOpen("RootDialog"))
@@ -405,19 +463,21 @@ public partial class MainWindowViewModel : ViewModelBase
                 {
                     _forceClose = true;
                     e.Cancel = false;
-                    App.Window.Close();
+                    App.Window?.Close();
                 }
             }
         }
     }
 
-    private async Task LogSheetLoadError(List<string> errors)
+    private async Task LogSheetLoadError(List<string> errors, string displayMessage)
     {
         var dialog = new TwofoldDialog
         {
-            Message = "An error occurred while loading this character sheet. The full error will be logged to a file.",
+            Message = $"1 or more error(s) occurred while loading this character sheet:\n{displayMessage}",
             PositiveText = "Open log folder",
-            NegativeText = "OK"
+            NegativeText = "OK",
+            Width = 500,
+            Height = 350
         };
         var task = dialog.ShowAsync();
         
@@ -432,13 +492,15 @@ public partial class MainWindowViewModel : ViewModelBase
         }
     }
     
-    public async Task LogModuleLoadError(List<string> errors)
+    public async Task LogModuleLoadError(List<string> errors, string displayMessage)
     {
         var dialog = new TwofoldDialog
         {
-            Message = "An error occurred while loading this module. The full error will be logged to a file.",
+            Message = $"An error occurred while loading this module:\n{displayMessage}",
             PositiveText = "Open log folder",
-            NegativeText = "OK"
+            NegativeText = "OK",
+            Width = 500,
+            Height = 350
         };
         var task = dialog.ShowAsync();
         
@@ -458,11 +520,12 @@ public partial class MainWindowViewModel : ViewModelBase
         await using var writer = new StreamWriter(await file.OpenWriteAsync());
         var saveData = LoadedSheet!.GetSaveData();
         await writer.WriteAsync(JsonSerializer.Serialize(saveData));
-        // the animation plays once whenever a new text block is created
+        // the animation only plays when the new text block is created
         SaveIndicator = new TextBlock
         {
             Classes = { "SaveIndicator" },
             Text = "Saved"
         };
+        LoadedSheet.ResetModified();
     }
 }

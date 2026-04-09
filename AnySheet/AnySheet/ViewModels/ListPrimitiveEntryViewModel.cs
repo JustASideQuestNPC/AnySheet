@@ -2,14 +2,24 @@
 
 namespace AnySheet.ViewModels;
 
+/// <summary>
+/// A single entry in a list module primitive.
+/// </summary>
 public partial class ListPrimitiveEntryViewModel : ViewModelBase
 {
     private ListPrimitive _parent;
     
     public string Text { get; set; } = "";
     private string _initialText = "";
-    
-    public bool HasBeenModified => Text != _initialText;
+
+    public bool HasBeenModified()
+    {
+        return Text != _initialText;
+    }
+    public void ResetModified()
+    {
+        _initialText = Text;
+    }
 
     public ListPrimitiveEntryViewModel(ListPrimitive parent, string text)
     {

@@ -6,6 +6,9 @@ using System.Collections.ObjectModel;
 
 namespace AnySheet.ViewModels;
 
+/// <summary>
+/// An entire folder in the module sidebar.
+/// </summary>
 public partial class ModuleFolderViewModel : ViewModelBase
 {
     [ObservableProperty]

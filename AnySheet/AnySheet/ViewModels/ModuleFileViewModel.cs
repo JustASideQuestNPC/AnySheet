@@ -5,6 +5,9 @@ using System.Threading.Tasks;
 
 namespace AnySheet.ViewModels;
 
+/// <summary>
+/// Entries for modules in the sidebar list.
+/// </summary>
 public partial class ModuleFileViewModel : ViewModelBase
 {
     [ObservableProperty]

@@ -7,9 +7,15 @@ using CommunityToolkit.Mvvm.Input;
 using LuaLib;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.IO;
+using System.Linq;
 using System.Text.Json.Nodes;
 using System.Threading.Tasks;
+using AnySheet.ViewModels;
+using Avalonia.Controls.Primitives;
+using Avalonia.Input;
+using Lua;
 
 namespace AnySheet.SheetModule;
 
@@ -21,10 +27,7 @@ public partial class SheetModule : UserControl
     
     private LuaSandbox _lua = null!;
     private CharacterSheet _parent = null!;
-    private string _scriptPath = ""; // for saving
     private bool _relativeToWorkingDirectory = false;
-    private int _gridWidth;
-    private int _gridHeight;
     private bool _moduleWasDragged = false;
     private JsonArray _saveData;
 
@@ -32,8 +35,12 @@ public partial class SheetModule : UserControl
     private readonly List<ModulePrimitiveLuaBase> _items = [];
     public static readonly StyledProperty<bool> ModuleEditsEnabledProperty =
         AvaloniaProperty.Register<SheetModule, bool>("ModuleEditsEnabled");
+    public static readonly StyledProperty<bool> TriggerEditsEnabledProperty =
+        AvaloniaProperty.Register<SheetModule, bool>("TriggerEditsEnabled");
     public static readonly StyledProperty<int> GridSnapProperty =
         AvaloniaProperty.Register<SheetModule, int>("GridSnap");
+
+    public ObservableCollection<ModuleTriggerToggleListEntry> TriggerToggleButtons { get; } = [];
 
     [RelayCommand]
     private void DragCompleted(ModuleDragBehavior.DragCompletedCommandParameters args)
@@ -57,25 +64,9 @@ public partial class SheetModule : UserControl
     
     public int StartY { get; set; }
 
-    private int GridWidth
-    {
-        get => _gridWidth;
-        set
-        {
-            _gridWidth = value;
-            //Grid.SetColumnSpan(this, value); 
-        }
-    }
+    private int GridWidth { get; set; }
 
-    private int GridHeight
-    {
-        get => _gridHeight;
-        set
-        {
-            _gridHeight = value;
-            //Grid.SetRowSpan(this, value);
-        }
-    }
+    private int GridHeight { get; set; }
 
     public bool ModuleEditsEnabled
     {
@@ -89,23 +80,31 @@ public partial class SheetModule : UserControl
         set => SetValue(GridSnapProperty, value);
     }
     
-    public bool HasBeenModified
+    public bool HasBeenModified()
     {
-        get
+        if (_moduleWasDragged)
         {
-            if (_moduleWasDragged)
+            return true;
+        }
+            
+        foreach (var item in _items)
+        {
+            if (item.HasBeenModified())
             {
                 return true;
             }
-            
-            foreach (var item in _items)
-            {
-                if (item.HasBeenModified)
-                {
-                    return true;
-                }
-            }
-            return false;
+        }
+        
+        return false;
+    }
+    
+    public void ResetModified()
+    {
+        _moduleWasDragged = false;
+        
+        foreach (var item in _items)
+        {
+            item.ResetModified();
         }
     }
 
@@ -113,18 +112,21 @@ public partial class SheetModule : UserControl
     public List<string> SaveDataLoadErrorMessages { get; } = [];
 
     public bool AbsolutePosition { get; private init; }
+    public string ScriptPath { get; private set; } = "";
+    
+    private Dictionary<string, LuaFunction> _triggers = new();
+    private readonly Dictionary<string, List<string>> _triggerGroups = new();
+    public List<string> TriggerGroupNames => _triggerGroups.Keys.ToList();
+    private string _editingTriggerGroup = "";
+    
+    private CharacterSheet.SheetMode _mode;
 
-    private void LogErrorMessage(string message)
-    {
-        SaveDataLoadErrorMessages.Add(message);
-        Console.WriteLine(message);
-    }
-
+    // called when loading sheets from a file
     public SheetModule(CharacterSheet parent, JsonArray saveData)
     {
-        if (saveData.Count != 4)
+        if (saveData.Count != 4 && saveData.Count != 5)
         {
-            LogErrorMessage($"Save data must contain 4 elements, but contains {saveData.Count}.");
+            LogErrorMessage($"Save data must contain 4 or 5 elements, but contains {saveData.Count}.");
             return;
         }
 
@@ -141,26 +143,49 @@ public partial class SheetModule : UserControl
             var dataType4 = saveData[3]?.GetType().Name ?? "null";
             LogErrorMessage("Save data must be an array of type [string, int, int, JsonArray], but " +
                                           $"contains [{dataType1}, {dataType2}, {dataType3}, {dataType4}].");
+            return;
         }
-        else
-        {
-            _parent = parent;
-            GridX = x;
-            GridY = y;
-            _saveData = itemData;
-            AbsolutePosition = true;
-            _setup(path);
-        }
-    }
 
+        if (saveData.Count == 4 || saveData[4] == null || saveData[4]!.AsObject() is not { Count: >= 0 } triggerData)
+        {
+            triggerData = new JsonObject();
+            Console.WriteLine("[Warning]: Module has no trigger data; adding placeholder object.");
+        }
+        
+        _parent = parent;
+        GridX = x;
+        GridY = y;
+        StartX = x;
+        StartY = y;
+        _saveData = itemData;
+        AbsolutePosition = true;
+
+        _triggerGroups = new Dictionary<string, List<string>>();
+        foreach (var (groupName, triggers) in triggerData)
+        {
+            if (triggers?.AsArray() is { Count: >= 0 } triggerNames)
+            {
+                _triggerGroups[groupName] = triggerNames.GetValues<string>().ToList();
+            }
+            else
+            {
+                LogErrorMessage($"Trigger group '{groupName}' is not an array of strings.");
+            }
+        }
+            
+        _setup(path);
+    }
+    
+    // called when adding a new module
     public SheetModule(CharacterSheet parent, int gridX, int gridY, string scriptPath, bool relativeToWorkingDirectory)
     {
         _parent = parent;
         GridX = gridX;
         GridY = gridY;
         AbsolutePosition = false;
-        _scriptPath = (relativeToWorkingDirectory ? "~" : "") + scriptPath;
+        ScriptPath = (relativeToWorkingDirectory ? "~" : "") + scriptPath;
         _saveData = [];
+        _triggerGroups = new Dictionary<string, List<string>>();
         
         _setup(scriptPath);
     }
@@ -171,12 +196,12 @@ public partial class SheetModule : UserControl
 
         if (scriptPath.StartsWith('~'))
         {
-            _scriptPath = scriptPath[1..];
+            ScriptPath = scriptPath[1..];
             _relativeToWorkingDirectory = true;
         }
         else
         {
-            _scriptPath = scriptPath;
+            ScriptPath = scriptPath;
         }
 
         InitializeComponent();
@@ -195,7 +220,7 @@ public partial class SheetModule : UserControl
                 ["SheetModule"]      = new LuaSheetModule(),
                 ["StaticText"]       = new StaticTextLua(),
                 ["TextBox"]          = new TextBoxLua(),
-                ["MultiLineTextBox"] = new MultilineTextBoxLua(),
+                ["MultilineTextBox"] = new MultilineTextBoxLua(),
                 ["TripleToggle"]     = new TripleToggleLua(),
                 ["ToggleButton"]     = new ToggleButtonLua(),
                 ["NumberBox"]        = new NumberBoxLua(),
@@ -206,16 +231,29 @@ public partial class SheetModule : UserControl
         };
         
         var buildScriptSuccessful = await _runBuildScript(
-            (_relativeToWorkingDirectory ? Environment.CurrentDirectory + @"\Modules\" : "") + _scriptPath, _saveData);
+            (_relativeToWorkingDirectory ? Environment.CurrentDirectory + @"\Modules\" : "") + ScriptPath, _saveData);
+        
+        var triggerVerificationSuccessful = true;
+        foreach (var (groupName, triggerNames) in _triggerGroups)
+        {
+            foreach (var triggerName in triggerNames) {
+                if (!_triggers.ContainsKey(triggerName))
+                {
+                    LogErrorMessage($"Trigger '{triggerName}' does not exist in group '{groupName}'.");
+                    triggerVerificationSuccessful = false;
+                }
+            }
+        }
+        
         // immediately remove the module if the build script fails
-        if (!buildScriptSuccessful)
+        if (!buildScriptSuccessful || !triggerVerificationSuccessful)
         {
             _parent.RemoveModule(this);
             return;
         }
         
         _parent.PositionOnGrid(this);
-        Console.WriteLine($"Loaded module '{_scriptPath}' with {PrimitiveGrid.Children.Count} elements. Module " +
+        Console.WriteLine($"Loaded module '{ScriptPath}' with {PrimitiveGrid.Children.Count} elements. Module " +
                           $"size: {Width}x{Height} ({GridWidth}x{GridHeight} on grid), position: {GridX},{GridY}.");
         Container.IsVisible = true;
     }
@@ -236,24 +274,19 @@ public partial class SheetModule : UserControl
             return false;
         }
         
-        // do way too much error checking
-        if (returnValue.Length != 1)
-        {
-            LogErrorMessage("Module script must return a SheetModule instance.");
-            return false;
-        }
-
-        LuaSheetModule module;
-        try
-        {
-            module = returnValue[0].Read<LuaSheetModule>();
-        }
-        catch (InvalidOperationException)
+        if (returnValue.Length != 1 || !returnValue[0].TryRead<LuaSheetModule>(out var module))
         {
             LogErrorMessage("Module script must return a SheetModule instance.");
             return false;
         }
         
+        _triggers = module.Triggers;
+        foreach (var (triggerName, _) in _triggers)
+        {
+            TriggerToggleButtons.Add(new ModuleTriggerToggleListEntry(this, triggerName, false));
+            Console.WriteLine($"Added trigger '{triggerName}' to module.");
+        }
+
         // for calculating grid size
         var left = int.MaxValue;
         var top = int.MaxValue;
@@ -316,8 +349,8 @@ public partial class SheetModule : UserControl
         Console.WriteLine($"{_items.Count} elements loaded. Grid size: {GridWidth}x{GridHeight}");
         foreach (var item in _items)
         {
-            // i can't just modify the GridX and GridY fields because i want the shift to be invisible from inside the
-            // lua script and i think that would mess with it
+            // i can't just modify the GridX and GridY fields because i want the movement to be invisible from inside
+            // the lua script
             var uiControl = item.CreateUiControl(-left, -top);
             
             PrimitiveGrid.Children.Add(uiControl);
@@ -334,6 +367,8 @@ public partial class SheetModule : UserControl
 
     public void SetModuleMode(CharacterSheet.SheetMode mode)
     {
+        _mode = mode;
+        
         switch (mode)
         {
             case CharacterSheet.SheetMode.Gameplay:
@@ -341,20 +376,67 @@ public partial class SheetModule : UserControl
                 {
                     item.EnableUiControl();
                 }
+                ModuleRemoveButton.IsVisible = false;
+                TriggerList.IsVisible = false;
                 ModuleEditsEnabled = false;
-                ContextMenu.IsEnabled = false;
                 break;
             case CharacterSheet.SheetMode.ModuleEdit:
                 foreach (var item in _items)
                 {
                     item.DisableUiControl();
                 }
+                ModuleRemoveButton.IsVisible = true;
+                TriggerList.IsVisible = false;
                 ModuleEditsEnabled = true;
-                ContextMenu.IsEnabled = true;
                 break;
             case CharacterSheet.SheetMode.TriggerEdit:
-                // currently unused
+                foreach (var item in _items)
+                {
+                    item.DisableUiControl();
+                }
+                ModuleRemoveButton.IsVisible = false;
+                TriggerList.IsVisible = false;
+                ModuleEditsEnabled = false;
                 break;
+        }
+    }
+
+    public void SetEditingTrigger(string groupName)
+    {
+        _editingTriggerGroup = groupName;
+        if (!_triggerGroups.TryGetValue(groupName, out var group))
+        {
+            group = [];
+            _triggerGroups[groupName] = group;
+        }
+
+        foreach (var triggerButton in TriggerToggleButtons)
+        {
+            triggerButton.ButtonState = group.Contains(triggerButton.Name);
+        }
+        
+        TriggerList.IsVisible = true;
+    }
+
+    public void UpdateTriggerGroup(string triggerName, bool state)
+    {
+        if (state) {
+            _triggerGroups[_editingTriggerGroup].Add(triggerName);
+        }
+        else
+        {
+            _triggerGroups[_editingTriggerGroup].Remove(triggerName);
+        }
+    }
+
+    public async Task RunTriggerGroup(string groupName)
+    {
+        if (_triggerGroups.TryGetValue(groupName, out var group))
+        {
+            foreach (var name in group)
+            {
+                await _lua.DoFunctionAsync(_triggers[name]);
+            }
         }
     }
 
@@ -366,8 +448,34 @@ public partial class SheetModule : UserControl
             itemData.Add(item.GetSaveObject());
         }
         
+        var triggerData = new JsonObject();
+        foreach (var (triggerName, triggers) in _triggerGroups)
+        {
+            var group = new JsonArray();
+            foreach (var trigger in triggers)
+            {
+                group.Add(trigger);
+            }
+            triggerData[triggerName] = group;
+        }
+        
         Console.WriteLine($"Saved module at {GridX}, {GridY}");
         
-        return [(_relativeToWorkingDirectory ? "~" : "") + _scriptPath, GridX, GridY, itemData];
+        return [(_relativeToWorkingDirectory ? "~" : "") + ScriptPath, GridX, GridY, itemData, triggerData];
+    }
+
+    private void LogErrorMessage(string message)
+    {
+        SaveDataLoadErrorMessages.Add(message);
+        Console.WriteLine(message);
+    }
+
+    private void Container_PointerPressed(object? sender, PointerPressedEventArgs e)
+    {
+        if (sender is Control ctl && e.GetCurrentPoint(ctl).Properties.IsRightButtonPressed &&
+            (ModuleRemoveButton.IsVisible || TriggerList.IsVisible))
+        {
+            FlyoutBase.ShowAttachedFlyout(ctl);
+        }
     }
 }

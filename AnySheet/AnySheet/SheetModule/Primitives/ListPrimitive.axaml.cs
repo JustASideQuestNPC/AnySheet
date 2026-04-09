@@ -20,7 +20,7 @@ public partial class ListPrimitiveLua : ModulePrimitiveLuaBase
     public new static ListPrimitiveLua CreateLua(LuaTable args)
     {
         VerifyPositionArgs(args);
-        
+
         return new ListPrimitiveLua
         {
             GridX = args["x"].Read<int>(),
@@ -29,7 +29,9 @@ public partial class ListPrimitiveLua : ModulePrimitiveLuaBase
             GridHeight = args["height"].Read<int>(),
         };
     }
-    
+
+    public override string Type { get; } = "List";
+
     public static bool TryReadLua(LuaValue value, out ListPrimitiveLua result)
     {
         return value.TryRead(out result);
@@ -40,7 +42,7 @@ public partial class ListPrimitiveLua : ModulePrimitiveLuaBase
         _uiControl = new ListPrimitive(GridX + xOffset, GridY + yOffset, GridWidth, GridHeight, _entries);
         return _uiControl;
     }
-    
+
     public override void EnableUiControl()
     {
         _uiControl.IsEnabled = true;
@@ -50,8 +52,10 @@ public partial class ListPrimitiveLua : ModulePrimitiveLuaBase
     {
         _uiControl.IsEnabled = false;
     }
-    
-    public override bool HasBeenModified => _uiControl.HasBeenModified();
+
+    public override bool HasBeenModified() => _uiControl.HasBeenModified();
+    public override void ResetModified() => _uiControl.ResetModified();
+
     public override JsonObject? GetSaveObject()
     {
         var entries = new JsonArray();
@@ -151,12 +155,22 @@ public partial class ListPrimitive : UserControl
 
         foreach (var entry in Entries)
         {
-            if (entry.HasBeenModified)
+            if (entry.HasBeenModified())
             {
                 return true;
             }
         }
         
         return false;
+    }
+
+    public void ResetModified()
+    {
+        _listItemAddedOrRemoved = false;
+
+        foreach (var entry in Entries)
+        {
+            entry.ResetModified();
+        }
     }
 }

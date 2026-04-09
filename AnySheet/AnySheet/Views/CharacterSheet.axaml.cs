@@ -33,25 +33,34 @@ public partial class CharacterSheet : UserControl
 
     public bool CanvasDragEnabled => Mode == SheetMode.Gameplay;
     public List<string> SaveDataLoadErrorMessages { get; } = [];
+    public string SaveDataLoadErrorPopupMessage { get; private set; }
+    
+    public readonly List<string> TriggerNames = [];
 
-    public bool HasBeenModified
+    public bool HasBeenModified()
     {
-        get
+        if (_moduleAddedOrRemoved)
         {
-            if (_moduleAddedOrRemoved)
+            return true;
+        }
+            
+        foreach (var module in Modules)
+        {
+            if (module.HasBeenModified())
             {
                 return true;
             }
-            
-            foreach (var module in Modules)
-            {
-                if (module.HasBeenModified)
-                {
-                    return true;
-                }
-            }
+        }
 
-            return false;
+        return false;
+    }
+    
+    public void ResetModified()
+    {
+        _moduleAddedOrRemoved = false;
+        foreach (var module in Modules)
+        {
+            module.ResetModified();
         }
     }
     
@@ -67,7 +76,12 @@ public partial class CharacterSheet : UserControl
     {
         using var reader = new StreamReader(await file.OpenReadAsync());
         var saveString = await reader.ReadToEndAsync(cancellationToken: token);
-        // why is there no JsonArray.TryParse?
+        
+        // for the error popup
+        var saveDataErrors = 0;
+        var moduleErrors = new List<string>();
+        
+        // why is there no JsonArray.TryParse??
         try
         {
             var saveData = JsonSerializer.Deserialize<JsonArray>(saveString);
@@ -85,9 +99,9 @@ public partial class CharacterSheet : UserControl
                     // "catch" the error but keep going so i can log every error
                     var dataType = moduleData != null ? moduleData.GetType().Name : "null";
                     SaveDataLoadErrorMessages.Add($"Invalid save data for module: Expected array, got {dataType}.");
+                    ++saveDataErrors;
                     continue;
                 }
-                
                 
                 var module = new SheetModule.SheetModule(this, moduleData.AsArray());
                 moduleBuffer.Add(module);
@@ -99,14 +113,25 @@ public partial class CharacterSheet : UserControl
             {
                 if (module.SaveDataLoadError)
                 {
+                    var loadErrorMessages = module.SaveDataLoadErrorMessages;
                     SaveDataLoadErrorMessages.Add($"Error(s) while loading module:");
-                    SaveDataLoadErrorMessages.AddRange(module.SaveDataLoadErrorMessages.Select(msg => $"- {msg}"));
+                    SaveDataLoadErrorMessages.AddRange(loadErrorMessages.Select(msg => $"- {msg}"));
+                    moduleErrors.Add(loadErrorMessages[0].StartsWith("Module script '") ? loadErrorMessages[0] :
+                                     $"{loadErrorMessages.Count} error(s) in module script '{module.ScriptPath}'");
                 }
                 else
                 {
                     Modules.Add(module);
                     ModuleGrid.Children.Add(module);
                     module.SetModuleMode(Mode);
+                    
+                    foreach (var triggerGroupName in module.TriggerGroupNames)
+                    {
+                        if (!TriggerNames.Contains(triggerGroupName))
+                        {
+                            TriggerNames.Add(triggerGroupName);
+                        }
+                    }
                 }
             }
         }
@@ -115,14 +140,29 @@ public partial class CharacterSheet : UserControl
             SaveDataLoadErrorMessages.Add($"Error while parsing JSON: {e.Message}");
             return false;
         }
-        
+
+        if (SaveDataLoadErrorMessages.Count > 0)
+        {
+            if (saveDataErrors > 0)
+            {
+                SaveDataLoadErrorPopupMessage = $"{saveDataErrors} error(s) while loading save data.";
+            }
+
+            foreach (var error in moduleErrors)
+            {
+                SaveDataLoadErrorPopupMessage += $"\n{error}";
+            }
+        }
         return SaveDataLoadErrorMessages.Count == 0;
     }
 
-    public async Task<(bool, List<string>)> AddModuleFromScript(string path, int gridX, int gridY)
+    // Adds a module from a script path at a position. Returns whether it succeeded, followed by any error messages,
+    // followed by what message to display in the popup
+    public async Task<(bool, List<string>, string)> AddModuleFromScript(string path, int gridX, int gridY)
     {
         var loadErrors = new List<string>();
         
+        // handle relative paths
         var relativeToWorkingDirectory = Utils.PathContainsWorkingDirectory(path);
         if (relativeToWorkingDirectory)
         {
@@ -134,18 +174,29 @@ public partial class CharacterSheet : UserControl
 
         if (module.SaveDataLoadError)
         {
-            loadErrors.Add($"Error(s) while loading module:");
+            loadErrors.Add("Error(s) while loading module:");
             loadErrors.AddRange(module.SaveDataLoadErrorMessages.Select(msg => $"- {msg}"));
-            return (false, loadErrors);
+            return (false, loadErrors, loadErrors[0].StartsWith("Module script '") ? loadErrors[0] :
+                        $"{loadErrors.Count} error(s) in module script '{path}'");
         }
         
         Modules.Add(module);
         ModuleGrid.Children.Add(module);
         module.SetModuleMode(Mode);
+
+        foreach (var triggerGroupName in module.TriggerGroupNames)
+        {
+            if (!TriggerNames.Contains(triggerGroupName))
+            {
+                TriggerNames.Add(triggerGroupName);
+            }
+        }
+        
         _moduleAddedOrRemoved = true;
-        return (true, []);
+        return (true, [], "");
     }
 
+    // called by modules to position themselves on the grid
     public void PositionOnGrid(SheetModule.SheetModule module)
     {
         var zoomedGridSize = module.GridSnap * ZoomBorder.ZoomX;
@@ -166,10 +217,10 @@ public partial class CharacterSheet : UserControl
     
     public async Task TryAddModuleFromFile(string path)
     {
-        var (success, errorMessages) = await AddModuleFromScript(path, 0, 0);
+        var (success, errorMessages, popupMessage) = await AddModuleFromScript(path, 0, 0);
         if (!success)
         {
-            await _parent.LogModuleLoadError(errorMessages);
+            await _parent.LogModuleLoadError(errorMessages, popupMessage);
         }
     }
 
@@ -180,6 +231,7 @@ public partial class CharacterSheet : UserControl
         _moduleAddedOrRemoved = true;
     }
 
+    // Resets everything to (0, 0). Useful when i mess up something and modules are getting saved in the wrong positions
     public void ResetModulePositions()
     {
         foreach (var module in Modules)
@@ -198,8 +250,34 @@ public partial class CharacterSheet : UserControl
         {
             module.SetModuleMode(mode);
         }
-        ZoomBorder.EnableZoom = (mode == SheetMode.Gameplay);
+        ZoomBorder.EnableZoom = (Mode != SheetMode.ModuleEdit);
         ZoomBorder.PanButton = (Mode == SheetMode.Gameplay ? ButtonName.Left : ButtonName.Right);
+    }
+
+    public bool HasTrigger(string name) => TriggerNames.Contains(name);
+    
+    public void AddTrigger(string name) => TriggerNames.Add(name);
+
+    public void RemoveTrigger(string name)
+    {
+        TriggerNames.Remove(name);
+    }
+
+    public void SetEditingTrigger(string name)
+    {
+        foreach (var module in Modules)
+        {
+            module.SetEditingTrigger(name);
+        }
+    }
+
+    public void ActivateTrigger(string name)
+    {
+        Console.WriteLine($"Activating trigger: {name}");
+        foreach (var module in Modules)
+        {
+            module.RunTriggerGroup(name);
+        }
     }
 
     public JsonArray GetSaveData()

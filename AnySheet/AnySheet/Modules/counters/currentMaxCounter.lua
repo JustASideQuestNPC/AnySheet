@@ -82,5 +82,11 @@ return SheetModule.create({
 				end
 			end
 		})
+	},
+
+	triggers = {
+		["Reset"] = function()
+			remainingUses.value = maxUses.value
+		end
 	}
 });

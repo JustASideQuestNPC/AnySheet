@@ -32,17 +32,30 @@ local elements = {
     })
 }
 
+---@type ToggleButton[]
+local buttons = {} -- secondary array for the reset trigger
 for i = 1, 3, 1 do
-    table.insert(elements, ToggleButton.create({
+    local successButton = ToggleButton.create({
         x = i + 2,
         y = 1
-    }))
-    table.insert(elements, ToggleButton.create({
+    })
+    local failureButton = ToggleButton.create({
         x = i + 2,
         y = 2
-    }))
+    })
+    table.insert(buttons, successButton)
+    table.insert(elements, successButton)
+    table.insert(buttons, failureButton)
+    table.insert(elements, failureButton)
 end
 
 return SheetModule.create({
-    elements = elements
+    elements = elements,
+    triggers = {
+        ["Reset"] = function()
+            for _, button in ipairs(buttons) do
+                button.toggled = false
+            end
+        end
+    }
 })

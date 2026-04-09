@@ -33,6 +33,8 @@ public partial class DividerLua : ModulePrimitiveLuaBase
     private bool _capEnd = true;
     private int _thickness = 1;
     private bool _betweenSquares = false;
+    
+    public override string Type { get; } = "Divider";
 
     [LuaMember("create")]
     private new static DividerLua CreateLua(LuaTable args)
@@ -116,20 +118,14 @@ public partial class DividerLua : ModulePrimitiveLuaBase
     }
 
     // dividers aren't interactive and save no data
-    public override void EnableUiControl()
-    {
-    }
-
-    public override void DisableUiControl()
-    {
-    }
-
-    public override bool HasBeenModified => false;
+    public override void EnableUiControl() {}
+    public override void DisableUiControl() {}
+    
+    public override bool HasBeenModified() => false;
+    public override void ResetModified() {}
+    
     public override JsonObject? GetSaveObject() => null;
-
-    public override void LoadSaveObject(JsonObject? obj)
-    {
-    }
+    public override void LoadSaveObject(JsonObject? obj) {}
 }
 
 public partial class DividerPrimitive : UserControl

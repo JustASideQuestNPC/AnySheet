@@ -12,6 +12,7 @@
         <entry key="AnySheet/Popups/ConfirmUnsavedSheetDialog.axaml" value="AnySheet/AnySheet.csproj" />
         <entry key="AnySheet/Popups/ConfirmUnsavedSheetPopup.axaml" value="AnySheet/AnySheet.csproj" />
         <entry key="AnySheet/Popups/UnsavedSheetPrompt.axaml" value="AnySheet/AnySheet.csproj" />
+        <entry key="AnySheet/Resources.axaml" value="AnySheet/AnySheet.csproj" />
         <entry key="AnySheet/SheetModule/Primitives/ButtonPrimitive.axaml" value="AnySheet/AnySheet.csproj" />
         <entry key="AnySheet/SheetModule/Primitives/Divider.axaml" value="AnySheet/AnySheet.csproj" />
         <entry key="AnySheet/SheetModule/Primitives/DividerPrimitive.axaml" value="AnySheet/AnySheet.csproj" />

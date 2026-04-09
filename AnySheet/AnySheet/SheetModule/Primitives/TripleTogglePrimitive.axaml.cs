@@ -26,6 +26,8 @@ public partial class TripleToggleLua : ModulePrimitiveLuaBase
     private LuaFunction? _onStateChange = null;
 
     private int _buttonState = 1;
+    
+    public override string Type { get; } = "TripleToggle";
 
     [LuaMember("state")]
     private int State
@@ -84,7 +86,9 @@ public partial class TripleToggleLua : ModulePrimitiveLuaBase
         _uiControl.IsEnabled = false;
     }
     
-    public override bool HasBeenModified => _uiControl.CurrentState != _buttonState;
+    public override bool HasBeenModified() => _uiControl.CurrentState != _buttonState;
+    public override void ResetModified() => _buttonState = _uiControl.CurrentState;
+    
     public override JsonObject GetSaveObject()
     {
         var state = _uiControl.ButtonDisabled ? 0 : _uiControl.Button.IsChecked == true ? 2 : 1;
