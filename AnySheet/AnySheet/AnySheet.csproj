@@ -2,10 +2,12 @@
     <PropertyGroup>
         <OutputType>WinExe</OutputType>
         <TargetFramework>net9.0</TargetFramework>
+<!--        <ApplicationIcon>Assets/ExeIcon.ico</ApplicationIcon>-->
         <Nullable>enable</Nullable>
         <BuiltInComInteropSupport>true</BuiltInComInteropSupport>
         <ApplicationManifest>app.manifest</ApplicationManifest>
         <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
+        <ApplicationIcon>Assets\ExeIcon.ico</ApplicationIcon>
     </PropertyGroup>
 
     <ItemGroup>

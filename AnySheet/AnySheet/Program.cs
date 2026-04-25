@@ -2,6 +2,7 @@
 using System;
 using System.Diagnostics;
 using System.IO;
+using System.Reflection;
 
 namespace AnySheet;
 
@@ -16,24 +17,72 @@ sealed class Program
     [STAThread]
     public static void Main(string[] args)
     {
-        // lets me test the crash handler without having to make sure the exe is always in the same folder
+        // command line arguments are used for the crash handler and for file association
+        var targetFile = "";
         if (args.Length > 0)
         {
-            _crashHandlerPath = args[0];
-            if (_crashHandlerPath == "--nocrashhandler")
+            for (var i = 0; i < args.Length; ++i)
             {
-                _noCrashHandler = true;
-            }
-            else if (!Path.Exists(Path.GetFullPath(_crashHandlerPath)))
-            {
-                throw new FileNotFoundException("Go fix your crash handler path.");
+                switch (args[i])
+                {
+                    case "--noCrashHandler":
+                        if (_noCrashHandler)
+                        {
+                            // todo: figure out what exception class to throw here
+                            throw new Exception("Repeat command line argument \"--noCrashHandler\".");
+                        }
+                        _noCrashHandler = true;
+                        break;
+                    case "--crashHandler":
+                    {
+                        if (_crashHandlerPath != "CrashHandler.exe")
+                        {
+                            throw new Exception("Repeat command line argument \"--crashHandler\".");
+                        }
+                        ++i;
+                        if (i == args.Length)
+                        {
+                            throw new Exception("Path to crash handler is required.");
+                        }
+                        if (!Path.Exists(Path.GetFullPath(args[i])))
+                        {
+                            throw new FileNotFoundException($"Crash handler does not exist at {args[i]}.");
+                        }
+                        _crashHandlerPath = args[i];
+                        break;
+                    }
+                    case "-f":
+                        if (targetFile != "")
+                        {
+                            throw new Exception("Repeat command line argument \"-f\".");
+                        }++i;
+                        if (i == args.Length)
+                        {
+                            throw new Exception("Path to file is required.");
+                        }
+                        // if (!Path.Exists(Path.GetFullPath(args[i])))
+                        // {
+                        //     throw new FileNotFoundException($"Sheet file does not exist at {args[i]}.");
+                        // }
+                        targetFile = args[i];
+                        break;
+                }
             }
         }
         Console.WriteLine($"crash handler at {Path.GetFullPath(_crashHandlerPath)}");
+        
+        // apparently, running the app by double-clicking a file will make the working directory the same place as that
+        // file, not the location of the exe
+        if (!Environment.CurrentDirectory.EndsWith("AnySheet"))
+        {
+            Environment.CurrentDirectory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) ??
+                                           Environment.CurrentDirectory;
+        }
+        // Environment.CurrentDirectory = Path.GetDirectoryName(Process.GetCurrentProcess().MainModule?.FileName) ?? Environment.CurrentDirectory;
 
         try
         {
-            BuildAvaloniaApp().StartWithClassicDesktopLifetime(args);
+            BuildAvaloniaApp().StartWithClassicDesktopLifetime([targetFile]);
         }
         catch (Exception e)
         {

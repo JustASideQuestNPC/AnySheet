@@ -6,7 +6,9 @@ using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Data.Core.Plugins;
 using Avalonia.Markup.Xaml;
 using System;
+using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
 using Avalonia.Media;
 
@@ -33,7 +35,7 @@ public partial class App : Application
     public static CharacterSheet? LoadedSheet =>
         Window is { DataContext: MainWindowViewModel vm } ? vm.LoadedSheet : null;
 
-    public override void OnFrameworkInitializationCompleted()
+    public override async void OnFrameworkInitializationCompleted()
     {
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
         {
@@ -52,8 +54,13 @@ public partial class App : Application
             desktop.MainWindow = window;
             Window = window;
             
-            // this may cause a race condition somewhere but whatever i'll burn that bridge when i get there
-            LoadConfig();
+            var args = desktop.Args;
+            if (args is { Length: > 0 })
+            {
+                await windowContext.OpenSheetFromPath(args[0]);
+            }
+            
+            await LoadConfig();
         }
 
         base.OnFrameworkInitializationCompleted();

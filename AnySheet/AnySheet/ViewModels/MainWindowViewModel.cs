@@ -303,28 +303,48 @@ public partial class MainWindowViewModel : ViewModelBase
 
         if (files.Count > 0)
         {
-            var characterSheet = new CharacterSheet(this);
+            await LoadSheet(files[0], token);
+        }
+    }
 
-            if (await characterSheet.LoadSaveFile(files[0], token))
-            {
-                LoadedSheet = characterSheet;
+    private async Task LoadSheet(IStorageFile file, CancellationToken token)
+    {
+        var characterSheet = new CharacterSheet(this);
 
-                TriggerListEntries.Clear();
-                foreach (var triggerName in LoadedSheet.TriggerNames)
-                {
-                    var entry = new TriggerListEntry(this, triggerName);
-                    TriggerListEntries.Add(entry);
-                    Console.WriteLine($"Added trigger '{triggerName}' to trigger menu.");
-                }
-                _currentFilePath = files[0].Path.AbsolutePath;
-                SheetMenusEnabled = true;
-                ChangeUiMode("Gameplay");
-            }
-            else
+        if (await characterSheet.LoadSaveFile(file, token))
+        {
+            LoadedSheet = characterSheet;
+
+            TriggerListEntries.Clear();
+            foreach (var triggerName in LoadedSheet.TriggerNames)
             {
-                await LogSheetLoadError(characterSheet.SaveDataLoadErrorMessages,
-                                        characterSheet.SaveDataLoadErrorPopupMessage);
+                var entry = new TriggerListEntry(this, triggerName);
+                TriggerListEntries.Add(entry);
+                Console.WriteLine($"Added trigger '{triggerName}' to trigger menu.");
             }
+            _currentFilePath = file.Path.AbsolutePath;
+            SheetMenusEnabled = true;
+            ChangeUiMode("Gameplay");
+        }
+        else
+        {
+            await LogSheetLoadError(characterSheet.SaveDataLoadErrorMessages,
+                                    characterSheet.SaveDataLoadErrorPopupMessage);
+        }
+    }
+
+    public async Task OpenSheetFromPath(string path)
+    {
+        if (App.TopLevel == null)
+        {
+            Console.WriteLine("No top level window!");
+            return;
+        }
+
+        
+        var file = await App.TopLevel.StorageProvider.TryGetFileFromPathAsync(path);
+        if (file != null) {
+            await LoadSheet(file, CancellationToken.None);
         }
     }
 
