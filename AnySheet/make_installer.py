@@ -10,8 +10,7 @@ PUBLISH_PROJECTS = ('AnySheet', 'CrashHandler')
 APP_PATH = Path.cwd() / 'publish'
 MODULE_PATH = Path.cwd() / 'AnySheet' / 'Modules'
 
-BASE_NSIS = r'''
-RequestExecutionLevel user ; for some reason the default level is admin?
+BASE_NSIS = r'''RequestExecutionLevel user ; for some reason the default level is admin?
 
 !include "MUI2.nsh"
 !include "UninstallLog.nsh"
@@ -53,7 +52,8 @@ var UninstLog
 !define REG_ROOT "HKCU"
 !define REG_APP_PATH "Software\AnySheet"
 ; error string if you somehow deleted the log without deleting the rest of the app
-LangString UninstLogMissing ${LANG_ENGLISH} "${UninstLog} not found!$\r$\nUninstallation cannot proceed!"
+LangString UninstLogMissing ${LANG_ENGLISH} \
+           "${UninstLog} not found!$\r$\nUninstallation cannot proceed!"
 
 ; define macros
 !define AddItem "!insertmacro AddItem"
@@ -91,6 +91,16 @@ Section "Main App" MainAppComponent
     Call BruteForceInstallApp
     FileWrite $UninstLog "$OUTDIR\icon.ico$\r$\n"
     ${WriteUninstaller} "AnySheet_Uninstaller.exe"
+
+    ; Add to the "Add or Remove Programs" list on windows
+    WriteRegStr HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\AnySheet" "DisplayName" \
+                     "AnySheet: The Modular TTRPG Character Sheet"
+    WriteRegStr HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\AnySheet" "DisplayIcon" \
+                     "$INSTDIR\AnySheet.exe"
+    WriteRegStr HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\AnySheet" \
+                     "UninstallString" "$\"$INSTDIR\AnySheet_Uninstaller.exe$\""
+    WriteRegStr HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\AnySheet" \
+                     "QuietUninstallString" "$\"$INSTDIR\AnySheet_Uninstaller.exe$\" /S"
 SectionEnd
 
 Section "Modules" ModulesComponent
@@ -100,8 +110,10 @@ SectionEnd
 Section "Associate with .acs Files" FileAssociationComponent
     WriteRegStr HKCU "Software\Classes\.acs" "" "AnySheet.CharacterSheet"
     WriteRegStr HKCU "Software\Classes\AnySheet.CharacterSheet" "" "AnySheet Character Sheet"
-    WriteRegStr HKCU "Software\Classes\AnySheet.CharacterSheet\shell\open\command" "" "$\"$INSTDIR\AnySheet.exe$\" -f $\"%1$\""
-    WriteRegStr HKCU "Software\Classes\AnySheet.CharacterSheet\DefaultIcon" "" "$INSTDIR\AnySheet.exe"
+    WriteRegStr HKCU "Software\Classes\AnySheet.CharacterSheet\shell\open\command" "" \
+                     "$\"$INSTDIR\AnySheet.exe$\" -f $\"%1$\""
+    WriteRegStr HKCU "Software\Classes\AnySheet.CharacterSheet\DefaultIcon" ""\
+                     "$INSTDIR\AnySheet.exe"
 SectionEnd
 
 Section "Desktop Shortcut" DesktopShortcutComponent
@@ -110,7 +122,8 @@ SectionEnd
 
 LangString DESC_MainAppComponent ${LANG_ENGLISH} "The main app (required)."
 LangString DESC_ModulesComponent ${LANG_ENGLISH} "A selection of premade sheet modules."
-LangString DESC_FileAssociationComponent ${LANG_ENGLISH} "Open AnySheet by double-clicking .acs files."
+LangString DESC_FileAssociationComponent ${LANG_ENGLISH} \
+           "Open AnySheet by double-clicking .acs files."
 LangString DESC_DesktopShortcutComponent ${LANG_ENGLISH} "Create a shortcut on your desktop."
 !insertmacro MUI_FUNCTION_DESCRIPTION_BEGIN
     !insertmacro MUI_DESCRIPTION_TEXT ${MainAppComponent} $(DESC_MainAppComponent)
@@ -124,7 +137,8 @@ Section
     ; Create shortcuts
     WriteRegStr HKCU "Software\AnySheet" "" $INSTDIR
     ${CreateDirectory} "$SMPROGRAMS\$StartMenuFolder"
-    ${CreateShortcut} "$SMPROGRAMS\$StartMenuFolder\AnySheet.lnk" "$INSTDIR\AnySheet.exe" "" "$INSTDIR\icon.ico" ""
+    ${CreateShortcut} "$SMPROGRAMS\$StartMenuFolder\AnySheet.lnk" "$INSTDIR\AnySheet.exe" "" \
+                      "$INSTDIR\icon.ico" ""
     !insertmacro MUI_STARTMENU_WRITE_END
 SectionEnd
 
@@ -134,11 +148,11 @@ Section Uninstall
         MessageBox MB_OK|MB_ICONSTOP "$(UninstLogMissing)"
         Abort
 
-    ; afaik nothing happens if i try to remove registry strings that don't exist
     DeleteRegKey HKCU "AnySheet\"
     DeleteRegKey HKCU "Software\AnySheet\"
     DeleteRegKey HKCU "Software\Classes\.acs"
     DeleteRegKey HKCU "Software\Classes\AnySheet.CharacterSheet"
+    DeleteRegKey HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\AnySheet"
     
     Push $R0
     Push $R1
@@ -183,11 +197,11 @@ Section Uninstall
     ; on the other hand, if you were stupid enough to put important files in the logs folder then
     ; tbh you kinda deserve this.
     RMDir /r "$INSTDIR\logs"
-    ; RMDir /r "$INSTDIR\modules" ; i'm not deleting the modules folder in case you've got custom ones in there
     Pop $R2
     Pop $R1
     Pop $R0
 SectionEnd
+
 '''
 
 def relative_path(path: str) -> Path:
