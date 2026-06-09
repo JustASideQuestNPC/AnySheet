@@ -1,8 +1,8 @@
 # AnySheet Scripting Docs
 Every AnySheet module is a [Lua](https://www.lua.org/about.html) script, and you can create your own
 modules by writing new scripts. Don't worry if you've never written code before, I promise it's not
-hard (seriously, I wrote all the scripts here in about 3 hours and most of that was deciding what I
-wanted them to look like).
+hard (seriously, I wrote all the built-in modules in about 3 hours and most of that was deciding
+what I wanted them to look like).
 
 ### Contents
 - [Getting Started](#getting-started)
@@ -31,13 +31,15 @@ If you've never written Lua before, I highly recommend installing
 [Lua extension](https://marketplace.visualstudio.com/items?itemName=sumneko.lua) for it. AnySheet
 includes type definitions that work with the Lua extension's autocomplete.
 
+For an example module with all the features and lots of comments, take a look at the
+[5e hp tracker](https://github.com/JustASideQuestNPC/AnySheet/tree/main/AnySheet/AnySheet/Modules/dnd_5e/hpTracker.lua).
+
 ### Module Files
 All modules are in the Modules folder, which is located in the same place you installed AnySheet. If
 you used the default install location, the Modules folder is at
 `C:/Users/<your name>/AppData/Roaming/AnySheet/Modules` (if you can't see AppData in the file
-explorer, make sure it's showing hidden files). Alternatively, open AnySheet, click "new sheet" so
-you can see the module sidebar, and click the folder icon to open the Modules folder in the file
-explorer.
+explorer, make sure it's showing hidden files). Alternatively, open AnySheet and click the folder
+icon at the top of the module sidebar. This will open the Modules folder in File Explorer.
 
 **Note:** For autocomplete to work in VSCode, you need to open the entire Modules folder in it, not
 just whatever folder you're putting your script in.
@@ -45,7 +47,8 @@ just whatever folder you're putting your script in.
 ### Your First Module
 For your first module, create a file in any of the folders (or make a new one) inside the Modules
 folder and name it `CustomModule.lua`. Modules won't appear in the sidebar unless they're in a
-subfolder. If AnySheet is currently running, you'll need to reload the sidebar to see the module.
+subfolder. If AnySheet is currently running, you'll need to reload the sidebar (click the refresh
+icon at the top) to see the module.
 
 Every module script returns a single module object, which you can create using
 `SheetModule.create()`:
@@ -54,6 +57,11 @@ local customModule = SheetModule.create({})
 return customModule
 ```
 If you try to load this module, it'll fail because your module doesn't have anything inside it.
+
+***IMPORTANT:*** If a module is on your character sheet and you change the script for it, the module
+will not update until you restart AnySheet or save and reopen the sheet file. I *do not* recommend
+doing this and make no promises that it won't break your entire sheet. Remove the module, change the
+script, then add it back onto your sheet.
 
 ### Module Elements
 Every module requires at least one element. Elements are the most basic building blocks of the
@@ -216,15 +224,15 @@ or `"accent"` (red).
 element), or `"full"` (border all the way around the element).
 
 ### `SheetModule`
-A character sheet module. Each module script should return exactly one module instance (created
-using `SheetModule.create()`) and nothing else.
+A character sheet module. Each module script must return exactly one module instance (created using
+`SheetModule.create()`) and nothing else.
 
 #### `SheetModule.create()`
 Generates a new module.
 
 **Parameters:**
 - `elements`: An array with all elements in the module. The module is automatically scaled to fit
-all the elements in side it.
+all the elements inside it.
 
 **Returns:** `SheetModule`
 
@@ -234,15 +242,6 @@ SheetModule.create({
     elements: ModuleElement[]
 })
 ```
-
-### `ModuleElementBase`
-Abstract base class for character sheet elements.
-
-#### Fields
-- `x` (integer): The x position of the element's top left corner.
-- `y` (integer): The y position of the element's top left corner.
-- `width` (integer): The width of the module.
-- `height` (integer): The height of the module.
 
 ### `Button`
 A button that runs a callback when clicked.

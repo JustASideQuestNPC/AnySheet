@@ -1,14 +1,11 @@
 ---@sheetModule
 ---@name HP Tracker
 
--- A shameless clone of the cool D&DBeyond HP tracker. Overly commented to act as some kind of cheat
--- sheet until I write proper documentation for the scripting API.
-
 -- Module scripts are written in Lua; you can find a lot of resources for Lua itself online.
 -- To actually make a module:
 -- 1. Create a module using SheetModule.create() (that's at the bottom of this script)
 -- 2. Give the module a list of elements. Every element takes different parameters, except for the
---    x and y coordinate.
+--    x and y coordinates.
 -- 3. Return the module.
 -- 4. Profit.
 
@@ -104,7 +101,6 @@ local healButton = Button.create({
 	icon = "heart-plus",
 	-- callback functions can also be defined "inline" without assigning them to a variable
 	callback = function()
-		print(tostring(currentHp.value) .. ", " .. tostring(inputBox.value))
 		currentHp.value = currentHp.value + inputBox.value
 
 		if currentHp.value > maxHp.value then
